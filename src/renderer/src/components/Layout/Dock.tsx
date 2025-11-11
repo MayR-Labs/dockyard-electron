@@ -105,15 +105,21 @@ function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
         )}
       </motion.button>
       
-      {/* Badge for multiple instances */}
-      {app.instances.length > 1 && (
+      {/* Badge for multiple instances or notifications */}
+      {(app.instances.length > 1 || (app.notifications?.badgeCount && app.notifications.badgeCount > 0)) && (
         <motion.span
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2 }}
-          className="absolute -top-1 -right-1 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg"
+          className={`absolute -top-1 -right-1 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg ${
+            app.notifications?.badgeCount && app.notifications.badgeCount > 0
+              ? 'bg-red-500'
+              : 'bg-indigo-500'
+          }`}
         >
-          {app.instances.length}
+          {app.notifications?.badgeCount && app.notifications.badgeCount > 0
+            ? app.notifications.badgeCount > 99 ? '99+' : app.notifications.badgeCount
+            : app.instances.length}
         </motion.span>
       )}
       

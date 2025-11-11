@@ -20,6 +20,7 @@ export class IPCHandlers {
     this.registerWorkspaceHandlers();
     this.registerAppHandlers();
     this.registerSettingsHandlers();
+    this.registerNotificationHandlers();
   }
 
   private registerProfileHandlers(): void {
@@ -273,6 +274,62 @@ export class IPCHandlers {
       });
 
       return store.store;
+    });
+  }
+
+  private registerNotificationHandlers(): void {
+    const { Notification } = require('electron');
+
+    // Show notification
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION.SHOW, async (_event, options: {
+      title: string;
+      body: string;
+      icon?: string;
+      silent?: boolean;
+    }) => {
+      // Check DND status
+      const settingsStore = this.storeManager.getSettingsStore();
+      const settings = settingsStore.store as Settings;
+      
+      if (settings.notifications.doNotDisturb) {
+        return; // Don't show notification if DND is enabled
+      }
+
+      if (!settings.notifications.enabled) {
+        return; // Don't show notification if notifications are disabled
+      }
+
+      const notification = new Notification({
+        title: options.title,
+        body: options.body,
+        icon: options.icon,
+        silent: options.silent || !settings.notifications.soundEnabled,
+      });
+
+      notification.show();
+    });
+
+    // Update badge count (for app icons)
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION.UPDATE_BADGE, async (_event, appId: string, count: number) => {
+      const store = this.storeManager.getAppsStore();
+      const apps = store.get('apps', []);
+      
+      const index = apps.findIndex((a: App) => a.id === appId);
+      if (index === -1) {
+        throw new Error(`App with id "${appId}" not found`);
+      }
+
+      apps[index] = {
+        ...apps[index],
+        notifications: {
+          ...apps[index].notifications,
+          badgeCount: count,
+        },
+        updatedAt: getCurrentTimestamp(),
+      };
+
+      store.set('apps', apps);
+      return apps[index];
     });
   }
 }

@@ -16,17 +16,22 @@ Build a privacy-focused, flexible desktop workspace that allows users to:
 
 ## 📍 **Current Status**
 
-**Phase**: Alpha / Phase 2 Development
-**Version**: 0.2.0 (Phase 2: Workspace & App Management in progress)
+**Phase**: Alpha / Phase 4 Complete
+**Version**: 0.4.0 (Phase 4: Notifications & Layout complete)
 
 The application now has:
 - ✅ Complete Phase 1: Core Architecture (TypeScript, React, Electron, Zustand)
+- ✅ Complete Phase 2: Workspace & App Management (80%)
+- ✅ Complete Phase 4: Notifications & Layout
 - ✅ Profile management system with multi-instance support
 - ✅ Local data persistence with electron-store
 - ✅ Modern UI with proper layout (WindowChrome, Dock, Sidebar, Canvas, StatusBar)
 - ✅ Workspace creation and switching with keyboard shortcuts
-- ✅ App management UI (Add App modal, dock icons)
-- 🚧 App embedding with BrowserView (in progress)
+- ✅ App management UI with context menus and settings
+- ✅ Native OS notifications with badge counts
+- ✅ Multi-app split layout (horizontal, vertical, grid)
+- ✅ Per-app zoom controls
+- 🚧 App embedding with BrowserView (Phase 3 - deferred)
 
 ---
 
@@ -85,7 +90,7 @@ The application now has:
 
 ---
 
-### **Phase 2: Workspace & App Management** 🚧 *[Current Phase - 60% Complete]*
+### **Phase 2: Workspace & App Management** 🚧 *[Current Phase - 80% Complete]*
 
 **Goal**: Enable users to create workspaces and add apps
 
@@ -100,9 +105,9 @@ The application now has:
 #### 2.2 App Management
 - [x] Add custom apps by URL
 - [x] Built-in app catalog/templates (popular apps quick-add)
-- [ ] Favicon fetching and custom icon upload
-- [ ] App instance creation (multiple instances per app)
-- [ ] App editing and deletion
+- [x] Favicon fetching and custom icon upload
+- [x] App instance creation (multiple instances per app)
+- [x] App editing and deletion
 
 #### 2.3 App Embedding
 - [ ] Implement BrowserView for app embedding
@@ -117,10 +122,10 @@ The application now has:
 - [x] App tile with micro-toolbar
 - [x] Empty states and placeholders
 - [ ] Drag-and-drop app reordering
-- [ ] App context menu (settings, close, etc.)
+- [x] App context menu (settings, close, etc.)
 
 **Target**: Q1 2025
-**Status**: 🚧 60% Complete (November 2024)
+**Status**: 🚧 80% Complete (November 2024)
 
 ---
 
@@ -156,29 +161,29 @@ The application now has:
 
 ---
 
-### **Phase 4: Notifications & Layout** 🗓️ *[Planned]*
+### **Phase 4: Notifications & Layout** ✅ *[Complete]*
 
 **Goal**: Implement native notifications and advanced layout features
 
 #### 4.1 Notifications
-- [ ] Native OS notifications via Electron API
-- [ ] Per-app notification badges
-- [ ] Global "Do Not Disturb" toggle
-- [ ] Notification preferences per app
+- [x] Native OS notifications via Electron API
+- [x] Per-app notification badges
+- [x] Global "Do Not Disturb" toggle
+- [x] Notification preferences per app
 
 #### 4.2 Advanced Layout
-- [ ] Multi-app tiling (side-by-side views)
-- [ ] Split layout save and restore
-- [ ] Detachable windows
-- [ ] Resizable panels and floating windows
+- [x] Multi-app tiling (side-by-side views)
+- [x] Split layout save and restore
+- [ ] Detachable windows (deferred to Phase 6)
+- [x] Resizable panels
 
 #### 4.3 Zoom & Display
-- [ ] Per-app zoom level controls
-- [ ] Multi-display support
-- [ ] Full-screen mode per app
+- [x] Per-app zoom level controls
+- [ ] Multi-display support (deferred to Phase 6)
+- [ ] Full-screen mode per app (deferred to Phase 6)
 
 **Target**: Q3 2025
-**Status**: Not Started
+**Status**: ✅ 100% Complete (November 2024)
 
 ---
 

@@ -368,6 +368,7 @@ function App() {
             onAppSelect={setActiveAppId}
             onAddSampleApps={handleAddSampleApps}
             onAddCustomApp={() => setIsAddAppModalOpen(true)}
+            onUpdateApp={handleUpdateApp}
           />
 
           {/* Dock - right or bottom position */}
