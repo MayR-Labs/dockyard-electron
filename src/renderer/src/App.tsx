@@ -2,12 +2,23 @@ import { useEffect, useState } from 'react';
 import { useWorkspaceStore } from './store/workspaces';
 import { useAppStore } from './store/apps';
 import { useSettingsStore } from './store/settings';
+import { WindowChrome } from './components/Layout/WindowChrome';
+import { Sidebar } from './components/Layout/Sidebar';
+import { Dock } from './components/Layout/Dock';
+import { WorkspaceCanvas } from './components/Layout/WorkspaceCanvas';
+import { StatusBar } from './components/Layout/StatusBar';
+import { AddAppModal } from './components/Modals/AddAppModal';
+import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal';
 
 function App() {
-  const { loadWorkspaces, workspaces, activeWorkspaceId, createWorkspace } = useWorkspaceStore();
-  const { loadApps, apps } = useAppStore();
-  const { loadSettings, settings } = useSettingsStore();
+  const { loadWorkspaces, workspaces, activeWorkspaceId, setActiveWorkspace, createWorkspace } = useWorkspaceStore();
+  const { loadApps, apps, createApp } = useAppStore();
+  const { loadSettings, settings, updateSettings } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeAppId, setActiveAppId] = useState<string | null>(null);
+  const [isAddAppModalOpen, setIsAddAppModalOpen] = useState(false);
+  const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
 
   useEffect(() => {
     // Load all data on startup
@@ -28,19 +39,60 @@ function App() {
     loadData();
   }, [loadWorkspaces, loadApps, loadSettings]);
 
-  const handleCreateWorkspace = async () => {
+  useEffect(() => {
+    // Set first workspace as active if none is active
+    if (workspaces.length > 0 && !activeWorkspaceId) {
+      setActiveWorkspace(workspaces[0].id);
+    }
+  }, [workspaces, activeWorkspaceId, setActiveWorkspace]);
+
+  const activeWorkspace = workspaces.find(w => w.id === activeWorkspaceId);
+  const workspaceApps = apps.filter(app => app.workspaceId === activeWorkspaceId);
+
+  const handleCreateWorkspace = async (data: {
+    name: string;
+    sessionMode: 'isolated' | 'shared';
+    dockPosition: 'top' | 'bottom' | 'left' | 'right';
+  }) => {
     await createWorkspace({
-      name: 'My Workspace',
+      name: data.name,
+      sessionMode: data.sessionMode,
       layout: {
-        dockPosition: 'left',
-        dockSize: 60,
+        dockPosition: data.dockPosition,
+        dockSize: 64,
       },
     });
   };
 
+  const handleAddApp = async (appData: {
+    name: string;
+    url: string;
+    icon?: string;
+  }) => {
+    if (!activeWorkspaceId) return;
+    
+    await createApp({
+      name: appData.name,
+      url: appData.url,
+      icon: appData.icon,
+      workspaceId: activeWorkspaceId,
+    });
+  };
+
+  const handleToggleDnd = () => {
+    if (settings) {
+      updateSettings({
+        notifications: {
+          ...settings.notifications,
+          doNotDisturb: !settings.notifications.doNotDisturb,
+        },
+      });
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-purple-600 to-indigo-700">
+      <div className="flex items-center justify-center h-screen bg-gray-950">
         <div className="text-center">
           <div className="text-6xl mb-4 animate-bounce">⚓</div>
           <div className="text-white text-2xl font-semibold">Loading Dockyard...</div>
@@ -49,90 +101,123 @@ function App() {
     );
   }
 
-  return (
-    <div className="h-screen bg-gradient-to-br from-purple-600 to-indigo-700 text-white">
-      <div className="container mx-auto px-8 py-12 h-full flex flex-col">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="text-7xl mb-4">⚓</div>
+  // Show welcome screen if no workspaces exist
+  if (workspaces.length === 0) {
+    return (
+      <div className="h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 text-white flex items-center justify-center">
+        <div className="text-center max-w-2xl px-8">
+          <div className="text-8xl mb-6">⚓</div>
           <h1 className="text-5xl font-bold mb-4">Welcome to Dockyard</h1>
-          <p className="text-xl opacity-90">
-            Phase 1: MVP - Core Architecture is now live!
+          <p className="text-xl opacity-90 mb-8">
+            Your local-first multi-app workspace is ready!
           </p>
+          <p className="text-gray-300 mb-8">
+            Create your first workspace to start organizing your web apps.
+          </p>
+          <button
+            onClick={() => setIsCreateWorkspaceModalOpen(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition shadow-lg"
+          >
+            Create Your First Workspace
+          </button>
         </div>
+        <CreateWorkspaceModal
+          isOpen={isCreateWorkspaceModalOpen}
+          onClose={() => setIsCreateWorkspaceModalOpen(false)}
+          onCreateWorkspace={handleCreateWorkspace}
+        />
+      </div>
+    );
+  }
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-6 mb-12">
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-            <div className="text-4xl font-bold mb-2">{workspaces.length}</div>
-            <div className="text-lg opacity-80">Workspaces</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-            <div className="text-4xl font-bold mb-2">{apps.length}</div>
-            <div className="text-lg opacity-80">Apps</div>
-          </div>
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-            <div className="text-4xl font-bold mb-2">
-              {settings?.performance.autoHibernation ? 'On' : 'Off'}
-            </div>
-            <div className="text-lg opacity-80">Auto-Hibernation</div>
-          </div>
-        </div>
+  const dockPosition = activeWorkspace?.layout.dockPosition || 'left';
+  const dockSize = activeWorkspace?.layout.dockSize || 64;
 
-        {/* Workspaces Section */}
-        <div className="flex-1 bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 overflow-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-semibold">Your Workspaces</h2>
-            <button
-              onClick={handleCreateWorkspace}
-              className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition"
-            >
-              + Create Workspace
-            </button>
-          </div>
+  return (
+    <div className="h-screen flex flex-col bg-gray-950 text-white">
+      {/* Window Chrome */}
+      <WindowChrome
+        currentWorkspace={activeWorkspace?.name || ''}
+        onProfileClick={() => {}}
+        onSearchClick={() => {}}
+      />
 
-          {workspaces.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="text-5xl mb-4 opacity-50">🗂️</div>
-              <p className="text-xl opacity-80 mb-6">No workspaces yet</p>
-              <p className="opacity-60">
-                Create your first workspace to get started organizing your apps
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4">
-              {workspaces.map((workspace) => (
-                <div
-                  key={workspace.id}
-                  className={`bg-white/10 border-2 rounded-xl p-6 transition cursor-pointer hover:bg-white/20 ${
-                    workspace.id === activeWorkspaceId
-                      ? 'border-white'
-                      : 'border-transparent'
-                  }`}
-                >
-                  <div className="text-2xl font-semibold mb-2">{workspace.name}</div>
-                  <div className="text-sm opacity-80">
-                    {workspace.apps.length} apps • {workspace.sessionMode} mode
-                  </div>
-                  {workspace.id === activeWorkspaceId && (
-                    <div className="mt-3 inline-block bg-green-400 text-green-900 px-3 py-1 rounded-full text-xs font-semibold">
-                      Active
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+      {/* Main Content Area */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Sidebar */}
+        <Sidebar
+          workspaces={workspaces}
+          activeWorkspaceId={activeWorkspaceId}
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+          onWorkspaceSelect={(id) => setActiveWorkspace(id)}
+          onCreateWorkspace={() => setIsCreateWorkspaceModalOpen(true)}
+        />
+
+        {/* Dock and Canvas Container */}
+        <div className="flex-1 flex" style={{ 
+          flexDirection: dockPosition === 'top' || dockPosition === 'bottom' ? 'column' : 'row' 
+        }}>
+          {/* Dock - positioned based on workspace settings */}
+          {(dockPosition === 'top' || dockPosition === 'left') && (
+            <Dock
+              apps={workspaceApps}
+              position={dockPosition}
+              size={dockSize}
+              activeAppId={activeAppId}
+              onAppClick={setActiveAppId}
+              onAppContextMenu={(appId, e) => {
+                e.preventDefault();
+                console.log('Context menu for app:', appId);
+              }}
+              onAddApp={() => setIsAddAppModalOpen(true)}
+            />
+          )}
+
+          {/* Workspace Canvas */}
+          <WorkspaceCanvas
+            apps={workspaceApps}
+            activeAppId={activeAppId}
+            onAppSelect={setActiveAppId}
+          />
+
+          {/* Dock - right or bottom position */}
+          {(dockPosition === 'bottom' || dockPosition === 'right') && (
+            <Dock
+              apps={workspaceApps}
+              position={dockPosition}
+              size={dockSize}
+              activeAppId={activeAppId}
+              onAppClick={setActiveAppId}
+              onAppContextMenu={(appId, e) => {
+                e.preventDefault();
+                console.log('Context menu for app:', appId);
+              }}
+              onAddApp={() => setIsAddAppModalOpen(true)}
+            />
           )}
         </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8 opacity-70 text-sm">
-          <p>🚀 Core Architecture Implementation Complete</p>
-          <p className="mt-2">
-            TypeScript • React • Vite • Zustand • TailwindCSS • Electron
-          </p>
-        </div>
       </div>
+
+      {/* Status Bar */}
+      <StatusBar
+        memoryUsage="256 MB"
+        doNotDisturb={settings?.notifications.doNotDisturb || false}
+        onToggleDnd={handleToggleDnd}
+      />
+
+      {/* Modals */}
+      <AddAppModal
+        isOpen={isAddAppModalOpen}
+        workspaceId={activeWorkspaceId || ''}
+        onClose={() => setIsAddAppModalOpen(false)}
+        onAddApp={handleAddApp}
+      />
+      <CreateWorkspaceModal
+        isOpen={isCreateWorkspaceModalOpen}
+        onClose={() => setIsCreateWorkspaceModalOpen(false)}
+        onCreateWorkspace={handleCreateWorkspace}
+      />
     </div>
   );
 }
