@@ -7,29 +7,28 @@ import { PerformanceMonitor } from './performance-monitor';
 import { IPC_CHANNELS } from '../shared/types';
 
 export function setupIPCHandlers(
-  profileManager: ProfileManager,
-  appManager: AppManager,
-  hibernationManager?: HibernationManager,
-  notificationManager?: NotificationManager,
-  performanceMonitor?: PerformanceMonitor
-): void {
+  profileManager,
+  appManager,
+  hibernationManager,
+  notificationManager,
+  performanceMonitor) {
   // Profile operations
   ipcMain.handle(IPC_CHANNELS.PROFILE_GET, () => {
     return profileManager.getCurrentProfile();
   });
 
-  ipcMain.handle(IPC_CHANNELS.PROFILE_CREATE, (_event, name: string) => {
+  ipcMain.handle(IPC_CHANNELS.PROFILE_CREATE, (_event, name) => {
     return profileManager.createProfile(name);
   });
 
   ipcMain.handle(
     IPC_CHANNELS.PROFILE_UPDATE,
-    (_event, profileId: string, updates: any) => {
+    (_event, profileId, updates) => {
       return profileManager.updateProfile(profileId, updates);
     }
   );
 
-  ipcMain.handle(IPC_CHANNELS.PROFILE_DELETE, (_event, profileId: string) => {
+  ipcMain.handle(IPC_CHANNELS.PROFILE_DELETE, (_event, profileId) => {
     profileManager.deleteProfile(profileId);
   });
 
@@ -40,32 +39,32 @@ export function setupIPCHandlers(
   // Workspace operations
   ipcMain.handle(
     IPC_CHANNELS.WORKSPACE_CREATE,
-    (_event, profileId: string, name: string, icon?: string) => {
+    (_event, profileId, name, icon) => {
       return profileManager.createWorkspace(profileId, name, icon);
     }
   );
 
   ipcMain.handle(
     IPC_CHANNELS.WORKSPACE_UPDATE,
-    (_event, workspaceId: string, updates: any) => {
+    (_event, workspaceId, updates) => {
       return profileManager.updateWorkspace(workspaceId, updates);
     }
   );
 
   ipcMain.handle(
     IPC_CHANNELS.WORKSPACE_DELETE,
-    (_event, workspaceId: string) => {
+    (_event, workspaceId) => {
       profileManager.deleteWorkspace(workspaceId);
     }
   );
 
-  ipcMain.handle(IPC_CHANNELS.WORKSPACE_LIST, (_event, profileId: string) => {
+  ipcMain.handle(IPC_CHANNELS.WORKSPACE_LIST, (_event, profileId) => {
     return profileManager.getWorkspacesByProfile(profileId);
   });
 
   ipcMain.handle(
     IPC_CHANNELS.WORKSPACE_SWITCH,
-    (_event, workspaceId: string) => {
+    (_event, workspaceId) => {
       // Get all apps in the workspace
       const apps = profileManager.getAppsByWorkspace(workspaceId);
       
@@ -85,7 +84,7 @@ export function setupIPCHandlers(
   // App operations
   ipcMain.handle(
     IPC_CHANNELS.APP_CREATE,
-    (_event, workspaceId: string, name: string, url: string, icon?: string) => {
+    (_event, workspaceId, name, url, icon) => {
       const app = profileManager.createApp(workspaceId, name, url, icon);
       // Create the BrowserView for the app
       appManager.createAppView(app);
@@ -93,33 +92,33 @@ export function setupIPCHandlers(
     }
   );
 
-  ipcMain.handle(IPC_CHANNELS.APP_UPDATE, (_event, appId: string, updates: any) => {
+  ipcMain.handle(IPC_CHANNELS.APP_UPDATE, (_event, appId, updates) => {
     return profileManager.updateApp(appId, updates);
   });
 
-  ipcMain.handle(IPC_CHANNELS.APP_DELETE, (_event, appId: string) => {
+  ipcMain.handle(IPC_CHANNELS.APP_DELETE, (_event, appId) => {
     appManager.destroyAppView(appId);
     profileManager.deleteApp(appId);
   });
 
-  ipcMain.handle(IPC_CHANNELS.APP_LIST, (_event, workspaceId: string) => {
+  ipcMain.handle(IPC_CHANNELS.APP_LIST, (_event, workspaceId) => {
     return profileManager.getAppsByWorkspace(workspaceId);
   });
 
-  ipcMain.handle(IPC_CHANNELS.APP_HIBERNATE, (_event, appId: string) => {
+  ipcMain.handle(IPC_CHANNELS.APP_HIBERNATE, (_event, appId) => {
     appManager.hibernateApp(appId);
   });
 
-  ipcMain.handle(IPC_CHANNELS.APP_WAKE, (_event, appId: string) => {
+  ipcMain.handle(IPC_CHANNELS.APP_WAKE, (_event, appId) => {
     appManager.wakeApp(appId);
   });
 
-  ipcMain.handle(IPC_CHANNELS.APP_CLEAR_SESSION, (_event, appId: string) => {
+  ipcMain.handle(IPC_CHANNELS.APP_CLEAR_SESSION, (_event, appId) => {
     return appManager.clearAppSession(appId);
   });
 
   // Handle app switching
-  ipcMain.handle('app:switch', (_event, appId: string) => {
+  ipcMain.handle('app:switch', (_event, appId) => {
     const app = profileManager.getApp(appId);
     if (!app) {
       throw new Error(`App with id ${appId} not found`);
@@ -147,7 +146,7 @@ export function setupIPCHandlers(
       return hibernationManager.getConfig();
     });
 
-    ipcMain.handle(IPC_CHANNELS.HIBERNATION_UPDATE_CONFIG, (_event, config: any) => {
+    ipcMain.handle(IPC_CHANNELS.HIBERNATION_UPDATE_CONFIG, (_event, config) => {
       hibernationManager.updateConfig(config);
       return hibernationManager.getConfig();
     });
@@ -167,7 +166,7 @@ export function setupIPCHandlers(
 
   // Phase 2: Notification handlers
   if (notificationManager) {
-    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_SHOW, (_event, notification: any) => {
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_SHOW, (_event, notification) => {
       notificationManager.showNotification(notification);
     });
 
@@ -175,7 +174,7 @@ export function setupIPCHandlers(
       return notificationManager.getConfig();
     });
 
-    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_UPDATE_CONFIG, (_event, config: any) => {
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_UPDATE_CONFIG, (_event, config) => {
       notificationManager.updateConfig(config);
       return notificationManager.getConfig();
     });
@@ -184,7 +183,7 @@ export function setupIPCHandlers(
       return Object.fromEntries(notificationManager.getAllBadgeCounts());
     });
 
-    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_CLEAR_BADGE, (_event, appId: string) => {
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_CLEAR_BADGE, (_event, appId) => {
       notificationManager.clearBadge(appId);
     });
 
@@ -203,11 +202,11 @@ export function setupIPCHandlers(
       return performanceMonitor.getMetricsHistory();
     });
 
-    ipcMain.handle(IPC_CHANNELS.PERFORMANCE_GET_APP_METRICS, (_event, appId: string) => {
+    ipcMain.handle(IPC_CHANNELS.PERFORMANCE_GET_APP_METRICS, (_event, appId) => {
       return performanceMonitor.getAppMetrics(appId);
     });
 
-    ipcMain.handle(IPC_CHANNELS.PERFORMANCE_GET_HIGH_MEMORY, (_event, thresholdMB?: number) => {
+    ipcMain.handle(IPC_CHANNELS.PERFORMANCE_GET_HIGH_MEMORY, (_event, thresholdMB) => {
       return performanceMonitor.getHighMemoryApps(thresholdMB);
     });
   }

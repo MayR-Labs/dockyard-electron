@@ -2,20 +2,14 @@ import { AppManager } from './app-manager';
 import { ProfileManager } from './profile-manager';
 import { DEFAULT_HIBERNATION_TIMEOUT } from '../shared/constants';
 
-export interface HibernationConfig {
-  enabled: boolean;
-  timeout: number; // milliseconds
-  excludeAppIds: string[];
-}
-
 export class HibernationManager {
-  private appManager: AppManager;
-  private profileManager: ProfileManager;
-  private checkInterval: ReturnType<typeof setInterval> | null = null;
-  private lastActivityMap: Map<string, number> = new Map();
-  private config: HibernationConfig;
+  appManager;
+  profileManager;
+  checkInterval= null;
+  lastActivityMap= new Map();
+  config;
 
-  constructor(appManager: AppManager, profileManager: ProfileManager) {
+  constructor(appManager, profileManager) {
     this.appManager = appManager;
     this.profileManager = profileManager;
     
@@ -23,11 +17,11 @@ export class HibernationManager {
     this.config = {
       enabled: profile?.settings.autoHibernate ?? true,
       timeout: profile?.settings.hibernateTimeout ?? DEFAULT_HIBERNATION_TIMEOUT,
-      excludeAppIds: [],
+      excludeAppIds,
     };
   }
 
-  start(): void {
+  start() {
     if (this.checkInterval) {
       return;
     }
@@ -40,7 +34,7 @@ export class HibernationManager {
     console.log('Hibernation manager started');
   }
 
-  stop(): void {
+  stop() {
     if (this.checkInterval) {
       clearInterval(this.checkInterval);
       this.checkInterval = null;
@@ -48,7 +42,7 @@ export class HibernationManager {
     console.log('Hibernation manager stopped');
   }
 
-  updateConfig(config: Partial<HibernationConfig>): void {
+  updateConfig(config) {
     this.config = { ...this.config, ...config };
     
     if (!this.config.enabled && this.checkInterval) {
@@ -58,11 +52,11 @@ export class HibernationManager {
     }
   }
 
-  trackActivity(appId: string): void {
+  trackActivity(appId) {
     this.lastActivityMap.set(appId, Date.now());
   }
 
-  private checkAndHibernateInactiveApps(): void {
+  checkAndHibernateInactiveApps() {
     if (!this.config.enabled) {
       return;
     }
@@ -79,7 +73,7 @@ export class HibernationManager {
     const workspaces = this.profileManager.getWorkspacesByProfile(profile.id);
     
     // Collect all app instances
-    const allAppIds: string[] = [];
+    const allAppIds= [];
     for (const workspace of workspaces) {
       const apps = this.profileManager.getAppsByWorkspace(workspace.id);
       allAppIds.push(...apps.map(app => app.id));
@@ -111,9 +105,8 @@ export class HibernationManager {
     }
   }
 
-  getInactiveApps(): Array<{ appId: string; inactiveDuration: number }> {
-    const now = Date.now();
-    const result: Array<{ appId: string; inactiveDuration: number }> = [];
+  getInactiveApps() { appId: string; inactiveDuration= Date.now();
+    const result= [];
 
     for (const [appId, lastActivity] of this.lastActivityMap.entries()) {
       const inactiveDuration = now - lastActivity;
@@ -123,7 +116,6 @@ export class HibernationManager {
     return result.sort((a, b) => b.inactiveDuration - a.inactiveDuration);
   }
 
-  getConfig(): HibernationConfig {
-    return { ...this.config };
+  getConfig() { ...this.config };
   }
 }

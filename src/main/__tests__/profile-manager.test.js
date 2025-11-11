@@ -1,7 +1,7 @@
 import { ProfileManager } from '../profile-manager';
 
 describe('ProfileManager', () => {
-  let profileManager: ProfileManager;
+  let profileManager;
 
   beforeEach(() => {
     // Create a new profile manager for each test
@@ -23,7 +23,7 @@ describe('ProfileManager', () => {
       expect(profile.workspaces).toEqual([]);
     });
 
-    it('should set the created profile as current profile', () => {
+    it('should set the created profile profile', () => {
       const profile = profileManager.createProfile('new-test-profile-2');
       
       expect(profileManager.getCurrentProfile()).toEqual(profile);

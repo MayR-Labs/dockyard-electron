@@ -3,40 +3,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 
-interface AddWorkspaceModalProps {
-  onClose: () => void;
-}
-
-const WORKSPACE_ICONS = [
-  '🏠',
-  '💼',
-  '🎨',
-  '⚙️',
-  '📚',
-  '🎮',
-  '💡',
-  '🚀',
-  '📁',
-  '🔧',
-];
-
-export function AddWorkspaceModal({ onClose }: AddWorkspaceModalProps) {
-  const { createWorkspace } = useStore();
+export function AddAppModal({ onClose }) {
+  const { createApp } = useStore();
   const [name, setName] = useState('');
-  const [icon, setIcon] = useState('📁');
+  const [url, setUrl] = useState('');
+  const [icon, setIcon] = useState('🌐');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!name) return;
+    
+    if (!name || !url) return;
 
     setIsSubmitting(true);
     try {
-      await createWorkspace(name, icon);
+      await createApp(name, url, icon);
       onClose();
     } catch (error) {
-      console.error('Failed to create workspace:', error);
+      console.error('Failed to create app:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -63,7 +47,7 @@ export function AddWorkspaceModal({ onClose }: AddWorkspaceModalProps) {
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">Add Workspace</h2>
+            <h2 className="text-2xl font-bold">Add App</h2>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
@@ -76,40 +60,42 @@ export function AddWorkspaceModal({ onClose }: AddWorkspaceModalProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">
-                Workspace Name
+                App Name
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g., Work, Personal, Design"
+                placeholder="e.g., Gmail, Slack, GitHub"
                 className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                 required
-                autoFocus
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Icon</label>
-              <div className="grid grid-cols-5 gap-2">
-                {WORKSPACE_ICONS.map((emoji) => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    onClick={() => setIcon(emoji)}
-                    className={`
-                      p-3 text-2xl rounded-lg transition-colors
-                      ${
-                        icon === emoji
-                          ? 'bg-primary-600'
-                          : 'bg-gray-700 hover:bg-gray-600'
-                      }
-                    `}
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
+              <label className="block text-sm font-medium mb-2">URL</label>
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com"
+                className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Icon (Emoji)
+              </label>
+              <input
+                type="text"
+                value={icon}
+                onChange={(e) => setIcon(e.target.value)}
+                placeholder="🌐"
+                className="w-full px-4 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                maxLength={2}
+              />
             </div>
 
             {/* Actions */}
@@ -123,10 +109,10 @@ export function AddWorkspaceModal({ onClose }: AddWorkspaceModalProps) {
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting || !name}
+                disabled={isSubmitting || !name || !url}
                 className="flex-1 px-4 py-2 bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Creating...' : 'Create'}
+                {isSubmitting ? 'Adding...' : 'Add App'}
               </button>
             </div>
           </form>

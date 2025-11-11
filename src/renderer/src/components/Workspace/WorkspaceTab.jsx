@@ -1,13 +1,7 @@
 import { motion } from 'framer-motion';
-import type { Workspace } from '@shared/types';
 import { useStore } from '../../store/useStore';
 
-interface WorkspaceTabProps {
-  workspace: Workspace;
-  isActive: boolean;
-}
-
-export function WorkspaceTab({ workspace, isActive }: WorkspaceTabProps) {
+export function WorkspaceTab({ workspace, isActive }) {
   const { switchWorkspace } = useStore();
 
   const handleClick = () => {

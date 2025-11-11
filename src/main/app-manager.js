@@ -3,15 +3,15 @@ import { AppInstance } from '../shared/types';
 import { PARTITION_PREFIX } from '../shared/constants';
 
 export class AppManager {
-  private browserViews: Map<string, BrowserView> = new Map();
-  private mainWindow: BrowserWindow | null = null;
-  private currentAppId: string | null = null;
+  browserViews= new Map();
+  mainWindow= null;
+  currentAppId= null;
 
-  setMainWindow(window: BrowserWindow): void {
+  setMainWindow(window) {
     this.mainWindow = window;
   }
 
-  createAppView(appInstance: AppInstance): BrowserView {
+  createAppView(appInstance) {
     // Clean up existing view if any
     if (this.browserViews.has(appInstance.id)) {
       this.destroyAppView(appInstance.id);
@@ -20,12 +20,10 @@ export class AppManager {
     const view = new BrowserView({
       webPreferences: {
         partition: `${PARTITION_PREFIX}:${appInstance.partition}`,
-        contextIsolation: true,
-        nodeIntegration: false,
-        sandbox: true,
-        devTools: true,
-      },
-    });
+        contextIsolation,
+        nodeIntegration,
+        sandbox,
+        devTools);
 
     view.webContents.loadURL(appInstance.url);
 
@@ -37,7 +35,7 @@ export class AppManager {
     // Handle favicon updates
     view.webContents.on('page-favicon-updated', (_event, favicons) => {
       if (favicons.length > 0) {
-        this.updateAppState(appInstance.id, { favicon: favicons[0] });
+        this.updateAppState(appInstance.id, { favicon);
       }
     });
 
@@ -45,7 +43,7 @@ export class AppManager {
     return view;
   }
 
-  showAppView(appId: string): void {
+  showAppView(appId) {
     if (!this.mainWindow) {
       return;
     }
@@ -69,22 +67,21 @@ export class AppManager {
     
     // Adjust bounds to account for dock (left side, 80px wide)
     view.setBounds({
-      x: 80,
-      y: 0,
+      x,
+      y,
       width: bounds.width - 80,
       height: bounds.height,
     });
 
     view.setAutoResize({
-      width: true,
-      height: true,
-    });
+      width,
+      height);
 
     this.currentAppId = appId;
     this.updateAppState(appId, { lastActiveAt: Date.now() });
   }
 
-  hideAppView(appId: string): void {
+  hideAppView(appId) {
     if (!this.mainWindow) {
       return;
     }
@@ -99,7 +96,7 @@ export class AppManager {
     }
   }
 
-  destroyAppView(appId: string): void {
+  destroyAppView(appId) {
     const view = this.browserViews.get(appId);
     if (view) {
       if (this.mainWindow) {
@@ -115,26 +112,25 @@ export class AppManager {
     }
   }
 
-  hibernateApp(appId: string): void {
+  hibernateApp(appId) {
     const view = this.browserViews.get(appId);
     if (view) {
       // For now, just hide the view. True hibernation would require
       // suspending the renderer process, which is more complex
       this.hideAppView(appId);
-      this.updateAppState(appId, { isHibernated: true });
+      this.updateAppState(appId, { isHibernated);
     }
   }
 
-  wakeApp(appId: string): void {
+  wakeApp(appId) {
     const view = this.browserViews.get(appId);
     if (view) {
       this.showAppView(appId);
-      this.updateAppState(appId, { isHibernated: false, lastActiveAt: Date.now() });
+      this.updateAppState(appId, { isHibernated, lastActiveAt: Date.now() });
     }
   }
 
-  async clearAppSession(appId: string): Promise<void> {
-    const view = this.browserViews.get(appId);
+  async clearAppSession(appId)= this.browserViews.get(appId);
     if (view) {
       const session = view.webContents.session;
       await session.clearCache();
@@ -142,20 +138,20 @@ export class AppManager {
     }
   }
 
-  private updateAppState(
-    appId: string,
+  updateAppState(
+    appId,
     state: Partial<AppInstance['state']>
-  ): void {
+  ) {
     // This will be handled by IPC to update the store
     // For now, just log
     console.log(`App ${appId} state updated:`, state);
   }
 
-  getCurrentAppId(): string | null {
+  getCurrentAppId() {
     return this.currentAppId;
   }
 
-  getView(appId: string): BrowserView | undefined {
+  getView(appId) {
     return this.browserViews.get(appId);
   }
 }

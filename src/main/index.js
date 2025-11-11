@@ -12,19 +12,19 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-let windowManager: WindowManager;
-let profileManager: ProfileManager;
-let appManager: AppManager;
-let hibernationManager: HibernationManager;
-let notificationManager: NotificationManager;
-let performanceMonitor: PerformanceMonitor;
+let windowManager;
+let profileManager;
+let appManager;
+let hibernationManager;
+let notificationManager;
+let performanceMonitor;
 
 // Parse command line arguments for profile
 const args = process.argv.slice(1);
 const profileArg = args.find((arg) => arg.startsWith('--profile='));
 const profileName = profileArg ? profileArg.split('=')[1] : 'default';
 
-const createWindow = (): void => {
+const createWindow = () => {
   // Initialize managers
   profileManager = new ProfileManager(profileName);
   appManager = new AppManager();

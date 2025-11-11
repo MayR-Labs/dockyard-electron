@@ -1,10 +1,4 @@
-interface EmptyStateProps {
-  icon: string;
-  title: string;
-  message: string;
-}
-
-export function EmptyState({ icon, title, message }: EmptyStateProps) {
+export function EmptyState({ icon, title, message }) {
   return (
     <div className="h-full flex items-center justify-center">
       <div className="text-center">

@@ -5,7 +5,7 @@ export function useKeyboardShortcuts() {
   const { workspaces, currentWorkspace, switchWorkspace } = useStore();
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = (event) => {
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
       const modKey = isMac ? event.metaKey : event.ctrlKey;
 

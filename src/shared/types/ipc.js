@@ -52,33 +52,7 @@ export const IPC_CHANNELS = {
   APP_STATE_CHANGED: 'app:state-changed',
   NOTIFICATION: 'notification',
   WORKSPACE_CHANGED: 'workspace:changed',
-} as const;
+};
 
 // IPC message types
-export interface CreateWorkspaceData {
-  profileId: string;
-  name: string;
-  icon?: string;
-}
 
-export interface CreateAppData {
-  workspaceId: string;
-  name: string;
-  url: string;
-  icon?: string;
-}
-
-export interface UpdateAppData {
-  id: string;
-  updates: Partial<AppInstance>;
-}
-
-export interface UpdateWorkspaceData {
-  id: string;
-  updates: Partial<Workspace>;
-}
-
-export interface UpdateProfileData {
-  id: string;
-  updates: Partial<Profile>;
-}

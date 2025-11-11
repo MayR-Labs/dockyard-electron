@@ -13,16 +13,16 @@ export const STORAGE_KEYS = {
   WORKSPACES: 'workspaces',
   APPS: 'apps',
   CURRENT_PROFILE: 'currentProfile',
-} as const;
+};
 
 // Partition prefixes
 export const PARTITION_PREFIX = 'persist';
 
 // Default theme
 export const DEFAULT_THEME = {
-  mode: 'system' as const,
+  mode: 'system',
   accentColor: '#8b5cf6',
-  background: 'solid' as const,
+  background: 'solid',
 };
 
 // App categories for curated apps
@@ -33,4 +33,4 @@ export const APP_CATEGORIES = [
   'Social',
   'Entertainment',
   'Other',
-] as const;
+];

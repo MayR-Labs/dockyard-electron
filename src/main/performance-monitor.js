@@ -1,31 +1,17 @@
 import { BrowserView } from 'electron';
 import { AppManager } from './app-manager';
 
-export interface AppPerformanceMetrics {
-  appId: string;
-  memoryUsage: number; // in MB
-  cpuUsage: number; // percentage
-  isLoading: boolean;
-  timestamp: number;
-}
-
-export interface PerformanceSnapshot {
-  totalMemory: number; // in MB
-  appMetrics: AppPerformanceMetrics[];
-  timestamp: number;
-}
-
 export class PerformanceMonitor {
-  private appManager: AppManager;
-  private monitoringInterval: ReturnType<typeof setInterval> | null = null;
-  private metricsHistory: PerformanceSnapshot[] = [];
-  private maxHistorySize = 60; // Keep last 60 snapshots (5 minutes at 5s intervals)
+  appManager;
+  monitoringInterval= null;
+  metricsHistory= [];
+  maxHistorySize = 60; // Keep last 60 snapshots (5 minutes at 5s intervals)
 
-  constructor(appManager: AppManager) {
+  constructor(appManager) {
     this.appManager = appManager;
   }
 
-  start(): void {
+  start() {
     if (this.monitoringInterval) {
       return;
     }
@@ -38,7 +24,7 @@ export class PerformanceMonitor {
     console.log('Performance monitor started');
   }
 
-  stop(): void {
+  stop() {
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
       this.monitoringInterval = null;
@@ -46,11 +32,11 @@ export class PerformanceMonitor {
     console.log('Performance monitor stopped');
   }
 
-  private async collectMetrics(): Promise<void> {
-    const appMetrics: AppPerformanceMetrics[] = [];
+  async collectMetrics() {
+    const appMetrics= [];
     let totalMemory = 0;
 
-    // Note: In a real implementation, we would iterate over all active app views
+    // Note, we would iterate over all active app views
     // For now, this is a simplified version
     const currentAppId = this.appManager.getCurrentAppId();
     
@@ -65,7 +51,7 @@ export class PerformanceMonitor {
       }
     }
 
-    const snapshot: PerformanceSnapshot = {
+    const snapshot= {
       totalMemory,
       appMetrics,
       timestamp: Date.now(),
@@ -77,11 +63,8 @@ export class PerformanceMonitor {
     }
   }
 
-  private async collectAppMetrics(
-    appId: string,
-    view: BrowserView
-  ): Promise<AppPerformanceMetrics | null> {
-    try {
+  async collectAppMetrics(
+    appId) {
       // Get process memory info using app.getAppMetrics()
       // For now, we'll use a simplified approach
       const memoryInfo = process.memoryUsage();
@@ -89,7 +72,7 @@ export class PerformanceMonitor {
       return {
         appId,
         memoryUsage: memoryInfo.heapUsed / 1024 / 1024, // Convert bytes to MB
-        cpuUsage: 0, // CPU usage tracking would require more complex implementation
+        cpuUsage, // CPU usage tracking would require more complex implementation
         isLoading: view.webContents.isLoading(),
         timestamp: Date.now(),
       };
@@ -99,21 +82,21 @@ export class PerformanceMonitor {
     }
   }
 
-  getCurrentSnapshot(): PerformanceSnapshot | null {
+  getCurrentSnapshot() {
     return this.metricsHistory[0] || null;
   }
 
-  getMetricsHistory(): PerformanceSnapshot[] {
+  getMetricsHistory()] {
     return [...this.metricsHistory];
   }
 
-  getAppMetrics(appId: string): AppPerformanceMetrics[] {
+  getAppMetrics(appId)] {
     return this.metricsHistory
       .map(snapshot => snapshot.appMetrics.find(m => m.appId === appId))
-      .filter((m): m is AppPerformanceMetrics => m !== undefined);
+      .filter((m) => m !== undefined);
   }
 
-  getAverageMemoryUsage(appId: string): number {
+  getAverageMemoryUsage(appId) {
     const metrics = this.getAppMetrics(appId);
     if (metrics.length === 0) return 0;
     
@@ -121,7 +104,7 @@ export class PerformanceMonitor {
     return total / metrics.length;
   }
 
-  getTotalAverageMemory(): number {
+  getTotalAverageMemory() {
     if (this.metricsHistory.length === 0) return 0;
     
     const total = this.metricsHistory.reduce(
@@ -131,12 +114,11 @@ export class PerformanceMonitor {
     return total / this.metricsHistory.length;
   }
 
-  clearHistory(): void {
+  clearHistory() {
     this.metricsHistory = [];
   }
 
-  getHighMemoryApps(thresholdMB = 500): Array<{ appId: string; memoryUsage: number }> {
-    const snapshot = this.getCurrentSnapshot();
+  getHighMemoryApps(thresholdMB = 500) { appId: string; memoryUsage= this.getCurrentSnapshot();
     if (!snapshot) return [];
 
     return snapshot.appMetrics

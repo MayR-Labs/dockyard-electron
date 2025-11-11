@@ -1,24 +1,23 @@
 import Store from 'electron-store';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 } from 'uuid';
 import { Profile, Workspace, AppInstance } from '../shared/types';
 import { DEFAULT_HIBERNATION_TIMEOUT, DEFAULT_THEME } from '../shared/constants';
 
 export class ProfileManager {
-  private store: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  private currentProfile: Profile | null = null;
+  store: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  currentProfile= null;
 
-  constructor(profileName?: string) {
+  constructor(profileName) {
     this.store = new Store({
       name: profileName || 'default',
     });
   }
 
-  getCurrentProfile(): Profile | null {
+  getCurrentProfile() {
     return this.currentProfile;
   }
 
-  loadProfile(name: string): Profile {
-    const profiles = this.store.get('profiles', {}) as Record<string, Profile>;
+  loadProfile(name)= this.store.get('profiles', {}), Profile>;
     let profile = profiles[name];
 
     if (!profile) {
@@ -29,22 +28,20 @@ export class ProfileManager {
     return profile;
   }
 
-  createProfile(name: string): Profile {
-    const profiles = this.store.get('profiles', {}) as Record<string, Profile>;
+  createProfile(name)= this.store.get('profiles', {}), Profile>;
 
-    const profile: Profile = {
+    const profile= {
       id: uuidv4(),
       name,
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      theme: DEFAULT_THEME,
+      theme,
       settings: {
-        notifications: true,
-        autoHibernate: true,
-        hibernateTimeout: DEFAULT_HIBERNATION_TIMEOUT,
-        launchOnStartup: false,
-      },
-      workspaces: [],
+        notifications,
+        autoHibernate,
+        hibernateTimeout,
+        launchOnStartup,
+      workspaces,
     };
 
     profiles[name] = profile;
@@ -54,8 +51,7 @@ export class ProfileManager {
     return profile;
   }
 
-  updateProfile(profileId: string, updates: Partial<Profile>): Profile {
-    const profiles = this.store.get('profiles', {}) as Record<string, Profile>;
+  updateProfile(profileId)= this.store.get('profiles', {}), Profile>;
     const profile = Object.values(profiles).find((p) => p.id === profileId);
 
     if (!profile) {
@@ -71,15 +67,15 @@ export class ProfileManager {
     profiles[profile.name] = updatedProfile;
     this.store.set('profiles', profiles);
 
-    if (this.currentProfile?.id === profileId) {
+    if (this.currentProfile.id === profileId) {
       this.currentProfile = updatedProfile;
     }
 
     return updatedProfile;
   }
 
-  deleteProfile(profileId: string): void {
-    const profiles = this.store.get('profiles', {}) as Record<string, Profile>;
+  deleteProfile(profileId) {
+    const profiles = this.store.get('profiles', {}), Profile>;
     const profile = Object.values(profiles).find((p) => p.id === profileId);
 
     if (!profile) {
@@ -89,19 +85,18 @@ export class ProfileManager {
     delete profiles[profile.name];
     this.store.set('profiles', profiles);
 
-    if (this.currentProfile?.id === profileId) {
+    if (this.currentProfile.id === profileId) {
       this.currentProfile = null;
     }
   }
 
-  listProfiles(): Profile[] {
-    const profiles = this.store.get('profiles', {}) as Record<string, Profile>;
+  listProfiles()= this.store.get('profiles', {}), Profile>;
     return Object.values(profiles);
   }
 
   // Workspace operations
-  createWorkspace(profileId: string, name: string, icon?: string): Workspace {
-    const workspace: Workspace = {
+  createWorkspace(profileId, name, icon) {
+    const workspace= {
       id: uuidv4(),
       profileId,
       name,
@@ -109,21 +104,21 @@ export class ProfileManager {
       position: this.getWorkspacesByProfile(profileId).length,
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      apps: [],
+      apps,
       settings: {
-        sharedSession: false,
+        sharedSession,
         layout: {
           dockPosition: 'left',
         },
       },
     };
 
-    const workspaces = this.store.get('workspaces', {}) as Record<string, Workspace>;
+    const workspaces = this.store.get('workspaces', {}), Workspace>;
     workspaces[workspace.id] = workspace;
     this.store.set('workspaces', workspaces);
 
     // Update profile's workspace list
-    if (this.currentProfile?.id === profileId) {
+    if (this.currentProfile.id === profileId) {
       this.currentProfile.workspaces.push(workspace.id);
       this.updateProfile(profileId, { workspaces: this.currentProfile.workspaces });
     }
@@ -131,8 +126,7 @@ export class ProfileManager {
     return workspace;
   }
 
-  updateWorkspace(workspaceId: string, updates: Partial<Workspace>): Workspace {
-    const workspaces = this.store.get('workspaces', {}) as Record<string, Workspace>;
+  updateWorkspace(workspaceId)= this.store.get('workspaces', {}), Workspace>;
     const workspace = workspaces[workspaceId];
 
     if (!workspace) {
@@ -151,8 +145,8 @@ export class ProfileManager {
     return updatedWorkspace;
   }
 
-  deleteWorkspace(workspaceId: string): void {
-    const workspaces = this.store.get('workspaces', {}) as Record<string, Workspace>;
+  deleteWorkspace(workspaceId) {
+    const workspaces = this.store.get('workspaces', {}), Workspace>;
     const workspace = workspaces[workspaceId];
 
     if (!workspace) {
@@ -160,7 +154,7 @@ export class ProfileManager {
     }
 
     // Delete all apps in the workspace
-    const apps = this.store.get('apps', {}) as Record<string, AppInstance>;
+    const apps = this.store.get('apps', {}), AppInstance>;
     workspace.apps.forEach((appId) => {
       delete apps[appId];
     });
@@ -181,34 +175,27 @@ export class ProfileManager {
     }
   }
 
-  getWorkspacesByProfile(profileId: string): Workspace[] {
-    const workspaces = this.store.get('workspaces', {}) as Record<string, Workspace>;
+  getWorkspacesByProfile(profileId)= this.store.get('workspaces', {}), Workspace>;
     return Object.values(workspaces).filter((w) => w.profileId === profileId);
   }
 
-  getWorkspace(workspaceId: string): Workspace | null {
-    const workspaces = this.store.get('workspaces', {}) as Record<string, Workspace>;
+  getWorkspace(workspaceId)= this.store.get('workspaces', {}), Workspace>;
     return workspaces[workspaceId] || null;
   }
 
   // App operations
   createApp(
-    workspaceId: string,
-    name: string,
-    url: string,
-    icon?: string
-  ): AppInstance {
-    const workspace = this.getWorkspace(workspaceId);
+    workspaceId,
+    name,
+    url,
+    icon)= this.getWorkspace(workspaceId);
     if (!workspace) {
       throw new Error(`Workspace with id ${workspaceId} not found`);
     }
 
     const appId = uuidv4();
-    const app: AppInstance = {
-      id: appId,
-      workspaceId,
-      name,
-      url,
+    const app= {
+      id,
       icon: icon || '🌐',
       position: workspace.apps.length,
       partition: workspace.settings.sharedSession
@@ -216,18 +203,18 @@ export class ProfileManager {
         : `app-${appId}`,
       createdAt: Date.now(),
       settings: {
-        notificationsEnabled: true,
-        badge: true,
+        notificationsEnabled,
+        badge,
         zoom: 1.0,
       },
       state: {
-        isLoaded: false,
-        isHibernated: false,
+        isLoaded,
+        isHibernated,
         lastActiveAt: Date.now(),
       },
     };
 
-    const apps = this.store.get('apps', {}) as Record<string, AppInstance>;
+    const apps = this.store.get('apps', {}), AppInstance>;
     apps[appId] = app;
     this.store.set('apps', apps);
 
@@ -238,8 +225,7 @@ export class ProfileManager {
     return app;
   }
 
-  updateApp(appId: string, updates: Partial<AppInstance>): AppInstance {
-    const apps = this.store.get('apps', {}) as Record<string, AppInstance>;
+  updateApp(appId)= this.store.get('apps', {}), AppInstance>;
     const app = apps[appId];
 
     if (!app) {
@@ -257,8 +243,8 @@ export class ProfileManager {
     return updatedApp;
   }
 
-  deleteApp(appId: string): void {
-    const apps = this.store.get('apps', {}) as Record<string, AppInstance>;
+  deleteApp(appId) {
+    const apps = this.store.get('apps', {}), AppInstance>;
     const app = apps[appId];
 
     if (!app) {
@@ -277,18 +263,16 @@ export class ProfileManager {
     this.store.set('apps', apps);
   }
 
-  getApp(appId: string): AppInstance | null {
-    const apps = this.store.get('apps', {}) as Record<string, AppInstance>;
+  getApp(appId)= this.store.get('apps', {}), AppInstance>;
     return apps[appId] || null;
   }
 
-  getAppsByWorkspace(workspaceId: string): AppInstance[] {
-    const workspace = this.getWorkspace(workspaceId);
+  getAppsByWorkspace(workspaceId)= this.getWorkspace(workspaceId);
     if (!workspace) {
       return [];
     }
 
-    const apps = this.store.get('apps', {}) as Record<string, AppInstance>;
+    const apps = this.store.get('apps', {}), AppInstance>;
     return workspace.apps.map((appId) => apps[appId]).filter(Boolean);
   }
 }

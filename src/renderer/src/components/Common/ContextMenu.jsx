@@ -1,32 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export interface ContextMenuItem {
-  label: string;
-  onClick: () => void;
-  icon?: string;
-  danger?: boolean;
-  disabled?: boolean;
-}
-
-interface ContextMenuProps {
-  x: number;
-  y: number;
-  items: ContextMenuItem[];
-  onClose: () => void;
-}
-
-export function ContextMenu({ x, y, items, onClose }: ContextMenuProps) {
-  const menuRef = useRef<HTMLDivElement>(null);
+export function ContextMenu({ x, y, items, onClose }) {
+  const menuRef = useRef(null);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target )) {
         onClose();
       }
     };
 
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (event) => {
       if (event.key === 'Escape') {
         onClose();
       }

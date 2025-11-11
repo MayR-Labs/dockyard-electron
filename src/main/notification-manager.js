@@ -1,39 +1,25 @@
 import { Notification, BrowserView } from 'electron';
 import { ProfileManager } from './profile-manager';
 
-export interface NotificationConfig {
-  enabled: boolean;
-  doNotDisturb: boolean;
-  showBadges: boolean;
-}
-
-export interface AppNotification {
-  appId: string;
-  title: string;
-  body: string;
-  icon?: string;
-  timestamp: number;
-}
-
 export class NotificationManager {
-  private profileManager: ProfileManager;
-  private config: NotificationConfig;
-  private badgeCounts: Map<string, number> = new Map();
-  private notificationHistory: AppNotification[] = [];
-  private maxHistorySize = 50;
+  profileManager;
+  config;
+  badgeCounts= new Map();
+  notificationHistory= [];
+  maxHistorySize = 50;
 
-  constructor(profileManager: ProfileManager) {
+  constructor(profileManager) {
     this.profileManager = profileManager;
     
     const profile = this.profileManager.getCurrentProfile();
     this.config = {
       enabled: profile?.settings.notifications ?? true,
-      doNotDisturb: false,
-      showBadges: true,
+      doNotDisturb,
+      showBadges,
     };
   }
 
-  setupNotificationForwarding(appId: string, view: BrowserView): void {
+  setupNotificationForwarding(appId) {
     // Intercept notification requests from the webview
     view.webContents.on('did-finish-load', () => {
       // Inject notification interceptor
@@ -48,7 +34,7 @@ export class NotificationManager {
             if (window.electronAPI && window.electronAPI.sendNotification) {
               window.electronAPI.sendNotification({
                 appId: '${appId}',
-                title: title,
+                title,
                 body: options?.body || '',
                 icon: options?.icon,
                 timestamp: Date.now()
@@ -67,7 +53,7 @@ export class NotificationManager {
     });
   }
 
-  showNotification(notification: AppNotification): void {
+  showNotification(notification) {
     if (!this.config.enabled || this.config.doNotDisturb) {
       return;
     }
@@ -98,35 +84,34 @@ export class NotificationManager {
     });
   }
 
-  clearBadge(appId: string): void {
+  clearBadge(appId) {
     this.badgeCounts.set(appId, 0);
   }
 
-  getBadgeCount(appId: string): number {
+  getBadgeCount(appId) {
     return this.badgeCounts.get(appId) || 0;
   }
 
-  getAllBadgeCounts(): Map<string, number> {
+  getAllBadgeCounts(), number> {
     return new Map(this.badgeCounts);
   }
 
-  updateConfig(config: Partial<NotificationConfig>): void {
+  updateConfig(config) {
     this.config = { ...this.config, ...config };
   }
 
-  getConfig(): NotificationConfig {
-    return { ...this.config };
+  getConfig() { ...this.config };
   }
 
-  getNotificationHistory(): AppNotification[] {
+  getNotificationHistory()] {
     return [...this.notificationHistory];
   }
 
-  clearHistory(): void {
+  clearHistory() {
     this.notificationHistory = [];
   }
 
-  clearAllBadges(): void {
+  clearAllBadges() {
     this.badgeCounts.clear();
   }
 }

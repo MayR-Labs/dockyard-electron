@@ -1,36 +1,8 @@
 import { create } from 'zustand';
-import type { Profile, Workspace, AppInstance } from '@shared/types';
 
-interface StoreState {
-  // State
-  profile: Profile | null;
-  workspaces: Workspace[];
-  currentWorkspace: Workspace | null;
-  apps: AppInstance[];
-  currentAppId: string | null;
-  isLoading: boolean;
 
-  // Actions
-  setProfile: (profile: Profile) => void;
-  setWorkspaces: (workspaces: Workspace[]) => void;
-  setCurrentWorkspace: (workspace: Workspace | null) => void;
-  setApps: (apps: AppInstance[]) => void;
-  setCurrentAppId: (appId: string | null) => void;
-  setLoading: (isLoading: boolean) => void;
 
-  // Async actions
-  loadProfile: () => Promise<void>;
-  loadWorkspaces: () => Promise<void>;
-  loadApps: (workspaceId: string) => Promise<void>;
-  switchWorkspace: (workspaceId: string) => Promise<void>;
-  switchApp: (appId: string) => Promise<void>;
-  createWorkspace: (name: string, icon?: string) => Promise<Workspace>;
-  createApp: (name: string, url: string, icon?: string) => Promise<AppInstance>;
-  deleteWorkspace: (workspaceId: string) => Promise<void>;
-  deleteApp: (appId: string) => Promise<void>;
-}
-
-export const useStore = create<StoreState>((set, get) => ({
+export const useStore = create((set, get) => ({
   // Initial state
   profile: null,
   workspaces: [],
@@ -75,7 +47,7 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  loadApps: async (workspaceId: string) => {
+  loadApps: async (workspaceId) => {
     try {
       const apps = await window.electronAPI.app.list(workspaceId);
       set({ apps });
@@ -84,7 +56,7 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  switchWorkspace: async (workspaceId: string) => {
+  switchWorkspace: async (workspaceId) => {
     try {
       const { workspaces } = get();
       const workspace = workspaces.find((w) => w.id === workspaceId);
@@ -99,7 +71,7 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  switchApp: async (appId: string) => {
+  switchApp: async (appId) => {
     try {
       await window.electronAPI.app.switch(appId);
       set({ currentAppId: appId });
@@ -108,7 +80,7 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  createWorkspace: async (name: string, icon?: string) => {
+  createWorkspace: async (name, icon) => {
     try {
       const { profile } = get();
       if (!profile) throw new Error('No profile loaded');
@@ -130,7 +102,7 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  createApp: async (name: string, url: string, icon?: string) => {
+  createApp: async (name, url, icon) => {
     try {
       const { currentWorkspace } = get();
       if (!currentWorkspace) throw new Error('No workspace selected');
@@ -153,7 +125,7 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  deleteWorkspace: async (workspaceId: string) => {
+  deleteWorkspace: async (workspaceId) => {
     try {
       await window.electronAPI.workspace.delete(workspaceId);
       
@@ -161,7 +133,7 @@ export const useStore = create<StoreState>((set, get) => ({
         workspaces: state.workspaces.filter((w) => w.id !== workspaceId),
         currentWorkspace:
           state.currentWorkspace?.id === workspaceId
-            ? state.workspaces[0] || null
+            ? state.workspaces[0]
             : state.currentWorkspace,
       }));
 
@@ -176,7 +148,7 @@ export const useStore = create<StoreState>((set, get) => ({
     }
   },
 
-  deleteApp: async (appId: string) => {
+  deleteApp: async (appId) => {
     try {
       await window.electronAPI.app.delete(appId);
       

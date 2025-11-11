@@ -1,11 +1,7 @@
 import { Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-interface AddAppButtonProps {
-  onClick: () => void;
-}
-
-export function AddAppButton({ onClick }: AddAppButtonProps) {
+export function AddAppButton({ onClick }) {
   return (
     <motion.button
       onClick={onClick}

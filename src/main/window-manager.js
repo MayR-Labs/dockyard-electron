@@ -2,23 +2,21 @@ import { BrowserWindow } from 'electron';
 import path from 'path';
 
 export class WindowManager {
-  private mainWindow: BrowserWindow | null = null;
+  mainWindow = null;
 
-  createMainWindow(): BrowserWindow {
+  createMainWindow() {
     this.mainWindow = new BrowserWindow({
-      width: 1400,
-      height: 900,
-      minWidth: 800,
-      minHeight: 600,
+      width,
+      height,
+      minWidth,
+      minHeight,
       titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-      frame: true,
+      frame,
       webPreferences: {
         preload: path.join(__dirname, '../preload/index.js'),
-        contextIsolation: true,
-        nodeIntegration: false,
-        sandbox: true,
-      },
-    });
+        contextIsolation,
+        nodeIntegration,
+        sandbox);
 
     // Load renderer
     if (process.env.NODE_ENV === 'development') {
@@ -35,7 +33,7 @@ export class WindowManager {
     return this.mainWindow;
   }
 
-  getMainWindow(): BrowserWindow | null {
+  getMainWindow() {
     return this.mainWindow;
   }
 }

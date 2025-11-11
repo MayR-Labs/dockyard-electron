@@ -5,48 +5,48 @@ const api = {
   // Profile API
   profile: {
     get: () => ipcRenderer.invoke(IPC_CHANNELS.PROFILE_GET),
-    create: (name: string) => ipcRenderer.invoke(IPC_CHANNELS.PROFILE_CREATE, name),
-    update: (profileId: string, updates: any) =>
+    create: (name) => ipcRenderer.invoke(IPC_CHANNELS.PROFILE_CREATE, name),
+    update: (profileId, updates) =>
       ipcRenderer.invoke(IPC_CHANNELS.PROFILE_UPDATE, profileId, updates),
-    delete: (profileId: string) =>
+    delete: (profileId) =>
       ipcRenderer.invoke(IPC_CHANNELS.PROFILE_DELETE, profileId),
     list: () => ipcRenderer.invoke(IPC_CHANNELS.PROFILE_LIST),
   },
 
   // Workspace API
   workspace: {
-    create: (profileId: string, name: string, icon?: string) =>
+    create: (profileId, name, icon) =>
       ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE_CREATE, profileId, name, icon),
-    update: (workspaceId: string, updates: any) =>
+    update: (workspaceId, updates) =>
       ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE_UPDATE, workspaceId, updates),
-    delete: (workspaceId: string) =>
+    delete: (workspaceId) =>
       ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE_DELETE, workspaceId),
-    list: (profileId: string) =>
+    list: (profileId) =>
       ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE_LIST, profileId),
-    switch: (workspaceId: string) =>
+    switch: (workspaceId) =>
       ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE_SWITCH, workspaceId),
   },
 
   // App API
   app: {
-    create: (workspaceId: string, name: string, url: string, icon?: string) =>
+    create: (workspaceId, name, url, icon) =>
       ipcRenderer.invoke(IPC_CHANNELS.APP_CREATE, workspaceId, name, url, icon),
-    update: (appId: string, updates: any) =>
+    update: (appId, updates) =>
       ipcRenderer.invoke(IPC_CHANNELS.APP_UPDATE, appId, updates),
-    delete: (appId: string) => ipcRenderer.invoke(IPC_CHANNELS.APP_DELETE, appId),
-    list: (workspaceId: string) =>
+    delete: (appId) => ipcRenderer.invoke(IPC_CHANNELS.APP_DELETE, appId),
+    list: (workspaceId) =>
       ipcRenderer.invoke(IPC_CHANNELS.APP_LIST, workspaceId),
-    hibernate: (appId: string) =>
+    hibernate: (appId) =>
       ipcRenderer.invoke(IPC_CHANNELS.APP_HIBERNATE, appId),
-    wake: (appId: string) => ipcRenderer.invoke(IPC_CHANNELS.APP_WAKE, appId),
-    clearSession: (appId: string) =>
+    wake: (appId) => ipcRenderer.invoke(IPC_CHANNELS.APP_WAKE, appId),
+    clearSession: (appId) =>
       ipcRenderer.invoke(IPC_CHANNELS.APP_CLEAR_SESSION, appId),
-    switch: (appId: string) => ipcRenderer.invoke('app:switch', appId),
+    switch: (appId) => ipcRenderer.invoke('app:switch', appId),
   },
 
   // System events
-  on: (channel: string, callback: (...args: any[]) => void) => {
-    const validChannels: string[] = [
+  on: (channel, callback: (...args) => void) => {
+    const validChannels= [
       IPC_CHANNELS.APP_STATE_CHANGED,
       IPC_CHANNELS.NOTIFICATION,
       IPC_CHANNELS.WORKSPACE_CHANGED,
@@ -56,7 +56,7 @@ const api = {
     }
   },
 
-  off: (channel: string, callback: (...args: any[]) => void) => {
+  off: (channel, callback: (...args) => void) => {
     ipcRenderer.removeListener(channel, callback);
   },
 };
@@ -64,4 +64,4 @@ const api = {
 contextBridge.exposeInMainWorld('electronAPI', api);
 
 // Type definition for renderer process
-export type ElectronAPI = typeof api;
+

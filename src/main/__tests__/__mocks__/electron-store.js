@@ -1,27 +1,27 @@
 export default class Store {
-  private data: Map<string, any>;
+  data;
 
-  constructor(_options?: any) {
+  constructor(_options?) {
     this.data = new Map();
   }
 
-  get(key: string, defaultValue?: any): any {
+  get(key, defaultValue?) {
     return this.data.has(key) ? this.data.get(key) : defaultValue;
   }
 
-  set(key: string, value: any): void {
+  set(key, value) {
     this.data.set(key, value);
   }
 
-  delete(key: string): void {
+  delete(key) {
     this.data.delete(key);
   }
 
-  clear(): void {
+  clear() {
     this.data.clear();
   }
 
-  has(key: string): boolean {
+  has(key) {
     return this.data.has(key);
   }
 }

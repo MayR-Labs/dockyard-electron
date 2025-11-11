@@ -1,28 +1,22 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import type { AppInstance } from '@shared/types';
 import { useStore } from '../../store/useStore';
-import { ContextMenu, type ContextMenuItem } from '../Common/ContextMenu';
+import { ContextMenu } from '../Common/ContextMenu';
 
-interface AppIconProps {
-  app: AppInstance;
-  isActive: boolean;
-}
-
-export function AppIcon({ app, isActive }: AppIconProps) {
+export function AppIcon({ app, isActive }) {
   const { switchApp, deleteApp } = useStore();
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [contextMenu, setContextMenu] = useState(null);
 
   const handleClick = () => {
     switchApp(app.id);
   };
 
-  const handleContextMenu = (e: React.MouseEvent) => {
+  const handleContextMenu = (e) => {
     e.preventDefault();
     setContextMenu({ x: e.clientX, y: e.clientY });
   };
 
-  const contextMenuItems: ContextMenuItem[] = [
+  const contextMenuItems = [
     {
       label: 'Open',
       icon: '🚀',
