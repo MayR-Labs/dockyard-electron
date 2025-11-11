@@ -2,10 +2,12 @@
   "name": "dockyard-electron",
   "version": "1.0.0",
   "description": "A flexible, open-source multi-app workspace built for power users.",
-  "main": "index.js",
+  "main": "src/main.js",
   "scripts": {
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish"
   },
   "repository": {
     "type": "git",
@@ -22,6 +24,18 @@
   },
   "homepage": "https://github.com/MayR-Labs/dockyard-electron#readme",
   "devDependencies": {
+    "@electron-forge/cli": "^7.10.2",
+    "@electron-forge/maker-deb": "^7.10.2",
+    "@electron-forge/maker-rpm": "^7.10.2",
+    "@electron-forge/maker-squirrel": "^7.10.2",
+    "@electron-forge/maker-zip": "^7.10.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.10.2",
+    "@electron-forge/plugin-fuses": "^7.10.2",
+    "@electron-forge/publisher-github": "^7.10.2",
+    "@electron/fuses": "^1.8.0",
     "electron": "^39.1.2"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1"
   }
 }
