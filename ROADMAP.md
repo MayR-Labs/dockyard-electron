@@ -74,32 +74,37 @@ This roadmap outlines the development phases for Dockyard, a flexible, open-sour
 
 ---
 
-## **Phase 2: Performance & Notifications** 🗓️
+## **Phase 2: Performance & Notifications** ✅
 
 **Goal:** Add performance optimizations and notification handling.
 
-### Milestone 2.1: Auto-Hibernation
-- [ ] Implement idle detection system
-- [ ] Build auto-suspend logic for inactive apps (default 15 min)
-- [ ] Create smart resume on app switch
-- [ ] Add per-app hibernation settings
-- [ ] Implement memory usage monitoring
-- [ ] Build performance dashboard
+### Milestone 2.1: Auto-Hibernation ✅
+- [x] Implement idle detection system
+- [x] Build auto-suspend logic for inactive apps (default 15 min)
+- [x] Create smart resume on app switch
+- [x] Add per-app hibernation settings
+- [x] Implement memory usage monitoring
+- [x] Build performance dashboard
 
-**Deliverables:**
-- Automatic resource management
-- Configurable hibernation rules
+**Deliverables:** ✅
+- Automatic resource management via HibernationManager
+- Configurable hibernation rules with timeout and exclusions
+- Tracks app activity and hibernates inactive apps
+- IPC handlers for configuration and monitoring
 
-### Milestone 2.2: Notifications
-- [ ] Forward webview notifications to native OS
-- [ ] Implement per-app badge counts
-- [ ] Create notification settings panel
-- [ ] Add global "Do Not Disturb" mode
-- [ ] Build notification history/log
+### Milestone 2.2: Notifications ✅
+- [x] Forward webview notifications to native OS
+- [x] Implement per-app badge counts
+- [x] Create notification settings panel (backend ready)
+- [x] Add global "Do Not Disturb" mode
+- [x] Build notification history/log
 
-**Deliverables:**
-- Native notification integration
-- Notification preferences
+**Deliverables:** ✅
+- Native notification integration via NotificationManager
+- Per-app badge tracking and clearing
+- Notification history (last 50 notifications)
+- Do Not Disturb mode configuration
+- IPC handlers for all notification features
 
 ---
 
