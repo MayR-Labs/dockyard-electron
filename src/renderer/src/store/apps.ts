@@ -1,5 +1,12 @@
+/**
+ * App Store
+ * Manages application state using Zustand
+ * Follows Single Responsibility Principle - only handles state management
+ */
+
 import { create } from 'zustand';
 import { App } from '../../../shared/types';
+import { appAPI } from '../services/api';
 
 interface AppStore {
   apps: App[];
@@ -23,7 +30,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   loadApps: async () => {
     set({ loading: true, error: null });
     try {
-      const apps = await window.dockyard.apps.list();
+      const apps = await appAPI.list();
       set({ apps, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
@@ -33,7 +40,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   createApp: async (data: Partial<App>) => {
     set({ loading: true, error: null });
     try {
-      const newApp = await window.dockyard.apps.create(data);
+      const newApp = await appAPI.create(data);
       const apps = [...get().apps, newApp];
       set({ apps, loading: false });
     } catch (error: any) {
@@ -44,7 +51,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   updateApp: async (id: string, data: Partial<App>) => {
     set({ loading: true, error: null });
     try {
-      const updatedApp = await window.dockyard.apps.update(id, data);
+      const updatedApp = await appAPI.update(id, data);
       const apps = get().apps.map(a => a.id === id ? updatedApp : a);
       set({ apps, loading: false });
     } catch (error: any) {
@@ -55,7 +62,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   deleteApp: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      await window.dockyard.apps.delete(id);
+      await appAPI.delete(id);
       const apps = get().apps.filter(a => a.id !== id);
       set({ apps, loading: false });
     } catch (error: any) {
@@ -65,7 +72,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   hibernateApp: async (id: string) => {
     try {
-      await window.dockyard.apps.hibernate(id);
+      await appAPI.hibernate(id);
     } catch (error: any) {
       set({ error: error.message });
     }
@@ -73,7 +80,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   resumeApp: async (id: string) => {
     try {
-      await window.dockyard.apps.resume(id);
+      await appAPI.resume(id);
     } catch (error: any) {
       set({ error: error.message });
     }

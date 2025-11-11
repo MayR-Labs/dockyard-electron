@@ -1,5 +1,12 @@
+/**
+ * Settings Store
+ * Manages application settings using Zustand
+ * Follows Single Responsibility Principle - only handles state management
+ */
+
 import { create } from 'zustand';
 import { Settings } from '../../../shared/types';
+import { settingsAPI } from '../services/api';
 
 interface SettingsStore {
   settings: Settings | null;
@@ -19,7 +26,7 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
   loadSettings: async () => {
     set({ loading: true, error: null });
     try {
-      const settings = await window.dockyard.settings.get();
+      const settings = await settingsAPI.get();
       set({ settings, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
@@ -29,7 +36,7 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
   updateSettings: async (data: Partial<Settings>) => {
     set({ loading: true, error: null });
     try {
-      const settings = await window.dockyard.settings.update(data);
+      const settings = await settingsAPI.update(data);
       set({ settings, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
