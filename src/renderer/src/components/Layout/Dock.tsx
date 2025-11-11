@@ -4,6 +4,7 @@
  * Single Responsibility: App icon display and interaction
  */
 
+import { motion } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 
 interface DockProps {
@@ -76,15 +77,22 @@ interface DockIconProps {
  */
 function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
   return (
-    <div className="relative group">
-      <button
+    <motion.div
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      className="relative group"
+    >
+      <motion.button
+        whileHover={{ scale: 1.1, y: -2 }}
+        whileTap={{ scale: 0.95 }}
         onClick={onClick}
         onContextMenu={onContextMenu}
         className={`
-          w-12 h-12 rounded-xl transition
+          w-12 h-12 rounded-xl transition-all duration-200
           flex items-center justify-center
           ${isActive 
-            ? 'bg-indigo-600 ring-2 ring-indigo-400' 
+            ? 'bg-indigo-600 ring-2 ring-indigo-400 shadow-lg shadow-indigo-500/50' 
             : 'bg-gray-800 hover:bg-gray-700'
           }
         `}
@@ -95,19 +103,24 @@ function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
         ) : (
           <span className="text-xl">{app.name.charAt(0).toUpperCase()}</span>
         )}
-      </button>
+      </motion.button>
       
       {/* Badge for multiple instances */}
       {app.instances.length > 1 && (
-        <span className="absolute -top-1 -right-1 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+        <motion.span
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="absolute -top-1 -right-1 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg"
+        >
           {app.instances.length}
-        </span>
+        </motion.span>
       )}
       
       {/* Tooltip */}
-      <div className="absolute hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50 left-full ml-2">
+      <div className="absolute hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50 left-full ml-2 shadow-xl">
         {app.name}
       </div>
-    </div>
+    </motion.div>
   );
 }
