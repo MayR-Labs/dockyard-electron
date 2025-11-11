@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useWorkspaceStore } from './store/workspaces';
 import { useAppStore } from './store/apps';
 import { useSettingsStore } from './store/settings';
@@ -155,6 +156,49 @@ function App() {
     });
   };
 
+  const handleAddSampleApps = async () => {
+    if (!activeWorkspaceId) return;
+
+    const sampleApps = [
+      {
+        name: 'Gmail',
+        url: 'https://mail.google.com',
+        icon: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico',
+      },
+      {
+        name: 'GitHub',
+        url: 'https://github.com',
+        icon: 'https://github.githubassets.com/favicons/favicon.svg',
+      },
+      {
+        name: 'Notion',
+        url: 'https://notion.so',
+        icon: 'https://www.notion.so/images/favicon.ico',
+      },
+      {
+        name: 'Slack',
+        url: 'https://slack.com/signin',
+        icon: 'https://a.slack-edge.com/80588/marketing/img/meta/favicon-32.png',
+      },
+    ];
+
+    // Add all sample apps
+    for (const appData of sampleApps) {
+      await createApp({
+        name: appData.name,
+        url: appData.url,
+        icon: appData.icon,
+        workspaceId: activeWorkspaceId,
+      });
+    }
+
+    // Select the first app
+    const firstApp = apps.find(a => a.workspaceId === activeWorkspaceId);
+    if (firstApp) {
+      setActiveAppId(firstApp.id);
+    }
+  };
+
   const handleUpdateApp = async (id: string, data: Partial<AppType>) => {
     await updateApp(id, data);
   };
@@ -199,23 +243,63 @@ function App() {
   // Show welcome screen if no workspaces exist
   if (workspaces.length === 0) {
     return (
-      <div className="h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 text-white flex items-center justify-center">
-        <div className="text-center max-w-2xl px-8">
-          <div className="text-8xl mb-6">⚓</div>
-          <h1 className="text-5xl font-bold mb-4">Welcome to Dockyard</h1>
-          <p className="text-xl opacity-90 mb-8">
+      <div className="h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 text-white flex items-center justify-center overflow-hidden relative">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl -top-20 -left-20 animate-pulse" />
+          <div className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -bottom-20 -right-20 animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-2xl px-8 relative z-10"
+        >
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.6, type: 'spring' }}
+            className="text-8xl mb-6 inline-block"
+          >
+            ⚓
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="text-5xl font-bold mb-4"
+          >
+            Welcome to Dockyard
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="text-xl opacity-90 mb-8"
+          >
             Your local-first multi-app workspace is ready!
-          </p>
-          <p className="text-gray-300 mb-8">
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            className="text-gray-300 mb-8"
+          >
             Create your first workspace to start organizing your web apps.
-          </p>
-          <button
+          </motion.p>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.0, duration: 0.6 }}
+            whileHover={{ scale: 1.05, boxShadow: '0 20px 50px rgba(99, 102, 241, 0.4)' }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsCreateWorkspaceModalOpen(true)}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition shadow-lg"
           >
             Create Your First Workspace
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
         <CreateWorkspaceModal
           isOpen={isCreateWorkspaceModalOpen}
           onClose={() => setIsCreateWorkspaceModalOpen(false)}
@@ -282,6 +366,8 @@ function App() {
             apps={workspaceApps}
             activeAppId={activeAppId}
             onAppSelect={setActiveAppId}
+            onAddSampleApps={handleAddSampleApps}
+            onAddCustomApp={() => setIsAddAppModalOpen(true)}
           />
 
           {/* Dock - right or bottom position */}

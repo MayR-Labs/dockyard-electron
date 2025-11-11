@@ -4,6 +4,7 @@
  * Single Responsibility: Workspace navigation UI
  */
 
+import { motion, AnimatePresence } from 'framer-motion';
 import { Workspace } from '../../../../shared/types/workspace';
 
 interface SidebarProps {
@@ -28,20 +29,29 @@ export function Sidebar({
 }: SidebarProps) {
   if (!isOpen) {
     return (
-      <button
+      <motion.button
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        whileHover={{ scale: 1.1 }}
         onClick={onToggle}
-        className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 hover:bg-gray-700 p-2 rounded-r-lg z-10"
+        className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 hover:bg-gray-700 p-2 rounded-r-lg z-10 shadow-lg"
         title="Open Sidebar (Ctrl/Cmd+B)"
       >
         <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-      </button>
+      </motion.button>
     );
   }
 
   return (
-    <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
+    <motion.div
+      initial={{ x: -280, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: -280, opacity: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col"
+    >
       {/* Sidebar header */}
       <div className="h-12 border-b border-gray-800 flex items-center justify-between px-4">
         <h2 className="text-sm font-semibold text-gray-300">Workspaces</h2>
@@ -59,13 +69,18 @@ export function Sidebar({
       {/* Workspace list */}
       <div className="flex-1 overflow-y-auto p-2">
         {workspaces.map((workspace, index) => (
-          <button
+          <motion.button
             key={workspace.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ scale: 1.02, x: 4 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => onWorkspaceSelect(workspace.id)}
             className={`
-              w-full text-left p-3 rounded-lg mb-2 transition
+              w-full text-left p-3 rounded-lg mb-2 transition-colors
               ${workspace.id === activeWorkspaceId
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
                 : 'bg-gray-800 text-gray-300 hover:bg-gray-750'
               }
             `}
@@ -84,13 +99,15 @@ export function Sidebar({
             <div className="text-xs opacity-70">
               {workspace.apps.length} apps • {workspace.sessionMode}
             </div>
-          </button>
+          </motion.button>
         ))}
       </div>
 
       {/* Create workspace button */}
       <div className="p-2 border-t border-gray-800">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={onCreateWorkspace}
           className="w-full p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium flex items-center justify-center gap-2 transition"
         >
@@ -98,8 +115,8 @@ export function Sidebar({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           New Workspace
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }
