@@ -40,8 +40,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
   createApp: async (data: Partial<App>) => {
     set({ loading: true, error: null });
     try {
-      const newApp = await appAPI.create(data);
-      const apps = [...get().apps, newApp];
+      await appAPI.create(data);
+      // Reload apps from storage to ensure consistency
+      const apps = await appAPI.list();
       set({ apps, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
@@ -51,8 +52,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
   updateApp: async (id: string, data: Partial<App>) => {
     set({ loading: true, error: null });
     try {
-      const updatedApp = await appAPI.update(id, data);
-      const apps = get().apps.map(a => a.id === id ? updatedApp : a);
+      await appAPI.update(id, data);
+      // Reload apps from storage to ensure consistency
+      const apps = await appAPI.list();
       set({ apps, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
@@ -63,7 +65,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       await appAPI.delete(id);
-      const apps = get().apps.filter(a => a.id !== id);
+      // Reload apps from storage to ensure consistency
+      const apps = await appAPI.list();
       set({ apps, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });

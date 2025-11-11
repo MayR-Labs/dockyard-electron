@@ -19,10 +19,27 @@ export function AddAppModal({ isOpen, workspaceId, onClose, onAddApp }: AddAppMo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    // Reset state when modal is closed
+    if (isSubmitting || error || name || url) {
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setError('');
+        setName('');
+        setUrl('');
+      }, 0);
+    }
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (isSubmitting) {
+      return;
+    }
+    
     setError('');
     
     if (!name.trim() || !url.trim()) {
@@ -58,7 +75,6 @@ export function AddAppModal({ isOpen, workspaceId, onClose, onAddApp }: AddAppMo
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add app');
-    } finally {
       setIsSubmitting(false);
     }
   };

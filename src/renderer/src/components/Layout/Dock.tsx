@@ -36,7 +36,7 @@ export function Dock({
     : { width: `${size}px`, height: '100%' };
 
   const containerClass = `bg-gray-900 border-gray-800 flex ${
-    isHorizontal ? 'flex-row border-t' : 'flex-col border-r'
+    isHorizontal ? 'flex-row border-t overflow-x-auto' : 'flex-col border-r overflow-y-auto'
   } items-center ${isHorizontal ? 'px-2 gap-2' : 'py-2 gap-2'}`;
 
   return (
