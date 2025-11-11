@@ -1,0 +1,99 @@
+import { app, BrowserWindow } from 'electron';
+import { WindowManager } from './window-manager';
+import { StoreManager } from './store-manager';
+import { IPCHandlers } from './ipc-handlers';
+
+// Handle creating/removing shortcuts on Windows when installing/uninstalling
+if (require('electron-squirrel-startup')) {
+  app.quit();
+}
+
+// Global instances
+let windowManager: WindowManager;
+let storeManager: StoreManager;
+let ipcHandlers: IPCHandlers;
+
+// Parse command line arguments for profile selection
+function parseProfileFromArgs(): string {
+  const profileArg = process.argv.find(arg => arg.startsWith('--profile='));
+  if (profileArg) {
+    return profileArg.split('=')[1];
+  }
+  return 'default';
+}
+
+/**
+ * Initialize the application
+ */
+async function initialize() {
+  // Get profile from command line or use default
+  const profileName = parseProfileFromArgs();
+  
+  // Initialize store manager
+  storeManager = new StoreManager();
+  storeManager.setCurrentProfile(profileName);
+  
+  // Initialize IPC handlers
+  ipcHandlers = new IPCHandlers(storeManager);
+  
+  // Initialize window manager
+  windowManager = new WindowManager();
+  
+  // Create main window
+  windowManager.createMainWindow();
+  
+  // Update last accessed time for profile
+  const rootStore = storeManager.getRootStore();
+  rootStore.set('lastActiveProfile', profileName);
+  
+  const profiles = rootStore.get('profiles', []);
+  const currentProfile = profiles.find((p: any) => p.id === profileName);
+  if (currentProfile) {
+    currentProfile.lastAccessed = new Date().toISOString();
+    rootStore.set('profiles', profiles);
+  }
+}
+
+/**
+ * App ready event
+ */
+app.whenReady().then(() => {
+  initialize();
+
+  // On macOS, re-create window when dock icon is clicked
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      windowManager.createMainWindow();
+    }
+  });
+});
+
+/**
+ * Quit when all windows are closed (except on macOS)
+ */
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+/**
+ * Handle second instance (for multi-profile support)
+ */
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  // Another instance is already running with the same profile
+  console.log('Another instance is already running with this profile');
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, focus our window
+    const mainWindow = windowManager?.getMainWindow();
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.focus();
+    }
+  });
+}
