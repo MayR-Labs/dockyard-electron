@@ -57,22 +57,27 @@ dockyard/
 
 ---
 
-## 🧩 **Build & Run**
+## 🧩 **Quick Start**
 
 ```bash
-# Clone repo
-git clone https://github.com/mayrlabs/dockyard.git
-cd dockyard
+# Clone the repository
+git clone https://github.com/MayR-Labs/dockyard-electron.git
+cd dockyard-electron
 
 # Install dependencies
 npm install
 
-# Start in dev mode
-npm run dev
+# Start in development mode
+npm run dev:electron
 
-# Build app
+# Build for production
 npm run build
+
+# Run production build
+npm start
 ```
+
+For detailed development instructions, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 ---
 
