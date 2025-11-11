@@ -59,9 +59,13 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
       // Reload workspaces from storage to ensure consistency
       const workspaces = await workspaceAPI.list();
       const activeWorkspace = await workspaceAPI.getActive();
+      
+      // Set new workspace as active (the backend sets it active if it's the first one)
+      const activeId = activeWorkspace?.id || newWorkspace.id;
+      
       set({ 
         workspaces, 
-        activeWorkspaceId: activeWorkspace?.id || newWorkspace.id,
+        activeWorkspaceId: activeId,
         loading: false 
       });
     } catch (error: any) {
