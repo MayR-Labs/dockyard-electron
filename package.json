@@ -1,0 +1,26 @@
+{
+  "name": "dockyard-electron",
+  "version": "1.0.0",
+  "description": "A flexible, open-source multi-app workspace built for power users.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MayR-Labs/dockyard-electron.git"
+  },
+  "keywords": [
+    "workspace",
+    "open-source"
+  ],
+  "author": "Aghogho Meyoron (https://mayrlabs.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MayR-Labs/dockyard-electron/issues"
+  },
+  "homepage": "https://github.com/MayR-Labs/dockyard-electron#readme",
+  "devDependencies": {
+    "electron": "^39.1.2"
+  }
+}
