@@ -76,8 +76,13 @@ npm run build
 
 ---
 
-## 💡 **Planned Milestones**
+## 💡 **Project Planning**
 
+For detailed development plans and roadmap, see:
+- **[ROADMAP.md](ROADMAP.md)** - Phased development timeline and milestones
+- **[PLAN.md](PLAN.md)** - Technical implementation details and architecture
+
+**Quick Milestones:**
 * [ ] MVP – Profiles, Workspaces, Custom Apps
 * [ ] Notifications & Hibernation
 * [ ] Full theming engine
