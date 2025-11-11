@@ -53,30 +53,42 @@ function App() {
     }
   }, [workspaces, activeWorkspaceId, setActiveWorkspace]);
 
+  // Define handleToggleDnd before the useEffect that uses it
+  const handleToggleDnd = () => {
+    if (settings) {
+      updateSettings({
+        notifications: {
+          ...settings.notifications,
+          doNotDisturb: !settings.notifications.doNotDisturb,
+        },
+      });
+    }
+  };
+
   useEffect(() => {
     // Keyboard shortcuts
     const handleKeyDown = (e: KeyboardEvent) => {
       const isMod = e.metaKey || e.ctrlKey; // Cmd on Mac, Ctrl on Windows/Linux
-      
+
       // Quick Launcher: Cmd/Ctrl+Space
       if (isMod && e.code === 'Space') {
         e.preventDefault();
         // TODO: Implement quick launcher
         console.log('Quick launcher shortcut triggered');
       }
-      
+
       // Toggle Sidebar: Cmd/Ctrl+B
       if (isMod && e.code === 'KeyB') {
         e.preventDefault();
         setIsSidebarOpen(prev => !prev);
       }
-      
+
       // Toggle DND: Cmd/Ctrl+Shift+D
       if (isMod && e.shiftKey && e.code === 'KeyD') {
         e.preventDefault();
         handleToggleDnd();
       }
-      
+
       // Switch Workspace: Cmd/Ctrl+1-9
       if (isMod && !e.shiftKey && e.code.startsWith('Digit')) {
         const num = parseInt(e.code.replace('Digit', ''));
@@ -89,7 +101,7 @@ function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [workspaces, setActiveWorkspace, handleToggleDnd]);
+  }, [workspaces, setActiveWorkspace, handleToggleDnd, settings, updateSettings]);
 
   const activeWorkspace = workspaces.find(w => w.id === activeWorkspaceId);
   const workspaceApps = apps.filter(app => app.workspaceId === activeWorkspaceId);
@@ -115,24 +127,13 @@ function App() {
     icon?: string;
   }) => {
     if (!activeWorkspaceId) return;
-    
+
     await createApp({
       name: appData.name,
       url: appData.url,
       icon: appData.icon,
       workspaceId: activeWorkspaceId,
     });
-  };
-
-  const handleToggleDnd = () => {
-    if (settings) {
-      updateSettings({
-        notifications: {
-          ...settings.notifications,
-          doNotDisturb: !settings.notifications.doNotDisturb,
-        },
-      });
-    }
   };
 
   if (isLoading) {
@@ -200,8 +201,8 @@ function App() {
         />
 
         {/* Dock and Canvas Container */}
-        <div className="flex-1 flex" style={{ 
-          flexDirection: dockPosition === 'top' || dockPosition === 'bottom' ? 'column' : 'row' 
+        <div className="flex-1 flex" style={{
+          flexDirection: dockPosition === 'top' || dockPosition === 'bottom' ? 'column' : 'row'
         }}>
           {/* Dock - positioned based on workspace settings */}
           {(dockPosition === 'top' || dockPosition === 'left') && (
