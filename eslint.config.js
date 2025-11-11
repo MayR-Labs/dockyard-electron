@@ -42,7 +42,17 @@ module.exports = [
     },
   },
   {
-    ignores: ['dist', 'out', 'node_modules', '.eslintrc.cjs', 'eslint.config.js'],
+    ignores: [
+      'dist',
+      'out',
+      'node_modules',
+      '.eslintrc.cjs',
+      'eslint.config.js',
+      '**/__tests__/**',
+      '**/__mocks__/**',
+      '**/*.test.ts',
+      '**/*.spec.ts',
+    ],
   },
   eslintConfigPrettier,
 ];
