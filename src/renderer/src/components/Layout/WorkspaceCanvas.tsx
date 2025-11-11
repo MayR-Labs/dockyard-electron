@@ -33,17 +33,19 @@ export function WorkspaceCanvas({
     );
   }
 
+  const activeApp = apps.find(app => app.id === activeAppId);
+
   return (
     <div className="flex-1 bg-gray-950 relative">
       <AnimatePresence mode="wait">
-        {apps.map((app) => (
+        {activeApp && (
           <AppTile
-            key={app.id}
-            app={app}
-            isActive={app.id === activeAppId}
-            onSelect={() => onAppSelect(app.id)}
+            key={activeApp.id}
+            app={activeApp}
+            isActive={true}
+            onSelect={() => onAppSelect(activeApp.id)}
           />
-        ))}
+        )}
       </AnimatePresence>
     </div>
   );

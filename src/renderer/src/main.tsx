@@ -55,7 +55,7 @@ if (typeof window !== 'undefined' && !window.dockyard) {
       list: async () => mockStorage.workspaces,
       create: async (data: any) => {
         const newWorkspace = {
-          id: `ws-${Date.now()}`,
+          id: `ws-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           name: data.name || 'New Workspace',
           icon: data.icon,
           apps: data.apps || [],
@@ -94,7 +94,7 @@ if (typeof window !== 'undefined' && !window.dockyard) {
       list: async () => mockStorage.apps,
       create: async (data: any) => {
         const newApp = {
-          id: `app-${Date.now()}`,
+          id: `app-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           name: data.name || 'New App',
           url: data.url || '',
           icon: data.icon,
