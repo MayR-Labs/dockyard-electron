@@ -47,7 +47,7 @@ const dockyardAPI: DockyardAPI = {
       IPC_EVENTS.NOTIFICATION,
     ];
     if (validChannels.includes(channel)) {
-      ipcRenderer.on(channel, (_, ...args) => callback(...args));
+      ipcRenderer.on(channel, (_event, ...args) => callback(...args));
     }
   },
 

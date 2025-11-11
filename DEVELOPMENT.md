@@ -25,14 +25,18 @@ npm install
 ### Development Mode
 
 ```bash
-# Build and start the application
+# Build and start the application in production mode
 npm start
-```
 
-For development with hot reload (coming soon):
-```bash
+# Run in development mode with hot reload
 npm run dev
 ```
+
+The `dev` command will:
+1. Build the main process
+2. Start Vite dev server for hot reload
+3. Watch for TypeScript changes in main process
+4. Launch Electron pointing to the dev server
 
 ### Production Build
 

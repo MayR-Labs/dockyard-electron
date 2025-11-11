@@ -206,7 +206,7 @@ export class IPCHandlers {
     });
 
     // Update app
-    ipcMain.handle(IPC_CHANNELS.APP.UPDATE, async (_, id: string, data: Partial<App>) => {
+    ipcMain.handle(IPC_CHANNELS.APP.UPDATE, async (_event, id: string, data: Partial<App>) => {
       const store = this.storeManager.getAppsStore();
       const apps = store.get('apps', []);
       
@@ -227,7 +227,7 @@ export class IPCHandlers {
     });
 
     // Delete app
-    ipcMain.handle(IPC_CHANNELS.APP.DELETE, async (_, id: string) => {
+    ipcMain.handle(IPC_CHANNELS.APP.DELETE, async (_event, id: string) => {
       const store = this.storeManager.getAppsStore();
       const apps = store.get('apps', []);
       const filtered = apps.filter((a: App) => a.id !== id);
@@ -235,13 +235,15 @@ export class IPCHandlers {
     });
 
     // Hibernate app (placeholder - will be implemented with BrowserView)
-    ipcMain.handle(IPC_CHANNELS.APP.HIBERNATE, async (_, id: string) => {
+    ipcMain.handle(IPC_CHANNELS.APP.HIBERNATE, async (_event, id: string) => {
+      // eslint-disable-next-line no-console
       console.log(`Hibernating app ${id}`);
       // TODO: Implement hibernation logic
     });
 
     // Resume app (placeholder - will be implemented with BrowserView)
-    ipcMain.handle(IPC_CHANNELS.APP.RESUME, async (_, id: string) => {
+    ipcMain.handle(IPC_CHANNELS.APP.RESUME, async (_event, id: string) => {
+      // eslint-disable-next-line no-console
       console.log(`Resuming app ${id}`);
       // TODO: Implement resume logic
     });
@@ -249,13 +251,13 @@ export class IPCHandlers {
 
   private registerSettingsHandlers(): void {
     // Get settings
-    ipcMain.handle(IPC_CHANNELS.SETTINGS.GET, async () => {
+    ipcMain.handle(IPC_CHANNELS.SETTINGS.GET, async (_event) => {
       const store = this.storeManager.getSettingsStore();
       return store.store;
     });
 
     // Update settings
-    ipcMain.handle(IPC_CHANNELS.SETTINGS.UPDATE, async (_, data: Partial<Settings>) => {
+    ipcMain.handle(IPC_CHANNELS.SETTINGS.UPDATE, async (_event, data: Partial<Settings>) => {
       const store = this.storeManager.getSettingsStore();
       
       // Deep merge the settings

@@ -23,13 +23,15 @@ export class WindowManager {
     });
 
     // Load the renderer
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' || process.env.VITE_DEV_SERVER_URL) {
       // In development, load from Vite dev server
-      this.mainWindow.loadURL('http://localhost:5173');
+      const devServerUrl = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
+      this.mainWindow.loadURL(devServerUrl);
       this.mainWindow.webContents.openDevTools();
     } else {
       // In production, load from built files
-      this.mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+      // dist/main/index.js -> dist/renderer/index.html
+      this.mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
     }
 
     // Show window when ready
