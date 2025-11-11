@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useStore } from './store/useStore';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { AppDock } from './components/AppDock/AppDock';
 import { WorkspaceSwitcher } from './components/Workspace/WorkspaceSwitcher';
 import { EmptyState } from './components/Common/EmptyState';
@@ -14,6 +15,9 @@ function App() {
     loadWorkspaces,
     setLoading,
   } = useStore();
+
+  // Enable keyboard shortcuts
+  useKeyboardShortcuts();
 
   useEffect(() => {
     const initializeApp = async () => {

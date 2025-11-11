@@ -8,69 +8,69 @@ This roadmap outlines the development phases for Dockyard, a flexible, open-sour
 
 **Goal:** Establish core architecture and deliver minimum viable product with essential features.
 
-### Milestone 1.1: Project Setup & Architecture
+### Milestone 1.1: Project Setup & Architecture ✅
 - [x] Initialize Electron + TypeScript project structure
-- [ ] Set up Vite + React for renderer process
-- [ ] Configure TypeScript strict mode and tsconfig
-- [ ] Implement modular folder structure (`main/`, `renderer/`, `preload/`, `shared/`)
-- [ ] Set up TailwindCSS for styling
-- [ ] Configure Framer Motion for animations
-- [ ] Set up electron-store for local persistence
-- [ ] Create build and dev scripts
-- [ ] Set up linting (ESLint) and formatting (Prettier)
+- [x] Set up Vite + React for renderer process
+- [x] Configure TypeScript strict mode and tsconfig
+- [x] Implement modular folder structure (`main/`, `renderer/`, `preload/`, `shared/`)
+- [x] Set up TailwindCSS for styling
+- [x] Configure Framer Motion for animations
+- [x] Set up electron-store for local persistence
+- [x] Create build and dev scripts
+- [x] Set up linting (ESLint) and formatting (Prettier)
 
-**Deliverables:**
-- Working dev environment with hot reload
-- Basic window management
-- TypeScript compilation pipeline
+**Deliverables:** ✅
+- ✅ Working dev environment with hot reload
+- ✅ Basic window management
+- ✅ TypeScript compilation pipeline
 
-### Milestone 1.2: Profile System
-- [ ] Design Profile data model and storage schema
-- [ ] Implement profile creation, deletion, and switching
+### Milestone 1.2: Profile System 🚧
+- [x] Design Profile data model and storage schema
+- [x] Implement profile creation, deletion, and switching
 - [ ] Create profile selector UI
-- [ ] Enable multi-instance launches with `--profile=<name>` flag
-- [ ] Implement profile-specific data stores
+- [x] Enable multi-instance launches with `--profile=<name>` flag (backend support)
+- [x] Implement profile-specific data stores
 - [ ] Build profile settings panel
 
 **Deliverables:**
-- Functional profile management
-- Ability to run multiple Dockyard instances simultaneously
+- ✅ Functional profile management (backend)
+- 🚧 Ability to run multiple Dockyard instances simultaneously
 
-### Milestone 1.3: Workspace Management
-- [ ] Design Workspace data model
-- [ ] Implement workspace CRUD operations
-- [ ] Create workspace switcher UI (sidebar/tabs)
+### Milestone 1.3: Workspace Management ✅
+- [x] Design Workspace data model
+- [x] Implement workspace CRUD operations
+- [x] Create workspace switcher UI (sidebar/tabs)
 - [ ] Implement quick-switch shortcut (Cmd/Ctrl+Tab)
-- [ ] Build workspace settings (name, icon, theme)
+- [x] Build workspace settings (name, icon, theme)
 - [ ] Add workspace import/export functionality
 
 **Deliverables:**
-- Working workspace organization system
-- Quick workspace navigation
+- ✅ Working workspace organization system
+- 🚧 Quick workspace navigation (UI complete, shortcuts pending)
 
-### Milestone 1.4: App Integration
-- [ ] Design App data model (name, URL, icon, settings)
-- [ ] Implement BrowserView/webview integration
-- [ ] Create app addition UI (custom URL + curated apps)
+### Milestone 1.4: App Integration ✅
+- [x] Design App data model (name, URL, icon, settings)
+- [x] Implement BrowserView integration
+- [x] Create app addition UI (custom URL + curated apps)
 - [ ] Implement favicon fetching for custom apps
-- [ ] Build app list management (add, edit, remove)
-- [ ] Create app dock UI with icon display
-- [ ] Implement app switching and loading states
+- [x] Build app list management (add, edit, remove)
+- [x] Create app dock UI with icon display
+- [x] Implement app switching and loading states
 
 **Deliverables:**
-- Functional app embedding and navigation
-- Custom app addition capability
+- ✅ Functional app embedding and navigation
+- ✅ Custom app addition capability
 
-### Milestone 1.5: Session Isolation
-- [ ] Implement partition-based session isolation
-- [ ] Create unique partitions per app instance
-- [ ] Add workspace-shared session option
+### Milestone 1.5: Session Isolation ✅
+- [x] Implement partition-based session isolation
+- [x] Create unique partitions per app instance
+- [x] Add workspace-shared session option
 - [ ] Build session management UI (clear cache/cookies)
-- [ ] Implement multiple app instances with separate sessions
+- [x] Implement multiple app instances with separate sessions
 
 **Deliverables:**
-- Isolated sessions for privacy and multi-account support
-- Session management controls
+- ✅ Isolated sessions for privacy and multi-account support
+- 🚧 Session management controls (backend ready, UI pending)
 
 ---
 
