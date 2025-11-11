@@ -1,0 +1,81 @@
+import { create } from 'zustand';
+import { App } from '../../../shared/types';
+
+interface AppStore {
+  apps: App[];
+  loading: boolean;
+  error: string | null;
+
+  // Actions
+  loadApps: () => Promise<void>;
+  createApp: (data: Partial<App>) => Promise<void>;
+  updateApp: (id: string, data: Partial<App>) => Promise<void>;
+  deleteApp: (id: string) => Promise<void>;
+  hibernateApp: (id: string) => Promise<void>;
+  resumeApp: (id: string) => Promise<void>;
+}
+
+export const useAppStore = create<AppStore>((set, get) => ({
+  apps: [],
+  loading: false,
+  error: null,
+
+  loadApps: async () => {
+    set({ loading: true, error: null });
+    try {
+      const apps = await window.dockyard.apps.list();
+      set({ apps, loading: false });
+    } catch (error: any) {
+      set({ error: error.message, loading: false });
+    }
+  },
+
+  createApp: async (data: Partial<App>) => {
+    set({ loading: true, error: null });
+    try {
+      const newApp = await window.dockyard.apps.create(data);
+      const apps = [...get().apps, newApp];
+      set({ apps, loading: false });
+    } catch (error: any) {
+      set({ error: error.message, loading: false });
+    }
+  },
+
+  updateApp: async (id: string, data: Partial<App>) => {
+    set({ loading: true, error: null });
+    try {
+      const updatedApp = await window.dockyard.apps.update(id, data);
+      const apps = get().apps.map(a => a.id === id ? updatedApp : a);
+      set({ apps, loading: false });
+    } catch (error: any) {
+      set({ error: error.message, loading: false });
+    }
+  },
+
+  deleteApp: async (id: string) => {
+    set({ loading: true, error: null });
+    try {
+      await window.dockyard.apps.delete(id);
+      const apps = get().apps.filter(a => a.id !== id);
+      set({ apps, loading: false });
+    } catch (error: any) {
+      set({ error: error.message, loading: false });
+    }
+  },
+
+  hibernateApp: async (id: string) => {
+    try {
+      await window.dockyard.apps.hibernate(id);
+    } catch (error: any) {
+      set({ error: error.message });
+    }
+  },
+
+  resumeApp: async (id: string) => {
+    try {
+      await window.dockyard.apps.resume(id);
+    } catch (error: any) {
+      set({ error: error.message });
+    }
+  },
+}));
