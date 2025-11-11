@@ -72,6 +72,28 @@ npm start
 
 Builds and runs the production version of the app.
 
+### Build Distributables
+
+To create platform-specific installers and packages:
+
+```bash
+# Package the app (creates distributable but not installer)
+npm run package
+
+# Create platform-specific installers (DMG for macOS, EXE for Windows, DEB/RPM for Linux)
+npm run make
+
+# Publish to GitHub Releases (requires GitHub token)
+npm run publish
+```
+
+The `make` command creates installers in the `out/make/` directory:
+- **macOS**: `.zip` and potentially `.dmg` files
+- **Windows**: `.exe` (Squirrel) installer
+- **Linux**: `.deb` (Debian/Ubuntu) and `.rpm` (Red Hat/Fedora) packages
+
+Configuration for these builds is in `forge.config.js`.
+
 ### Code Quality
 
 ```bash
