@@ -1,3 +1,9 @@
+/**
+ * Dock Component
+ * Displays app icons in a customizable dock (top, bottom, left, or right)
+ * Single Responsibility: App icon display and interaction
+ */
+
 import { App } from '../../../../shared/types/app';
 
 interface DockProps {
@@ -10,6 +16,9 @@ interface DockProps {
   onAddApp: () => void;
 }
 
+/**
+ * Dock component that displays app icons with configurable positioning
+ */
 export function Dock({
   apps,
   position,
@@ -62,6 +71,9 @@ interface DockIconProps {
   onContextMenu: (e: React.MouseEvent) => void;
 }
 
+/**
+ * Individual dock icon component with tooltip and instance badge
+ */
 function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
   return (
     <div className="relative group">
