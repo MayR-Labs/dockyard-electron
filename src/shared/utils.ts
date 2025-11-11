@@ -1,10 +1,15 @@
-import { randomBytes } from 'crypto';
-
 /**
  * Generate a unique ID
+ * Browser and Node.js compatible version
  */
 export function generateId(): string {
-  return randomBytes(16).toString('hex');
+  // Use browser's crypto API if available, otherwise fallback
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  
+  // Fallback: timestamp + random string
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 }
 
 /**

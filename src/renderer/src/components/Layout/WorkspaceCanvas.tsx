@@ -1,4 +1,11 @@
+/**
+ * Workspace Canvas Component
+ * Displays the main workspace area with app tiles
+ * Single Responsibility: Workspace content display
+ */
+
 import { App } from '../../../../shared/types/app';
+import { NavigationControls } from '../AppControls/NavigationControls';
 
 interface WorkspaceCanvasProps {
   apps: App[];
@@ -42,6 +49,13 @@ interface AppTileProps {
 function AppTile({ app, isActive, onSelect }: AppTileProps) {
   if (!isActive) return null;
 
+  // Placeholder handlers for navigation controls
+  // These will be connected to BrowserView in Phase 2.3
+  const handleBack = () => console.log('Navigate back');
+  const handleForward = () => console.log('Navigate forward');
+  const handleReload = () => console.log('Reload');
+  const handleHome = () => console.log('Navigate home');
+
   return (
     <div 
       className="absolute inset-0 flex flex-col bg-gray-900"
@@ -50,19 +64,33 @@ function AppTile({ app, isActive, onSelect }: AppTileProps) {
       {/* Micro-toolbar */}
       <div className="h-10 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          {app.icon && (
-            <img src={app.icon} alt={app.name} className="w-5 h-5 rounded" />
-          )}
-          <span className="text-sm font-medium text-gray-300">{app.name}</span>
-          {app.instances.length > 1 && (
-            <select className="text-xs bg-gray-700 text-gray-300 rounded px-2 py-1 border border-gray-600">
-              {app.instances.map((instance, idx) => (
-                <option key={instance.id} value={instance.id}>
-                  {instance.name || `Instance ${idx + 1}`}
-                </option>
-              ))}
-            </select>
-          )}
+          {/* Navigation Controls */}
+          <NavigationControls
+            canGoBack={false}
+            canGoForward={false}
+            isLoading={false}
+            onBack={handleBack}
+            onForward={handleForward}
+            onReload={handleReload}
+            onHome={handleHome}
+          />
+          
+          {/* App Info */}
+          <div className="flex items-center gap-2 ml-2 border-l border-gray-700 pl-3">
+            {app.icon && (
+              <img src={app.icon} alt={app.name} className="w-5 h-5 rounded" />
+            )}
+            <span className="text-sm font-medium text-gray-300">{app.name}</span>
+            {app.instances.length > 1 && (
+              <select className="text-xs bg-gray-700 text-gray-300 rounded px-2 py-1 border border-gray-600">
+                {app.instances.map((instance, idx) => (
+                  <option key={instance.id} value={instance.id}>
+                    {instance.name || `Instance ${idx + 1}`}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
         </div>
         
         <div className="flex items-center gap-2">
@@ -92,8 +120,11 @@ function AppTile({ app, isActive, onSelect }: AppTileProps) {
           <div className="text-4xl mb-4">🌐</div>
           <h3 className="text-xl font-semibold text-gray-700 mb-2">{app.name}</h3>
           <p className="text-gray-500 text-sm mb-4">{app.url}</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-400 mb-2">
             App embedding will be implemented with BrowserView
+          </p>
+          <p className="text-xs text-gray-500">
+            Navigation controls are ready for BrowserView integration
           </p>
         </div>
       </div>
