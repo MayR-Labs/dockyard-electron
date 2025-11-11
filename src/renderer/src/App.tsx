@@ -1,25 +1,45 @@
+/**
+ * Main App Component
+ * Orchestrates the application layout and state
+ * Refactored to follow SOLID principles with proper separation of concerns
+ */
+
 import { useEffect, useState } from 'react';
 import { useWorkspaceStore } from './store/workspaces';
 import { useAppStore } from './store/apps';
 import { useSettingsStore } from './store/settings';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { WindowChrome } from './components/Layout/WindowChrome';
 import { Sidebar } from './components/Layout/Sidebar';
 import { Dock } from './components/Layout/Dock';
 import { WorkspaceCanvas } from './components/Layout/WorkspaceCanvas';
 import { StatusBar } from './components/Layout/StatusBar';
 import { AddAppModal } from './components/Modals/AddAppModal';
+import { EditAppModal } from './components/Modals/EditAppModal';
 import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal';
+import { CreateInstanceModal } from './components/Modals/CreateInstanceModal';
 import { AppContextMenu } from './components/ContextMenu/AppContextMenu';
+import { App as AppType, AppInstance } from '../../shared/types/app';
 
 function App() {
+  // Store hooks
   const { loadWorkspaces, workspaces, activeWorkspaceId, setActiveWorkspace, createWorkspace } = useWorkspaceStore();
-  const { loadApps, apps, createApp, deleteApp, hibernateApp } = useAppStore();
+  const { loadApps, apps, createApp, updateApp, deleteApp, hibernateApp } = useAppStore();
   const { loadSettings, settings, updateSettings } = useSettingsStore();
+  
+  // UI state
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
+  
+  // Modal state
   const [isAddAppModalOpen, setIsAddAppModalOpen] = useState(false);
+  const [isEditAppModalOpen, setIsEditAppModalOpen] = useState(false);
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
+  const [isCreateInstanceModalOpen, setIsCreateInstanceModalOpen] = useState(false);
+  const [selectedApp, setSelectedApp] = useState<AppType | null>(null);
+  
+  // Context menu state
   const [contextMenu, setContextMenu] = useState<{
     appId: string;
     appName: string;
@@ -53,7 +73,7 @@ function App() {
     }
   }, [workspaces, activeWorkspaceId, setActiveWorkspace]);
 
-  // Define handleToggleDnd before the useEffect that uses it
+  // Handlers
   const handleToggleDnd = () => {
     if (settings) {
       updateSettings({
@@ -65,43 +85,42 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    // Keyboard shortcuts
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const isMod = e.metaKey || e.ctrlKey; // Cmd on Mac, Ctrl on Windows/Linux
-
-      // Quick Launcher: Cmd/Ctrl+Space
-      if (isMod && e.code === 'Space') {
-        e.preventDefault();
+  // Keyboard shortcuts using custom hook
+  useKeyboardShortcuts([
+    // Quick Launcher: Cmd/Ctrl+Space
+    {
+      key: 'Space',
+      modifier: 'ctrlOrMeta',
+      action: () => {
         // TODO: Implement quick launcher
         console.log('Quick launcher shortcut triggered');
-      }
-
-      // Toggle Sidebar: Cmd/Ctrl+B
-      if (isMod && e.code === 'KeyB') {
-        e.preventDefault();
-        setIsSidebarOpen(prev => !prev);
-      }
-
-      // Toggle DND: Cmd/Ctrl+Shift+D
-      if (isMod && e.shiftKey && e.code === 'KeyD') {
-        e.preventDefault();
-        handleToggleDnd();
-      }
-
-      // Switch Workspace: Cmd/Ctrl+1-9
-      if (isMod && !e.shiftKey && e.code.startsWith('Digit')) {
-        const num = parseInt(e.code.replace('Digit', ''));
-        if (num >= 1 && num <= workspaces.length) {
-          e.preventDefault();
-          setActiveWorkspace(workspaces[num - 1].id);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [workspaces, setActiveWorkspace, handleToggleDnd, settings, updateSettings]);
+      },
+      description: 'Open quick launcher',
+    },
+    // Toggle Sidebar: Cmd/Ctrl+B
+    {
+      key: 'KeyB',
+      modifier: 'ctrlOrMeta',
+      action: () => setIsSidebarOpen(prev => !prev),
+      description: 'Toggle sidebar',
+    },
+    // Toggle DND: Cmd/Ctrl+Shift+D
+    {
+      key: 'KeyD',
+      modifier: 'ctrlOrMeta',
+      shiftKey: true,
+      action: handleToggleDnd,
+      description: 'Toggle Do Not Disturb',
+    },
+    // Workspace switching: Cmd/Ctrl+1-9
+    ...workspaces.slice(0, 9).map((workspace, index) => ({
+      key: `Digit${index + 1}`,
+      modifier: 'ctrlOrMeta' as const,
+      shiftKey: false,
+      action: () => setActiveWorkspace(workspace.id),
+      description: `Switch to workspace ${index + 1}`,
+    })),
+  ]);
 
   const activeWorkspace = workspaces.find(w => w.id === activeWorkspaceId);
   const workspaceApps = apps.filter(app => app.workspaceId === activeWorkspaceId);
@@ -134,6 +153,36 @@ function App() {
       icon: appData.icon,
       workspaceId: activeWorkspaceId,
     });
+  };
+
+  const handleUpdateApp = async (id: string, data: Partial<AppType>) => {
+    await updateApp(id, data);
+  };
+
+  const handleCreateInstance = async (appId: string, instance: AppInstance) => {
+    const app = apps.find(a => a.id === appId);
+    if (!app) return;
+
+    // Add the new instance to the app
+    await updateApp(appId, {
+      instances: [...app.instances, instance],
+    });
+  };
+
+  const handleOpenSettings = (appId: string) => {
+    const app = apps.find(a => a.id === appId);
+    if (app) {
+      setSelectedApp(app);
+      setIsEditAppModalOpen(true);
+    }
+  };
+
+  const handleOpenNewInstance = (appId: string) => {
+    const app = apps.find(a => a.id === appId);
+    if (app) {
+      setSelectedApp(app);
+      setIsCreateInstanceModalOpen(true);
+    }
   };
 
   if (isLoading) {
@@ -275,10 +324,28 @@ function App() {
         onClose={() => setIsAddAppModalOpen(false)}
         onAddApp={handleAddApp}
       />
+      <EditAppModal
+        isOpen={isEditAppModalOpen}
+        app={selectedApp}
+        onClose={() => {
+          setIsEditAppModalOpen(false);
+          setSelectedApp(null);
+        }}
+        onUpdateApp={handleUpdateApp}
+      />
       <CreateWorkspaceModal
         isOpen={isCreateWorkspaceModalOpen}
         onClose={() => setIsCreateWorkspaceModalOpen(false)}
         onCreateWorkspace={handleCreateWorkspace}
+      />
+      <CreateInstanceModal
+        isOpen={isCreateInstanceModalOpen}
+        app={selectedApp}
+        onClose={() => {
+          setIsCreateInstanceModalOpen(false);
+          setSelectedApp(null);
+        }}
+        onCreateInstance={handleCreateInstance}
       />
 
       {/* Context Menu */}
@@ -290,12 +357,10 @@ function App() {
           appName={contextMenu.appName}
           onClose={() => setContextMenu(null)}
           onNewInstance={() => {
-            console.log('Create new instance for:', contextMenu.appId);
-            // TODO: Implement instance creation
+            handleOpenNewInstance(contextMenu.appId);
           }}
           onSettings={() => {
-            console.log('Open settings for:', contextMenu.appId);
-            // TODO: Implement app settings
+            handleOpenSettings(contextMenu.appId);
           }}
           onHibernate={() => {
             hibernateApp(contextMenu.appId);

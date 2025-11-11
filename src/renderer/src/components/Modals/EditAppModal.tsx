@@ -1,25 +1,35 @@
-import { useState } from 'react';
+/**
+ * Edit App Modal Component
+ * Allows editing app properties
+ * Single Responsibility: App editing UI
+ */
 
-interface AddAppModalProps {
+import { useState, useEffect } from 'react';
+import { App } from '../../../../shared/types/app';
+
+interface EditAppModalProps {
   isOpen: boolean;
-  workspaceId: string;
+  app: App | null;
   onClose: () => void;
-  onAddApp: (appData: {
-    name: string;
-    url: string;
-    icon?: string;
-    customCSS?: string;
-    customJS?: string;
-  }) => Promise<void>;
+  onUpdateApp: (id: string, data: Partial<App>) => Promise<void>;
 }
 
-export function AddAppModal({ isOpen, workspaceId, onClose, onAddApp }: AddAppModalProps) {
+export function EditAppModal({ isOpen, app, onClose, onUpdateApp }: EditAppModalProps) {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
+  const [icon, setIcon] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (app) {
+      setName(app.name);
+      setUrl(app.url);
+      setIcon(app.icon || '');
+    }
+  }, [app]);
+
+  if (!isOpen || !app) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,23 +51,15 @@ export function AddAppModal({ isOpen, workspaceId, onClose, onAddApp }: AddAppMo
     setIsSubmitting(true);
     try {
       const normalizedUrl = url.startsWith('http') ? url : `https://${url}`;
-      
-      // Try to fetch favicon automatically
-      const { getFaviconUrl } = await import('../../utils/favicon');
-      const faviconUrl = getFaviconUrl(normalizedUrl);
-      
-      await onAddApp({
+      await onUpdateApp(app.id, {
         name: name.trim(),
         url: normalizedUrl,
-        icon: faviconUrl,
+        icon: icon || undefined,
       });
       
-      // Reset form and close
-      setName('');
-      setUrl('');
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add app');
+      setError(err instanceof Error ? err.message : 'Failed to update app');
     } finally {
       setIsSubmitting(false);
     }
@@ -77,7 +79,7 @@ export function AddAppModal({ isOpen, workspaceId, onClose, onAddApp }: AddAppMo
       <div className="bg-gray-900 rounded-2xl border border-gray-800 w-full max-w-md p-6 shadow-2xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white">Add App</h2>
+          <h2 className="text-2xl font-bold text-white">Edit App</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-800 rounded-lg transition"
@@ -116,8 +118,22 @@ export function AddAppModal({ isOpen, workspaceId, onClose, onAddApp }: AddAppMo
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               disabled={isSubmitting}
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Icon URL (Optional)
+            </label>
+            <input
+              type="text"
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
+              placeholder="https://example.com/icon.png"
+              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              disabled={isSubmitting}
+            />
             <p className="mt-1 text-xs text-gray-500">
-              Enter a domain or full URL. HTTPS will be added automatically.
+              Leave empty to use the default favicon
             </p>
           </div>
 
@@ -142,40 +158,11 @@ export function AddAppModal({ isOpen, workspaceId, onClose, onAddApp }: AddAppMo
               className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Adding...' : 'Add App'}
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>
-
-        {/* Quick Templates */}
-        <div className="mt-6 pt-6 border-t border-gray-800">
-          <p className="text-xs font-medium text-gray-400 mb-3">Popular Apps</p>
-          <div className="grid grid-cols-3 gap-2">
-            {POPULAR_APPS.map((app) => (
-              <button
-                key={app.name}
-                onClick={() => {
-                  setName(app.name);
-                  setUrl(app.url);
-                }}
-                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs text-gray-300 transition"
-                disabled={isSubmitting}
-              >
-                {app.name}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );
 }
-
-const POPULAR_APPS = [
-  { name: 'Gmail', url: 'https://mail.google.com' },
-  { name: 'Slack', url: 'https://app.slack.com' },
-  { name: 'GitHub', url: 'https://github.com' },
-  { name: 'Notion', url: 'https://notion.so' },
-  { name: 'Discord', url: 'https://discord.com/app' },
-  { name: 'Trello', url: 'https://trello.com' },
-];

@@ -1,3 +1,9 @@
+/**
+ * Sidebar Component
+ * Displays workspace list with navigation and creation controls
+ * Single Responsibility: Workspace navigation UI
+ */
+
 import { Workspace } from '../../../../shared/types/workspace';
 
 interface SidebarProps {
@@ -9,6 +15,9 @@ interface SidebarProps {
   onCreateWorkspace: () => void;
 }
 
+/**
+ * Collapsible sidebar for workspace management
+ */
 export function Sidebar({
   workspaces,
   activeWorkspaceId,

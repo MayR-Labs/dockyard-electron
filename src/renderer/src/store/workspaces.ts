@@ -1,5 +1,12 @@
+/**
+ * Workspace Store
+ * Manages workspace state using Zustand
+ * Follows Single Responsibility Principle - only handles state management
+ */
+
 import { create } from 'zustand';
 import { Workspace } from '../../../shared/types';
+import { workspaceAPI } from '../services/api';
 
 interface WorkspaceStore {
   workspaces: Workspace[];
@@ -24,8 +31,8 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
   loadWorkspaces: async () => {
     set({ loading: true, error: null });
     try {
-      const workspaces = await window.dockyard.workspaces.list();
-      const activeWorkspace = await window.dockyard.workspaces.getActive();
+      const workspaces = await workspaceAPI.list();
+      const activeWorkspace = await workspaceAPI.getActive();
       set({ 
         workspaces, 
         activeWorkspaceId: activeWorkspace?.id || null,
@@ -38,7 +45,7 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
 
   setActiveWorkspace: async (id: string) => {
     try {
-      await window.dockyard.workspaces.switch(id);
+      await workspaceAPI.switch(id);
       set({ activeWorkspaceId: id });
     } catch (error: any) {
       set({ error: error.message });
@@ -48,7 +55,7 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
   createWorkspace: async (data: Partial<Workspace>) => {
     set({ loading: true, error: null });
     try {
-      const newWorkspace = await window.dockyard.workspaces.create(data);
+      const newWorkspace = await workspaceAPI.create(data);
       const workspaces = [...get().workspaces, newWorkspace];
       set({ workspaces, loading: false });
     } catch (error: any) {
@@ -59,7 +66,7 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
   updateWorkspace: async (id: string, data: Partial<Workspace>) => {
     set({ loading: true, error: null });
     try {
-      const updatedWorkspace = await window.dockyard.workspaces.update(id, data);
+      const updatedWorkspace = await workspaceAPI.update(id, data);
       const workspaces = get().workspaces.map(w => 
         w.id === id ? updatedWorkspace : w
       );
@@ -72,7 +79,7 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
   deleteWorkspace: async (id: string) => {
     set({ loading: true, error: null });
     try {
-      await window.dockyard.workspaces.delete(id);
+      await workspaceAPI.delete(id);
       const workspaces = get().workspaces.filter(w => w.id !== id);
       set({ workspaces, loading: false });
     } catch (error: any) {

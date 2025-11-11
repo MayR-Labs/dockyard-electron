@@ -1,3 +1,9 @@
+/**
+ * App Context Menu Component
+ * Right-click context menu for app actions
+ * Single Responsibility: Context menu UI and interactions
+ */
+
 import { useEffect, useRef } from 'react';
 
 interface AppContextMenuProps {
@@ -12,6 +18,9 @@ interface AppContextMenuProps {
   onDelete: () => void;
 }
 
+/**
+ * Context menu with app-related actions (new instance, settings, hibernate, delete)
+ */
 export function AppContextMenu({
   x,
   y,
