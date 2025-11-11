@@ -2,7 +2,7 @@
   "name": "dockyard-electron",
   "version": "1.0.0",
   "description": "A flexible, open-source multi-app workspace built for power users.",
-  "main": "out/main/index.js",
+  "main": "out/main/main/index.js",
   "scripts": {
     "dev": "vite",
     "build:renderer": "tsc && vite build",
