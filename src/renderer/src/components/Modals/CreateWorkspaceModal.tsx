@@ -17,10 +17,28 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreateWorkspace }: Cre
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    // Reset state when modal is closed
+    if (isSubmitting || error || name) {
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setError('');
+        setName('');
+        setSessionMode('isolated');
+        setDockPosition('left');
+      }, 0);
+    }
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent double submission
+    if (isSubmitting) {
+      return;
+    }
+    
     setError('');
     
     if (!name.trim()) {
@@ -43,7 +61,6 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreateWorkspace }: Cre
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create workspace');
-    } finally {
       setIsSubmitting(false);
     }
   };

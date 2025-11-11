@@ -56,8 +56,14 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const newWorkspace = await workspaceAPI.create(data);
-      const workspaces = [...get().workspaces, newWorkspace];
-      set({ workspaces, loading: false });
+      // Reload workspaces from storage to ensure consistency
+      const workspaces = await workspaceAPI.list();
+      const activeWorkspace = await workspaceAPI.getActive();
+      set({ 
+        workspaces, 
+        activeWorkspaceId: activeWorkspace?.id || newWorkspace.id,
+        loading: false 
+      });
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
@@ -66,10 +72,9 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
   updateWorkspace: async (id: string, data: Partial<Workspace>) => {
     set({ loading: true, error: null });
     try {
-      const updatedWorkspace = await workspaceAPI.update(id, data);
-      const workspaces = get().workspaces.map(w => 
-        w.id === id ? updatedWorkspace : w
-      );
+      await workspaceAPI.update(id, data);
+      // Reload workspaces from storage to ensure consistency
+      const workspaces = await workspaceAPI.list();
       set({ workspaces, loading: false });
     } catch (error: any) {
       set({ error: error.message, loading: false });
@@ -80,8 +85,14 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       await workspaceAPI.delete(id);
-      const workspaces = get().workspaces.filter(w => w.id !== id);
-      set({ workspaces, loading: false });
+      // Reload workspaces from storage to ensure consistency
+      const workspaces = await workspaceAPI.list();
+      const activeWorkspace = await workspaceAPI.getActive();
+      set({ 
+        workspaces, 
+        activeWorkspaceId: activeWorkspace?.id || null,
+        loading: false 
+      });
     } catch (error: any) {
       set({ error: error.message, loading: false });
     }
