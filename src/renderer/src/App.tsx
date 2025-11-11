@@ -9,16 +9,23 @@ import { WorkspaceCanvas } from './components/Layout/WorkspaceCanvas';
 import { StatusBar } from './components/Layout/StatusBar';
 import { AddAppModal } from './components/Modals/AddAppModal';
 import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal';
+import { AppContextMenu } from './components/ContextMenu/AppContextMenu';
 
 function App() {
   const { loadWorkspaces, workspaces, activeWorkspaceId, setActiveWorkspace, createWorkspace } = useWorkspaceStore();
-  const { loadApps, apps, createApp } = useAppStore();
+  const { loadApps, apps, createApp, deleteApp, hibernateApp } = useAppStore();
   const { loadSettings, settings, updateSettings } = useSettingsStore();
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
   const [isAddAppModalOpen, setIsAddAppModalOpen] = useState(false);
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{
+    appId: string;
+    appName: string;
+    x: number;
+    y: number;
+  } | null>(null);
 
   useEffect(() => {
     // Load all data on startup
@@ -206,7 +213,15 @@ function App() {
               onAppClick={setActiveAppId}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();
-                console.log('Context menu for app:', appId);
+                const app = workspaceApps.find(a => a.id === appId);
+                if (app) {
+                  setContextMenu({
+                    appId,
+                    appName: app.name,
+                    x: e.clientX,
+                    y: e.clientY,
+                  });
+                }
               }}
               onAddApp={() => setIsAddAppModalOpen(true)}
             />
@@ -229,7 +244,15 @@ function App() {
               onAppClick={setActiveAppId}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();
-                console.log('Context menu for app:', appId);
+                const app = workspaceApps.find(a => a.id === appId);
+                if (app) {
+                  setContextMenu({
+                    appId,
+                    appName: app.name,
+                    x: e.clientX,
+                    y: e.clientY,
+                  });
+                }
               }}
               onAddApp={() => setIsAddAppModalOpen(true)}
             />
@@ -256,6 +279,34 @@ function App() {
         onClose={() => setIsCreateWorkspaceModalOpen(false)}
         onCreateWorkspace={handleCreateWorkspace}
       />
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <AppContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          appId={contextMenu.appId}
+          appName={contextMenu.appName}
+          onClose={() => setContextMenu(null)}
+          onNewInstance={() => {
+            console.log('Create new instance for:', contextMenu.appId);
+            // TODO: Implement instance creation
+          }}
+          onSettings={() => {
+            console.log('Open settings for:', contextMenu.appId);
+            // TODO: Implement app settings
+          }}
+          onHibernate={() => {
+            hibernateApp(contextMenu.appId);
+          }}
+          onDelete={async () => {
+            await deleteApp(contextMenu.appId);
+            if (activeAppId === contextMenu.appId) {
+              setActiveAppId(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
