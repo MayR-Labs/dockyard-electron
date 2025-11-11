@@ -2,6 +2,9 @@ import { app, BrowserWindow } from 'electron';
 import { WindowManager } from './window-manager';
 import { ProfileManager } from './profile-manager';
 import { AppManager } from './app-manager';
+import { HibernationManager } from './hibernation-manager';
+import { NotificationManager } from './notification-manager';
+import { PerformanceMonitor } from './performance-monitor';
 import { setupIPCHandlers } from './ipc-handlers';
 
 // Handle Squirrel events on Windows
@@ -12,6 +15,9 @@ if (require('electron-squirrel-startup')) {
 let windowManager: WindowManager;
 let profileManager: ProfileManager;
 let appManager: AppManager;
+let hibernationManager: HibernationManager;
+let notificationManager: NotificationManager;
+let performanceMonitor: PerformanceMonitor;
 
 // Parse command line arguments for profile
 const args = process.argv.slice(1);
@@ -32,8 +38,25 @@ const createWindow = (): void => {
   const mainWindow = windowManager.createMainWindow();
   appManager.setMainWindow(mainWindow);
 
+  // Initialize Phase 2 managers
+  hibernationManager = new HibernationManager(appManager, profileManager);
+  notificationManager = new NotificationManager(profileManager);
+  performanceMonitor = new PerformanceMonitor(appManager);
+
+  // Start hibernation and performance monitoring if enabled
+  if (profile.settings.autoHibernate) {
+    hibernationManager.start();
+  }
+  performanceMonitor.start();
+
   // Setup IPC handlers
-  setupIPCHandlers(profileManager, appManager);
+  setupIPCHandlers(
+    profileManager,
+    appManager,
+    hibernationManager,
+    notificationManager,
+    performanceMonitor
+  );
 
   // Create default workspace if none exist
   const workspaces = profileManager.getWorkspacesByProfile(profile.id);
@@ -58,6 +81,14 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
+  // Cleanup managers
+  if (hibernationManager) {
+    hibernationManager.stop();
+  }
+  if (performanceMonitor) {
+    performanceMonitor.stop();
+  }
+  
   if (process.platform !== 'darwin') {
     app.quit();
   }

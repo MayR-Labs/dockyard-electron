@@ -1,11 +1,17 @@
 import { ipcMain } from 'electron';
 import { ProfileManager } from './profile-manager';
 import { AppManager } from './app-manager';
+import { HibernationManager } from './hibernation-manager';
+import { NotificationManager } from './notification-manager';
+import { PerformanceMonitor } from './performance-monitor';
 import { IPC_CHANNELS } from '../shared/types';
 
 export function setupIPCHandlers(
   profileManager: ProfileManager,
-  appManager: AppManager
+  appManager: AppManager,
+  hibernationManager?: HibernationManager,
+  notificationManager?: NotificationManager,
+  performanceMonitor?: PerformanceMonitor
 ): void {
   // Profile operations
   ipcMain.handle(IPC_CHANNELS.PROFILE_GET, () => {
@@ -126,6 +132,83 @@ export function setupIPCHandlers(
     }
 
     appManager.showAppView(appId);
+    
+    // Track activity for hibernation
+    if (hibernationManager) {
+      hibernationManager.trackActivity(appId);
+    }
+    
     return app;
   });
+
+  // Phase 2: Hibernation handlers
+  if (hibernationManager) {
+    ipcMain.handle(IPC_CHANNELS.HIBERNATION_GET_CONFIG, () => {
+      return hibernationManager.getConfig();
+    });
+
+    ipcMain.handle(IPC_CHANNELS.HIBERNATION_UPDATE_CONFIG, (_event, config: any) => {
+      hibernationManager.updateConfig(config);
+      return hibernationManager.getConfig();
+    });
+
+    ipcMain.handle(IPC_CHANNELS.HIBERNATION_GET_INACTIVE, () => {
+      return hibernationManager.getInactiveApps();
+    });
+
+    ipcMain.handle(IPC_CHANNELS.HIBERNATION_START, () => {
+      hibernationManager.start();
+    });
+
+    ipcMain.handle(IPC_CHANNELS.HIBERNATION_STOP, () => {
+      hibernationManager.stop();
+    });
+  }
+
+  // Phase 2: Notification handlers
+  if (notificationManager) {
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_SHOW, (_event, notification: any) => {
+      notificationManager.showNotification(notification);
+    });
+
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_GET_CONFIG, () => {
+      return notificationManager.getConfig();
+    });
+
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_UPDATE_CONFIG, (_event, config: any) => {
+      notificationManager.updateConfig(config);
+      return notificationManager.getConfig();
+    });
+
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_GET_BADGES, () => {
+      return Object.fromEntries(notificationManager.getAllBadgeCounts());
+    });
+
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_CLEAR_BADGE, (_event, appId: string) => {
+      notificationManager.clearBadge(appId);
+    });
+
+    ipcMain.handle(IPC_CHANNELS.NOTIFICATION_GET_HISTORY, () => {
+      return notificationManager.getNotificationHistory();
+    });
+  }
+
+  // Phase 2: Performance handlers
+  if (performanceMonitor) {
+    ipcMain.handle(IPC_CHANNELS.PERFORMANCE_GET_SNAPSHOT, () => {
+      return performanceMonitor.getCurrentSnapshot();
+    });
+
+    ipcMain.handle(IPC_CHANNELS.PERFORMANCE_GET_HISTORY, () => {
+      return performanceMonitor.getMetricsHistory();
+    });
+
+    ipcMain.handle(IPC_CHANNELS.PERFORMANCE_GET_APP_METRICS, (_event, appId: string) => {
+      return performanceMonitor.getAppMetrics(appId);
+    });
+
+    ipcMain.handle(IPC_CHANNELS.PERFORMANCE_GET_HIGH_MEMORY, (_event, thresholdMB?: number) => {
+      return performanceMonitor.getHighMemoryApps(thresholdMB);
+    });
+  }
 }
