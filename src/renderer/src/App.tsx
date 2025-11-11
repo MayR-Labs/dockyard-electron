@@ -46,6 +46,44 @@ function App() {
     }
   }, [workspaces, activeWorkspaceId, setActiveWorkspace]);
 
+  useEffect(() => {
+    // Keyboard shortcuts
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMod = e.metaKey || e.ctrlKey; // Cmd on Mac, Ctrl on Windows/Linux
+      
+      // Quick Launcher: Cmd/Ctrl+Space
+      if (isMod && e.code === 'Space') {
+        e.preventDefault();
+        // TODO: Implement quick launcher
+        console.log('Quick launcher shortcut triggered');
+      }
+      
+      // Toggle Sidebar: Cmd/Ctrl+B
+      if (isMod && e.code === 'KeyB') {
+        e.preventDefault();
+        setIsSidebarOpen(prev => !prev);
+      }
+      
+      // Toggle DND: Cmd/Ctrl+Shift+D
+      if (isMod && e.shiftKey && e.code === 'KeyD') {
+        e.preventDefault();
+        handleToggleDnd();
+      }
+      
+      // Switch Workspace: Cmd/Ctrl+1-9
+      if (isMod && !e.shiftKey && e.code.startsWith('Digit')) {
+        const num = parseInt(e.code.replace('Digit', ''));
+        if (num >= 1 && num <= workspaces.length) {
+          e.preventDefault();
+          setActiveWorkspace(workspaces[num - 1].id);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [workspaces, setActiveWorkspace, handleToggleDnd]);
+
   const activeWorkspace = workspaces.find(w => w.id === activeWorkspaceId);
   const workspaceApps = apps.filter(app => app.workspaceId === activeWorkspaceId);
 
