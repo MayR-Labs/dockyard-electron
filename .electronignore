@@ -1,0 +1,22 @@
+# Source files
+src/
+
+# Build scripts
+scripts/
+
+# Git
+.git/
+.github/
+
+# IDE
+.vscode/
+
+# Documentation
+*.md
+!README.md
+
+# Logs
+*.log
+
+# Cache
+node_modules/.cache/
