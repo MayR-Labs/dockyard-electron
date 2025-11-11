@@ -1,18 +1,15 @@
 const js = require('@eslint/js');
-const tseslint = require('@typescript-eslint/eslint-plugin');
-const tsparser = require('@typescript-eslint/parser');
 const eslintConfigPrettier = require('eslint-config-prettier');
 const globals = require('globals');
 
 module.exports = [
   js.configs.recommended,
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.js', '**/*.jsx'],
     languageOptions: {
-      parser: tsparser,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
       parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
         ecmaFeatures: {
           jsx: true,
         },
@@ -23,22 +20,8 @@ module.exports = [
         React: 'readonly',
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslint,
-    },
     rules: {
-      ...tseslint.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-require-imports': 'off',
-    },
-  },
-  {
-    files: ['**/*.js', '**/*.cjs'],
-    languageOptions: {
-      globals: {
-        ...globals.node,
-      },
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
   {
@@ -50,8 +33,8 @@ module.exports = [
       'eslint.config.js',
       '**/__tests__/**',
       '**/__mocks__/**',
-      '**/*.test.ts',
-      '**/*.spec.ts',
+      '**/*.test.js',
+      '**/*.spec.js',
     ],
   },
   eslintConfigPrettier,
