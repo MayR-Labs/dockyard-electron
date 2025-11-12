@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import { WindowManager } from './window-manager';
 import { StoreManager } from './store-manager';
 import { IPCHandlers } from './ipc-handlers';
+import { BrowserViewManager } from './browser-view-manager';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling
 if (require('electron-squirrel-startup')) {
@@ -12,6 +13,7 @@ if (require('electron-squirrel-startup')) {
 let windowManager: WindowManager;
 let storeManager: StoreManager;
 let ipcHandlers: IPCHandlers;
+let browserViewManager: BrowserViewManager;
 
 // Parse command line arguments for profile selection
 function parseProfileFromArgs(): string {
@@ -33,14 +35,20 @@ async function initialize() {
   storeManager = new StoreManager();
   storeManager.setCurrentProfile(profileName);
   
+  // Initialize browser view manager
+  browserViewManager = new BrowserViewManager();
+  
   // Initialize IPC handlers
-  ipcHandlers = new IPCHandlers(storeManager);
+  ipcHandlers = new IPCHandlers(storeManager, browserViewManager);
   
   // Initialize window manager
   windowManager = new WindowManager();
   
   // Create main window
-  windowManager.createMainWindow();
+  const mainWindow = windowManager.createMainWindow();
+  
+  // Set main window reference for browser view manager
+  browserViewManager.setMainWindow(mainWindow);
   
   // Update last accessed time for profile
   const rootStore = storeManager.getRootStore();
