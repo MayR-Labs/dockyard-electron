@@ -2,6 +2,8 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { IPC_CHANNELS, IPC_EVENTS } from '../shared/constants';
 import type { DockyardAPI } from '../shared/types/preload';
 
+console.log('🔧 Preload script is executing...');
+
 // Expose safe API to renderer process
 const dockyardAPI: DockyardAPI = {
   // Profile APIs
@@ -98,3 +100,6 @@ const dockyardAPI: DockyardAPI = {
 
 // Expose the API to the renderer process
 contextBridge.exposeInMainWorld('dockyard', dockyardAPI);
+
+console.log('✅ Dockyard API exposed to renderer via contextBridge');
+console.log('API includes:', Object.keys(dockyardAPI));

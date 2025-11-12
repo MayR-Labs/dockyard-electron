@@ -8,16 +8,28 @@ export class WindowManager {
    * Create the main application window
    */
   createMainWindow(): BrowserWindow {
+    const preloadPath = path.join(__dirname, '../preload/index.js');
+    console.log('Preload script path:', preloadPath);
+    console.log('__dirname:', __dirname);
+
+    // Check if preload file exists
+    const fs = require('fs');
+    if (fs.existsSync(preloadPath)) {
+      console.log('✓ Preload script found');
+    } else {
+      console.error('✗ Preload script NOT found at:', preloadPath);
+    }
+
     this.mainWindow = new BrowserWindow({
       width: 1200,
       height: 800,
       minWidth: 800,
       minHeight: 600,
       webPreferences: {
-        preload: path.join(__dirname, '../preload/index.js'),
+        preload: preloadPath,
         contextIsolation: true,
         nodeIntegration: false,
-        sandbox: true,
+        sandbox: false, // Temporarily disable sandbox to see if that's the issue
       },
       show: false, // Don't show until ready
     });

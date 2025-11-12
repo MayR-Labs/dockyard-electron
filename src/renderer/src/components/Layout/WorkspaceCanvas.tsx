@@ -24,9 +24,9 @@ interface WorkspaceCanvasProps {
   onUpdateApp?: (id: string, data: Partial<App>) => void;
 }
 
-export function WorkspaceCanvas({ 
-  apps, 
-  activeAppId, 
+export function WorkspaceCanvas({
+  apps,
+  activeAppId,
   onAppSelect,
   onAddSampleApps,
   onAddCustomApp,
@@ -37,7 +37,7 @@ export function WorkspaceCanvas({
 
   if (apps.length === 0) {
     return (
-      <QuickStartGuide 
+      <QuickStartGuide
         onAddSampleApps={onAddSampleApps || (() => {})}
         onAddCustomApp={onAddCustomApp || (() => {})}
       />
@@ -55,7 +55,7 @@ export function WorkspaceCanvas({
     if (!activeAppIds.includes(appId)) {
       const newIds = [...activeAppIds, appId];
       setActiveAppIds(newIds);
-      
+
       // Auto-switch to split layout if adding second app
       if (newIds.length === 2 && layoutMode === 'single') {
         setLayoutMode('split-horizontal');
@@ -73,7 +73,7 @@ export function WorkspaceCanvas({
             currentMode={layoutMode}
             onModeChange={(mode) => setLayoutMode(mode)}
           />
-          
+
           <div className="flex items-center gap-2 text-sm text-gray-400">
             <span>{activeAppIds.length} apps displayed</span>
           </div>
@@ -106,7 +106,7 @@ export function WorkspaceCanvas({
               }
             }}
           />
-          
+
           {apps.length > 1 && (
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-500">Add to layout:</span>
@@ -167,14 +167,58 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
     isLoading: false,
     url: app.url,
   });
+  const [isCreatingInstance, setIsCreatingInstance] = useState(false);
 
   // Get the first instance for now (TODO: handle multiple instances)
-  const instanceId = app.instances[0]?.id;
+  // Ensure the app has at least one instance
+  const instanceId = app.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
+
+  // Create a default instance if none exists
+  useEffect(() => {
+    const createInstance = async () => {
+      if (!instanceId && !isCreatingInstance && onUpdateApp && app.instances.length === 0) {
+        setIsCreatingInstance(true);
+        console.log('Creating default instance for app:', app.name);
+
+        // Generate a new instance
+        const newInstanceId = `inst-${Date.now()}`;
+        const newInstance = {
+          id: newInstanceId,
+          appId: app.id,
+          partitionId: `persist:app-${app.id}-${newInstanceId}`,
+          hibernated: false,
+          lastActive: new Date().toISOString(),
+        };
+
+        // Update the app with the new instance
+        try {
+          await onUpdateApp(app.id, {
+            instances: [newInstance],
+          });
+          console.log('Successfully created instance:', newInstanceId);
+        } catch (error) {
+          console.error('Failed to create default instance:', error);
+          setIsCreatingInstance(false);
+        }
+        // Don't set isCreatingInstance to false here - let the next render with updated app prop handle it
+      } else if (instanceId && isCreatingInstance) {
+        // Instance now exists, reset creating flag
+        setIsCreatingInstance(false);
+      }
+    };
+
+    createInstance();
+  }, [app, instanceId, isCreatingInstance, onUpdateApp]);
 
   // Poll navigation state
   useEffect(() => {
+    if (!window.dockyard?.browserView) {
+      console.warn('BrowserView API not available');
+      return;
+    }
+
     const interval = setInterval(async () => {
-      if (instanceId) {
+      if (instanceId && window.dockyard?.browserView) {
         try {
           const state = await window.dockyard.browserView.getState(app.id, instanceId);
           setNavigationState(state);
@@ -189,31 +233,31 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
 
   // Navigation handlers
   const handleBack = async () => {
-    if (instanceId) {
+    if (instanceId && window.dockyard?.browserView) {
       await window.dockyard.browserView.goBack(app.id, instanceId);
     }
   };
 
   const handleForward = async () => {
-    if (instanceId) {
+    if (instanceId && window.dockyard?.browserView) {
       await window.dockyard.browserView.goForward(app.id, instanceId);
     }
   };
 
   const handleReload = async () => {
-    if (instanceId) {
+    if (instanceId && window.dockyard?.browserView) {
       await window.dockyard.browserView.reload(app.id, instanceId);
     }
   };
 
   const handleHome = async () => {
-    if (instanceId) {
+    if (instanceId && window.dockyard?.browserView) {
       await window.dockyard.browserView.navigate(app.id, instanceId, app.url);
     }
   };
 
   const handleNavigate = async (url: string) => {
-    if (instanceId) {
+    if (instanceId && window.dockyard?.browserView) {
       await window.dockyard.browserView.navigate(app.id, instanceId, url);
     }
   };
@@ -230,7 +274,7 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
@@ -251,14 +295,14 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
             onReload={handleReload}
             onHome={handleHome}
           />
-          
+
           {/* URL Bar */}
           <URLBar
             url={navigationState.url || app.url}
             isLoading={navigationState.isLoading}
             onNavigate={handleNavigate}
           />
-          
+
           {/* App Info */}
           <div className="flex items-center gap-2 ml-2 border-l border-gray-700 pl-3">
             {app.icon && (
@@ -276,14 +320,14 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
             )}
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {/* Zoom Controls */}
           <ZoomControls
             zoomLevel={zoomLevel}
             onZoomChange={handleZoomChange}
           />
-          
+
           <button
             className="p-1 hover:bg-gray-700 rounded transition-colors"
             title="Settings"
@@ -303,7 +347,7 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
           </button>
         </div>
       </div>
-      
+
       {/* App content area - BrowserView Container */}
       <BrowserViewContainer app={app} instanceId={instanceId} />
     </motion.div>
@@ -320,9 +364,15 @@ function BrowserViewContainer({ app, instanceId }: { app: App; instanceId?: stri
   useEffect(() => {
     if (!instanceId) return;
 
+    // Check if window.dockyard is available
+    if (!window.dockyard || !window.dockyard.browserView) {
+      console.error('Dockyard API not available. Preload script may not be loaded.');
+      return;
+    }
+
     // Show the BrowserView when the container is mounted
     const updateBounds = () => {
-      if (containerRef.current) {
+      if (containerRef.current && window.dockyard?.browserView) {
         const rect = containerRef.current.getBoundingClientRect();
         const bounds = {
           x: Math.round(rect.left),
@@ -346,7 +396,7 @@ function BrowserViewContainer({ app, instanceId }: { app: App; instanceId?: stri
     };
 
     window.addEventListener('resize', handleResize);
-    
+
     // Use ResizeObserver for more accurate container size tracking
     let resizeObserver: ResizeObserver | null = null;
     if (containerRef.current) {
@@ -367,17 +417,25 @@ function BrowserViewContainer({ app, instanceId }: { app: App; instanceId?: stri
   }, [app.id, instanceId]);
 
   if (!instanceId) {
+    console.log('No instance available for app:', app);
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-900">
         <div className="text-center text-gray-400">
-          <p>No instance available</p>
+          <div className="mb-4">
+            <svg className="w-16 h-16 mx-auto opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-lg font-medium">Loading app...</p>
+          <p className="text-sm mt-2">Creating instance for {app.name}</p>
+          <p className="text-xs mt-4 text-gray-500">If this persists, try reloading the app</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="flex-1 bg-gray-900 relative"
       style={{ minHeight: 0 }} // Important for flex layout
