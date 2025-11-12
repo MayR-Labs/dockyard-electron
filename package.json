@@ -14,7 +14,8 @@
     "start": "npm run build && electron .",
     "package": "npm run build && electron-forge package",
     "make": "npm run build && electron-forge make",
-    "publish": "npm run build && electron-forge publish"
+    "publish": "npm run build && electron-forge publish",
+    "format": "prettier --write 'src/**/*.{js,ts,jsx,tsx,css,scss,html,json,md}'"
   },
   "repository": {
     "type": "git",
