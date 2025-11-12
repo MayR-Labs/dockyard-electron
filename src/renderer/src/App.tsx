@@ -20,6 +20,8 @@ import { EditAppModal } from './components/Modals/EditAppModal';
 import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal';
 import { CreateInstanceModal } from './components/Modals/CreateInstanceModal';
 import { AppContextMenu } from './components/ContextMenu/AppContextMenu';
+import { PerformanceDashboard } from './components/DevTools/PerformanceDashboard';
+import { SessionManager } from './components/DevTools/SessionManager';
 import { App as AppType, AppInstance } from '../../shared/types/app';
 
 function App() {
@@ -38,6 +40,8 @@ function App() {
   const [isEditAppModalOpen, setIsEditAppModalOpen] = useState(false);
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
   const [isCreateInstanceModalOpen, setIsCreateInstanceModalOpen] = useState(false);
+  const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
+  const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppType | null>(null);
   
   // Context menu state
@@ -402,6 +406,8 @@ function App() {
         memoryUsage="256 MB"
         doNotDisturb={settings?.notifications.doNotDisturb || false}
         onToggleDnd={handleToggleDnd}
+        onOpenPerformance={() => setIsPerformanceDashboardOpen(true)}
+        onOpenSessions={() => setIsSessionManagerOpen(true)}
       />
 
       {/* Modals */}
@@ -458,6 +464,17 @@ function App() {
               setActiveAppId(null);
             }
           }}
+        />
+      )}
+
+      {/* DevTools */}
+      {isPerformanceDashboardOpen && (
+        <PerformanceDashboard onClose={() => setIsPerformanceDashboardOpen(false)} />
+      )}
+      {isSessionManagerOpen && (
+        <SessionManager 
+          apps={workspaceApps}
+          onClose={() => setIsSessionManagerOpen(false)} 
         />
       )}
     </div>
