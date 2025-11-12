@@ -39,6 +39,14 @@ const dockyardAPI: DockyardAPI = {
     update: (data) => ipcRenderer.invoke(IPC_CHANNELS.SETTINGS.UPDATE, data),
   },
 
+  // Notification APIs
+  notifications: {
+    show: (options: { title: string; body: string; icon?: string; silent?: boolean }) =>
+      ipcRenderer.invoke(IPC_CHANNELS.NOTIFICATION.SHOW, options),
+    updateBadge: (appId: string, count: number) =>
+      ipcRenderer.invoke(IPC_CHANNELS.NOTIFICATION.UPDATE_BADGE, appId, count),
+  },
+
   // Event listeners
   on: (channel: string, callback: (...args: any[]) => void) => {
     const validChannels: string[] = [

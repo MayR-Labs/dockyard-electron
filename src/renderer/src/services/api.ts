@@ -97,3 +97,16 @@ export const settingsAPI = {
     return window.dockyard.settings.update(data);
   },
 };
+
+/**
+ * Notification API Service
+ */
+export const notificationAPI = {
+  show: (options: { title: string; body: string; icon?: string; silent?: boolean }): Promise<void> => {
+    return window.dockyard.notifications.show(options);
+  },
+
+  updateBadge: (appId: string, count: number): Promise<App> => {
+    return window.dockyard.notifications.updateBadge(appId, count);
+  },
+};

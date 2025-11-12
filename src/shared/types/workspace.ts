@@ -1,3 +1,13 @@
+export type LayoutMode = 'single' | 'split-horizontal' | 'split-vertical' | 'grid';
+
+export interface SplitLayoutConfig {
+  mode: LayoutMode;
+  panels: {
+    appId: string;
+    size?: number; // percentage, 0-100
+  }[];
+}
+
 export interface Workspace {
   id: string;
   name: string;
@@ -6,6 +16,7 @@ export interface Workspace {
   layout: {
     dockPosition: 'top' | 'bottom' | 'left' | 'right';
     dockSize: number;
+    splitLayout?: SplitLayoutConfig;
   };
   theme?: {
     mode: 'light' | 'dark' | 'system';

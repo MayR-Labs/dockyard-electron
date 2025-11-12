@@ -27,6 +27,10 @@ export const IPC_CHANNELS = {
     GET: 'settings:get',
     UPDATE: 'settings:update',
   },
+  NOTIFICATION: {
+    SHOW: 'notification:show',
+    UPDATE_BADGE: 'notification:update-badge',
+  },
 } as const;
 
 // Event names for main -> renderer communication

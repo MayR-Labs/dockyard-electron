@@ -31,6 +31,10 @@ export interface DockyardAPI {
     get: () => Promise<Settings>;
     update: (data: Partial<Settings>) => Promise<Settings>;
   };
+  notifications: {
+    show: (options: { title: string; body: string; icon?: string; silent?: boolean }) => Promise<void>;
+    updateBadge: (appId: string, count: number) => Promise<App>;
+  };
   on: (channel: string, callback: (...args: any[]) => void) => void;
   off: (channel: string, callback: (...args: any[]) => void) => void;
 }

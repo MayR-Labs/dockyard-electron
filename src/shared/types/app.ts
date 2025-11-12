@@ -7,6 +7,16 @@ export interface AppInstance {
   lastActive: string;
 }
 
+export interface AppNotificationSettings {
+  enabled: boolean;
+  soundEnabled: boolean;
+  badgeCount?: number;
+}
+
+export interface AppDisplaySettings {
+  zoomLevel: number;  // 0.5 to 2.0, default 1.0
+}
+
 export interface App {
   id: string;
   name: string;
@@ -16,6 +26,8 @@ export interface App {
   customJS?: string;
   workspaceId: string;
   instances: AppInstance[];
+  notifications?: AppNotificationSettings;
+  display?: AppDisplaySettings;
   createdAt: string;
   updatedAt: string;
 }
