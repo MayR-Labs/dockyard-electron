@@ -184,7 +184,43 @@ export class IPCHandlers {
     // List all apps
     ipcMain.handle(IPC_CHANNELS.APP.LIST, async () => {
       const store = this.storeManager.getAppsStore();
-      return store.get('apps', []);
+      const apps = store.get('apps', []);
+      
+      // Ensure all apps have at least one instance (migration for older data)
+      let needsUpdate = false;
+      const normalizedApps = apps.map((app: App) => {
+        if (!app.instances || app.instances.length === 0) {
+          needsUpdate = true;
+          const instanceId = generateId();
+          
+          // Get workspace to determine default session mode
+          const workspaceStore = this.storeManager.getWorkspacesStore();
+          const workspaces = workspaceStore.get('workspaces', []);
+          const workspace = workspaces.find((w: any) => w.id === app.workspaceId);
+          const sessionMode = workspace?.sessionMode || 'isolated';
+          
+          return {
+            ...app,
+            instances: [{
+              id: instanceId,
+              appId: app.id,
+              partitionId: sessionMode === 'shared' 
+                ? `persist:workspace-${app.workspaceId}` 
+                : `persist:app-${app.id}-${instanceId}`,
+              hibernated: false,
+              lastActive: getCurrentTimestamp(),
+            }],
+          };
+        }
+        return app;
+      });
+      
+      // Save normalized apps if any were updated
+      if (needsUpdate) {
+        store.set('apps', normalizedApps);
+      }
+      
+      return normalizedApps;
     });
 
     // Create new app
