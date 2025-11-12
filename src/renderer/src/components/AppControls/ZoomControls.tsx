@@ -13,7 +13,7 @@ interface ZoomControlsProps {
 
 export function ZoomControls({ zoomLevel, onZoomChange }: ZoomControlsProps) {
   const zoomPercentage = Math.round(zoomLevel * 100);
-  
+
   const handleZoomIn = () => {
     const newLevel = Math.min(2.0, zoomLevel + 0.1);
     onZoomChange(Math.round(newLevel * 10) / 10);
@@ -39,8 +39,18 @@ export function ZoomControls({ zoomLevel, onZoomChange }: ZoomControlsProps) {
         className="p-1 hover:bg-gray-800 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
         title="Zoom Out"
       >
-        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+        <svg
+          className="w-4 h-4 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"
+          />
         </svg>
       </motion.button>
 
@@ -62,19 +72,34 @@ export function ZoomControls({ zoomLevel, onZoomChange }: ZoomControlsProps) {
         className="p-1 hover:bg-gray-800 rounded transition disabled:opacity-50 disabled:cursor-not-allowed"
         title="Zoom In"
       >
-        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+        <svg
+          className="w-4 h-4 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
+          />
         </svg>
       </motion.button>
 
       {/* Presets Dropdown (Optional) */}
       <div className="relative group">
         <button className="p-1 hover:bg-gray-800 rounded transition">
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-4 h-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-        
+
         {/* Dropdown Menu */}
         <div className="absolute bottom-full mb-2 right-0 hidden group-hover:block bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-1 min-w-32 z-50">
           {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map((level) => (

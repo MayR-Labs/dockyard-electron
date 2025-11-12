@@ -22,7 +22,7 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
     setMessage(null);
 
     try {
-      const instance = app.instances.find(i => i.id === instanceId);
+      const instance = app.instances.find((i) => i.id === instanceId);
       if (!instance) {
         throw new Error('Instance not found');
       }
@@ -39,15 +39,15 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
 
   const getSessionType = (app: App): string => {
     if (app.instances.length === 0) return 'No instances';
-    
+
     const firstPartition = app.instances[0].partitionId;
-    
+
     if (firstPartition.startsWith('persist:workspace-')) {
       return 'Workspace-shared';
     } else if (firstPartition.startsWith('persist:app-')) {
       return 'Isolated per instance';
     }
-    
+
     return 'Unknown';
   };
 
@@ -62,8 +62,18 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+            <svg
+              className="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
+              />
             </svg>
           </div>
           <div>
@@ -71,14 +81,24 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
             <p className="text-sm text-gray-400">Manage app sessions and clear data</p>
           </div>
         </div>
-        
+
         <button
           onClick={onClose}
           className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
           title="Close"
         >
-          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="w-5 h-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -98,11 +118,21 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
           <div className="flex items-center gap-2">
             {message.type === 'success' ? (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             ) : (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             )}
             <span className="text-sm font-medium">{message.text}</span>
@@ -133,15 +163,13 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
                   className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-750 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    {app.icon && (
-                      <img src={app.icon} alt={app.name} className="w-8 h-8 rounded" />
-                    )}
+                    {app.icon && <img src={app.icon} alt={app.name} className="w-8 h-8 rounded" />}
                     <div className="text-left">
                       <h3 className="text-lg font-semibold text-white">{app.name}</h3>
                       <p className="text-sm text-gray-400">{getSessionType(app)}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <span className="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded">
                       {app.instances.length} {app.instances.length === 1 ? 'instance' : 'instances'}
@@ -154,7 +182,12 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </button>
@@ -184,9 +217,11 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-gray-500 font-mono">{instance.partitionId}</p>
+                            <p className="text-xs text-gray-500 font-mono">
+                              {instance.partitionId}
+                            </p>
                           </div>
-                          
+
                           <button
                             onClick={() => handleClearSession(app, instance.id)}
                             disabled={clearing}
@@ -208,11 +243,22 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
       {/* Footer */}
       <div className="px-6 py-3 border-t border-gray-800">
         <div className="flex items-start gap-3 text-xs text-gray-500">
-          <svg className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          <svg
+            className="w-4 h-4 text-yellow-500 flex-shrink-0 mt-0.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
           </svg>
           <div>
-            <strong>Warning:</strong> Clearing session data will log you out of apps and delete all cookies, cache, and local storage for that instance.
+            <strong>Warning:</strong> Clearing session data will log you out of apps and delete all
+            cookies, cache, and local storage for that instance.
           </div>
         </div>
       </div>

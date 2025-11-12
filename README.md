@@ -1,6 +1,6 @@
 # **Dockyard**
 
-*A flexible, open-source multi-app workspace built for power users.*
+_A flexible, open-source multi-app workspace built for power users._
 
 Dockyard lets you bring all your favourite web apps into one elegant desktop hub. Switch, tile, and manage them like browser tabs on steroids — all while keeping sessions isolated, notifications flowing, and your workspace tidy.
 
@@ -8,17 +8,17 @@ Dockyard lets you bring all your favourite web apps into one elegant desktop hub
 
 ## 🚀 **Features at a Glance**
 
-* Multiple profiles (run separate instances of the app)
-* Workspaces for grouping related apps
-* Add unlimited built-in or custom apps
-* Multiple instances per app (e.g., two GitHub accounts)
-* Session isolation and shared session options
-* Auto-hibernation and performance controls
-* Notifications and per-app badges
-* Customisable layout (icons on top, left, right, or bottom)
-* Full theme control with light/dark and accent colours
-* Offline-first local persistence
-* Cross-platform (Windows, macOS, Linux)
+- Multiple profiles (run separate instances of the app)
+- Workspaces for grouping related apps
+- Add unlimited built-in or custom apps
+- Multiple instances per app (e.g., two GitHub accounts)
+- Session isolation and shared session options
+- Auto-hibernation and performance controls
+- Notifications and per-app badges
+- Customisable layout (icons on top, left, right, or bottom)
+- Full theme control with light/dark and accent colours
+- Offline-first local persistence
+- Cross-platform (Windows, macOS, Linux)
 
 ---
 
@@ -31,12 +31,12 @@ No logins, no cloud sync — just your setup, your data, your workflow.
 
 ## 🧩 **Tech Stack**
 
-* **Electron** — desktop shell
-* **Vite + React** — frontend UI
-* **TypeScript** — strong typing for maintainability
-* **electron-store / lowdb** — local persistence
-* **TailwindCSS** — styling system
-* **Framer Motion** — smooth transitions and animations
+- **Electron** — desktop shell
+- **Vite + React** — frontend UI
+- **TypeScript** — strong typing for maintainability
+- **electron-store / lowdb** — local persistence
+- **TailwindCSS** — styling system
+- **Framer Motion** — smooth transitions and animations
 
 ---
 
@@ -79,15 +79,17 @@ npm run build
 ## 💡 **Project Planning**
 
 For detailed development plans and roadmap, see:
+
 - **[ROADMAP.md](ROADMAP.md)** - Phased development timeline and milestones
 - **[PLAN.md](PLAN.md)** - Technical implementation details and architecture
 
 **Quick Milestones:**
-* [ ] MVP – Profiles, Workspaces, Custom Apps
-* [ ] Notifications & Hibernation
-* [ ] Full theming engine
-* [ ] App store & custom script injection
-* [ ] Focus Mode & Automation Rules
+
+- [ ] MVP – Profiles, Workspaces, Custom Apps
+- [ ] Notifications & Hibernation
+- [ ] Full theming engine
+- [ ] App store & custom script injection
+- [ ] Focus Mode & Automation Rules
 
 ---
 
@@ -100,4 +102,4 @@ Report bugs, request features, or share your workspace ideas via [GitHub Issues]
 
 ## ⚖️ **Licence**
 
-MIT Licence — free to use, modify, and distribute.****
+MIT Licence — free to use, modify, and distribute.\*\*\*\*

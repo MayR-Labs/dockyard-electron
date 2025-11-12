@@ -34,18 +34,18 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
       try {
         // Get all active views
         const views = await window.dockyard.browserView.getAll();
-        
+
         // Get apps list
         const apps = await window.dockyard.apps.list();
-        
+
         // Fetch metrics for each view
         const metricsPromises = views.map(async (view) => {
-          const app = apps.find(a => a.id === view.appId);
+          const app = apps.find((a) => a.id === view.appId);
           const [memory, cpu] = await Promise.all([
             window.dockyard.browserView.getMemory(view.appId, view.instanceId),
             window.dockyard.browserView.getCPU(view.appId, view.instanceId),
           ]);
-          
+
           return {
             appId: view.appId,
             instanceId: view.instanceId,
@@ -56,7 +56,7 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
             isActive: view.isActive,
           };
         });
-        
+
         const allMetrics = await Promise.all(metricsPromises);
         setMetrics(allMetrics);
       } catch (error) {
@@ -75,7 +75,7 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
   const formatTime = (timestamp: number): string => {
@@ -88,9 +88,8 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
   };
 
   const totalMemory = metrics.reduce((sum, m) => sum + m.memoryUsage.workingSetSize, 0);
-  const avgCPU = metrics.length > 0
-    ? metrics.reduce((sum, m) => sum + m.cpuUsage, 0) / metrics.length
-    : 0;
+  const avgCPU =
+    metrics.length > 0 ? metrics.reduce((sum, m) => sum + m.cpuUsage, 0) / metrics.length : 0;
 
   return (
     <motion.div
@@ -103,8 +102,18 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <svg
+              className="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+              />
             </svg>
           </div>
           <div>
@@ -112,7 +121,7 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
             <p className="text-sm text-gray-400">Real-time app metrics and resource usage</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <button
             onClick={() => setAutoRefresh(!autoRefresh)}
@@ -124,14 +133,24 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
           >
             {autoRefresh ? '● Auto-refresh' : 'Auto-refresh Off'}
           </button>
-          
+
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
             title="Close"
           >
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -146,7 +165,7 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
           </div>
           <div className="text-3xl font-bold text-white">{metrics.length}</div>
         </div>
-        
+
         <div className="bg-gray-800 rounded-lg p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-400">Total Memory</span>
@@ -154,7 +173,7 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
           </div>
           <div className="text-3xl font-bold text-white">{formatBytes(totalMemory)}</div>
         </div>
-        
+
         <div className="bg-gray-800 rounded-lg p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-gray-400">Avg CPU</span>
@@ -191,9 +210,11 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-400">Instance: {metric.instanceId.slice(0, 8)}</p>
+                    <p className="text-sm text-gray-400">
+                      Instance: {metric.instanceId.slice(0, 8)}
+                    </p>
                   </div>
-                  
+
                   <div className="text-right text-sm text-gray-500">
                     Last active: {formatTime(metric.lastActive)}
                   </div>
@@ -205,12 +226,16 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
                   <div className="bg-gray-900/50 rounded p-3">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs text-gray-400 uppercase font-medium">Memory</span>
-                      <span className="text-xs text-indigo-400">{formatBytes(metric.memoryUsage.workingSetSize)}</span>
+                      <span className="text-xs text-indigo-400">
+                        {formatBytes(metric.memoryUsage.workingSetSize)}
+                      </span>
                     </div>
                     <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-500"
-                        style={{ width: `${Math.min(100, (metric.memoryUsage.workingSetSize / (500 * 1024 * 1024)) * 100)}%` }}
+                        style={{
+                          width: `${Math.min(100, (metric.memoryUsage.workingSetSize / (500 * 1024 * 1024)) * 100)}%`,
+                        }}
                       />
                     </div>
                     <div className="mt-1 text-xs text-gray-500">

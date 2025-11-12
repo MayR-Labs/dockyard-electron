@@ -33,9 +33,9 @@ export function Dock({
   onReorder,
 }: DockProps) {
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-  
+
   const isHorizontal = position === 'top' || position === 'bottom';
-  
+
   const dockStyle = isHorizontal
     ? { height: `${size}px`, width: '100%' }
     : { width: `${size}px`, height: '100%' };
@@ -57,7 +57,7 @@ export function Dock({
   const handleDrop = (e: React.DragEvent, targetIndex: number) => {
     e.preventDefault();
     setDragOverIndex(null);
-    
+
     const draggedAppId = e.dataTransfer.getData('application/dockyard-app-id');
     if (draggedAppId && onReorder) {
       onReorder(draggedAppId, targetIndex);
@@ -73,9 +73,9 @@ export function Dock({
           onDragLeave={handleDragLeave}
           onDrop={(e) => handleDrop(e, index)}
           className={`relative ${
-            dragOverIndex === index 
-              ? isHorizontal 
-                ? 'border-l-2 border-indigo-500' 
+            dragOverIndex === index
+              ? isHorizontal
+                ? 'border-l-2 border-indigo-500'
                 : 'border-t-2 border-indigo-500'
               : ''
           }`}
@@ -88,14 +88,19 @@ export function Dock({
           />
         </div>
       ))}
-      
+
       {/* Add App Button */}
       <button
         onClick={onAddApp}
         className="flex items-center justify-center w-12 h-12 rounded-xl bg-gray-800 hover:bg-gray-700 transition border border-gray-700 hover:border-gray-600"
         title="Add App"
       >
-        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-6 h-6 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
       </button>
@@ -144,9 +149,10 @@ function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
         className={`
           w-12 h-12 rounded-xl transition-all duration-200
           flex items-center justify-center
-          ${isActive 
-            ? 'bg-indigo-600 ring-2 ring-indigo-400 shadow-lg shadow-indigo-500/50' 
-            : 'bg-gray-800 hover:bg-gray-700'
+          ${
+            isActive
+              ? 'bg-indigo-600 ring-2 ring-indigo-400 shadow-lg shadow-indigo-500/50'
+              : 'bg-gray-800 hover:bg-gray-700'
           }
           ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}
         `}
@@ -158,9 +164,10 @@ function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
           <span className="text-xl">{app.name.charAt(0).toUpperCase()}</span>
         )}
       </motion.button>
-      
+
       {/* Badge for multiple instances or notifications */}
-      {(app.instances.length > 1 || (app.notifications?.badgeCount && app.notifications.badgeCount > 0)) && (
+      {(app.instances.length > 1 ||
+        (app.notifications?.badgeCount && app.notifications.badgeCount > 0)) && (
         <motion.span
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -172,11 +179,13 @@ function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
           }`}
         >
           {app.notifications?.badgeCount && app.notifications.badgeCount > 0
-            ? app.notifications.badgeCount > 99 ? '99+' : app.notifications.badgeCount
+            ? app.notifications.badgeCount > 99
+              ? '99+'
+              : app.notifications.badgeCount
             : app.instances.length}
         </motion.span>
       )}
-      
+
       {/* Tooltip */}
       <div className="absolute hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50 left-full ml-2 shadow-xl">
         {app.name}

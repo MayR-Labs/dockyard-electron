@@ -36,9 +36,9 @@ export class BrowserViewManager {
    */
   getOrCreateView(app: App, instance: AppInstance): BrowserView {
     const viewId = this.getViewId(app.id, instance.id);
-    
+
     let entry = this.views.get(viewId);
-    
+
     if (entry && !entry.view.webContents.isDestroyed()) {
       // Resume if hibernated
       if (instance.hibernated) {
@@ -112,7 +112,7 @@ export class BrowserViewManager {
 
     // Add and position the new view
     this.mainWindow.addBrowserView(entry.view);
-    
+
     if (bounds) {
       entry.view.setBounds(bounds);
     }
@@ -195,7 +195,10 @@ export class BrowserViewManager {
   /**
    * Get navigation state
    */
-  getNavigationState(appId: string, instanceId: string): {
+  getNavigationState(
+    appId: string,
+    instanceId: string
+  ): {
     canGoBack: boolean;
     canGoForward: boolean;
     isLoading: boolean;
@@ -270,7 +273,7 @@ export class BrowserViewManager {
         this.mainWindow.removeBrowserView(entry.view);
         this.activeViewId = null;
       }
-      
+
       // Note: We don't destroy the view, just hide it
       // The OS/Electron will manage memory for background tabs
       console.log(`Hibernated view: ${viewId}`);
@@ -322,17 +325,17 @@ export class BrowserViewManager {
    */
   async clearSessionData(partitionId: string): Promise<void> {
     const ses = session.fromPartition(partitionId);
-    
+
     // Clear cache
     await ses.clearCache();
-    
+
     // Clear cookies
     const cookies = await ses.cookies.get({});
     for (const cookie of cookies) {
       const url = `http${cookie.secure ? 's' : ''}://${cookie.domain}${cookie.path}`;
       await ses.cookies.remove(url, cookie.name);
     }
-    
+
     // Clear storage data
     await ses.clearStorageData();
   }
@@ -340,7 +343,10 @@ export class BrowserViewManager {
   /**
    * Get memory usage for a view
    */
-  async getMemoryUsage(appId: string, instanceId: string): Promise<{
+  async getMemoryUsage(
+    appId: string,
+    instanceId: string
+  ): Promise<{
     workingSetSize: number;
     privateBytes: number;
   }> {
@@ -356,7 +362,7 @@ export class BrowserViewManager {
       const pid = entry.view.webContents.getOSProcessId();
       const appMetrics = require('electron').app.getAppMetrics();
       const processMetrics = appMetrics.find((m: any) => m.pid === pid);
-      
+
       if (processMetrics && processMetrics.memory) {
         return {
           workingSetSize: processMetrics.memory.workingSetSize || 0,
@@ -386,7 +392,7 @@ export class BrowserViewManager {
       const pid = entry.view.webContents.getOSProcessId();
       const appMetrics = require('electron').app.getAppMetrics();
       const processMetrics = appMetrics.find((m: any) => m.pid === pid);
-      
+
       if (processMetrics && processMetrics.cpu) {
         return processMetrics.cpu.percentCPUUsage || 0;
       }
@@ -408,7 +414,7 @@ export class BrowserViewManager {
 
       this.views.forEach((entry, viewId) => {
         const idleTime = now - entry.lastActive;
-        
+
         // Hibernate if idle and not active
         if (idleTime > idleThresholdMs && this.activeViewId !== viewId) {
           console.log(`Auto-hibernating idle view: ${viewId}`);
@@ -466,7 +472,7 @@ export class BrowserViewManager {
    */
   cleanup(): void {
     this.stopHibernationCheck();
-    
+
     this.views.forEach((entry) => {
       if (!entry.view.webContents.isDestroyed()) {
         (entry.view.webContents as any).destroy();

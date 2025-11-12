@@ -17,7 +17,7 @@ let browserViewManager: BrowserViewManager;
 
 // Parse command line arguments for profile selection
 function parseProfileFromArgs(): string {
-  const profileArg = process.argv.find(arg => arg.startsWith('--profile='));
+  const profileArg = process.argv.find((arg) => arg.startsWith('--profile='));
   if (profileArg) {
     return profileArg.split('=')[1];
   }
@@ -30,30 +30,30 @@ function parseProfileFromArgs(): string {
 async function initialize() {
   // Get profile from command line or use default
   const profileName = parseProfileFromArgs();
-  
+
   // Initialize store manager
   storeManager = new StoreManager();
   storeManager.setCurrentProfile(profileName);
-  
+
   // Initialize browser view manager
   browserViewManager = new BrowserViewManager();
-  
+
   // Initialize IPC handlers
   ipcHandlers = new IPCHandlers(storeManager, browserViewManager);
-  
+
   // Initialize window manager
   windowManager = new WindowManager();
-  
+
   // Create main window
   const mainWindow = windowManager.createMainWindow();
-  
+
   // Set main window reference for browser view manager
   browserViewManager.setMainWindow(mainWindow);
-  
+
   // Update last accessed time for profile
   const rootStore = storeManager.getRootStore();
   rootStore.set('lastActiveProfile', profileName);
-  
+
   const profiles = rootStore.get('profiles', []);
   const currentProfile = profiles.find((p: any) => p.id === profileName);
   if (currentProfile) {

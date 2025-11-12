@@ -38,7 +38,7 @@ Each app can have multiple instances (perfect for managing multiple accounts) an
 ### **Customisation**
 
 You decide everything — icon placement, theme colour, layout, and behaviour.
-Dockyard is designed to *adapt to you*, not the other way around.
+Dockyard is designed to _adapt to you_, not the other way around.
 
 ### **Performance**
 

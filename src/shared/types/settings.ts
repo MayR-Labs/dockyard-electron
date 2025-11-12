@@ -19,7 +19,7 @@ export interface Settings {
     blockThirdPartyCookies: boolean;
   };
   shortcuts: {
-    [action: string]: string;  // e.g., "switchWorkspace": "Cmd+Tab"
+    [action: string]: string; // e.g., "switchWorkspace": "Cmd+Tab"
   };
   advanced: {
     devToolsEnabled: boolean;

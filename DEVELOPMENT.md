@@ -33,6 +33,7 @@ npm run dev
 ```
 
 The `dev` command will:
+
 1. Build the main process
 2. Start Vite dev server for hot reload
 3. Watch for TypeScript changes in main process
@@ -88,16 +89,16 @@ dockyard-electron/
 
 ## 🔧 Tech Stack
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Desktop Shell | Electron 39+ | Cross-platform desktop app |
-| Main Process | TypeScript + Node.js | Backend logic and IPC |
-| Renderer | React 19 + Vite 7 | Fast UI development |
-| State Management | Zustand 5 | Lightweight state management |
-| Styling | TailwindCSS 4 | Utility-first CSS |
-| Data Storage | electron-store 11 | Local JSON persistence |
-| Build Tool | Vite 7 | Fast bundling and HMR |
-| Packaging | Electron Forge 7 | Distribution builds |
+| Component        | Technology           | Purpose                      |
+| ---------------- | -------------------- | ---------------------------- |
+| Desktop Shell    | Electron 39+         | Cross-platform desktop app   |
+| Main Process     | TypeScript + Node.js | Backend logic and IPC        |
+| Renderer         | React 19 + Vite 7    | Fast UI development          |
+| State Management | Zustand 5            | Lightweight state management |
+| Styling          | TailwindCSS 4        | Utility-first CSS            |
+| Data Storage     | electron-store 11    | Local JSON persistence       |
+| Build Tool       | Vite 7               | Fast bundling and HMR        |
+| Packaging        | Electron Forge 7     | Distribution builds          |
 
 ## 📦 Available Scripts
 
@@ -111,6 +112,7 @@ dockyard-electron/
 ## 🧪 Testing
 
 Coming in future phases:
+
 - Unit tests with Jest
 - Integration tests with Spectron/Playwright
 - E2E tests for complete workflows
@@ -127,27 +129,35 @@ Coming in future phases:
 ## 📚 Key Features Implemented
 
 ### ✅ Multi-Profile Support
+
 Launch multiple instances with different profiles:
+
 ```bash
 npm start -- --profile=work
 npm start -- --profile=personal
 ```
 
 ### ✅ Data Persistence
+
 All data stored locally in:
+
 - macOS: `~/Library/Application Support/dockyard-electron/`
 - Windows: `%APPDATA%/dockyard-electron/`
 - Linux: `~/.config/dockyard-electron/`
 
 ### ✅ IPC Communication
+
 Secure message passing between main and renderer:
+
 - Profiles: list, create, delete, switch
 - Workspaces: list, create, update, delete, switch
 - Apps: list, create, update, delete, hibernate, resume
 - Settings: get, update
 
 ### ✅ Type Safety
+
 Full TypeScript coverage with strict mode:
+
 - Shared types between main and renderer
 - IPC API type definitions
 - Compile-time error checking
@@ -155,13 +165,17 @@ Full TypeScript coverage with strict mode:
 ## 🐛 Debugging
 
 ### Main Process
+
 The main process logs to the terminal. Look for errors during startup.
 
 ### Renderer Process
+
 In development, DevTools opens automatically. Check the Console tab for errors.
 
 ### Data Storage
+
 Inspect stored data at:
+
 ```bash
 # macOS/Linux
 cat ~/Library/Application\ Support/dockyard-electron/profiles.json
@@ -173,6 +187,7 @@ type %APPDATA%\dockyard-electron\profiles.json
 ## 🚧 Coming Next
 
 Phase 2 features (see ROADMAP.md):
+
 - Workspace switching UI
 - App management interface
 - BrowserView embedding for web apps

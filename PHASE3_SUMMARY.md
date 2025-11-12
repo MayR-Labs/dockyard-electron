@@ -17,6 +17,7 @@ Phase 3 focused on implementing session management, performance monitoring, and 
 ### 2.3 App Embedding ✅
 
 **BrowserView Manager** (`src/main/browser-view-manager.ts`)
+
 - Complete lifecycle management for embedded web apps
 - Session partition management with isolation
 - Navigation controls (back, forward, reload, home)
@@ -27,6 +28,7 @@ Phase 3 focused on implementing session management, performance monitoring, and 
 - Graceful cleanup on shutdown
 
 **Key Features:**
+
 ```typescript
 // Create/resume views with proper session isolation
 getOrCreateView(app: App, instance: AppInstance): BrowserView
@@ -48,11 +50,13 @@ hibernateView/resumeView(appId: string, instanceId: string): void
 ### 3.1 Session Isolation ✅
 
 **Partition System**
+
 - Per-app isolation: `persist:app-{appId}-{instanceId}`
 - Workspace-shared: `persist:workspace-{workspaceId}`
 - Utility function for consistent partition naming
 
 **Session Management UI** (`src/renderer/src/components/DevTools/SessionManager.tsx`)
+
 - View all app sessions by workspace
 - Clear cache/cookies per app instance
 - Identify isolated vs shared sessions
@@ -60,6 +64,7 @@ hibernateView/resumeView(appId: string, instanceId: string): void
 - Warning before clearing data
 
 **Features:**
+
 - Automatically creates default instance on app creation
 - Respects workspace session mode setting
 - Clear all session data (cache, cookies, local storage)
@@ -68,6 +73,7 @@ hibernateView/resumeView(appId: string, instanceId: string): void
 ### 3.2 Auto-Hibernation ✅
 
 **Idle Detection System**
+
 - Background check every 60 seconds
 - Default idle threshold: 15 minutes
 - Automatic suspension of inactive apps
@@ -75,6 +81,7 @@ hibernateView/resumeView(appId: string, instanceId: string): void
 - Preserves session state
 
 **Implementation:**
+
 ```typescript
 // Automatic hibernation check
 setInterval(() => {
@@ -88,6 +95,7 @@ setInterval(() => {
 ```
 
 **Benefits:**
+
 - Reduces memory usage for inactive apps
 - Improves overall system performance
 - Seamless user experience on resume
@@ -95,6 +103,7 @@ setInterval(() => {
 ### 3.3 Performance Monitoring ✅
 
 **Performance Dashboard** (`src/renderer/src/components/DevTools/PerformanceDashboard.tsx`)
+
 - Real-time memory tracking (working set, private bytes)
 - CPU usage monitoring per app
 - Auto-refresh every 3 seconds
@@ -103,22 +112,24 @@ setInterval(() => {
 - High usage warnings
 
 **Metrics Tracked:**
+
 ```typescript
 interface AppMetrics {
   appId: string;
   instanceId: string;
   appName: string;
   memoryUsage: {
-    workingSetSize: number;  // Total memory
-    privateBytes: number;     // App-specific memory
+    workingSetSize: number; // Total memory
+    privateBytes: number; // App-specific memory
   };
-  cpuUsage: number;          // Percentage
-  lastActive: number;        // Timestamp
-  isActive: boolean;         // Currently visible
+  cpuUsage: number; // Percentage
+  lastActive: number; // Timestamp
+  isActive: boolean; // Currently visible
 }
 ```
 
 **Features:**
+
 - Toggle auto-refresh on/off
 - Color-coded indicators (green = normal, yellow/red = high usage)
 - Formatted units (B, KB, MB, GB)
@@ -128,12 +139,14 @@ interface AppMetrics {
 ### 3.4 Developer Tools ✅
 
 **Status Bar Integration** (`src/renderer/src/components/Layout/StatusBar.tsx`)
+
 - Quick access to Performance Monitor
 - Quick access to Session Manager
 - Do Not Disturb toggle
 - Memory usage indicator
 
 **DevTools Controls:**
+
 ```typescript
 // Per-app DevTools
 openDevTools(appId: string, instanceId: string): void
@@ -145,6 +158,7 @@ getNavigationState(appId: string, instanceId: string): NavigationState
 ```
 
 **Keyboard Shortcuts:**
+
 - Status bar buttons accessible via mouse
 - Future: Keyboard shortcuts for quick access
 
@@ -185,14 +199,24 @@ getNavigationState(appId: string, instanceId: string): NavigationState
 ### IPC Communication
 
 **New Channels:**
+
 ```typescript
 BROWSER_VIEW: {
-  SHOW, HIDE, UPDATE_BOUNDS,
-  NAVIGATE, GO_BACK, GO_FORWARD, RELOAD,
-  GET_STATE, SET_ZOOM,
-  OPEN_DEVTOOLS, CLOSE_DEVTOOLS,
-  CLEAR_SESSION,
-  GET_MEMORY, GET_CPU, GET_ALL
+  (SHOW,
+    HIDE,
+    UPDATE_BOUNDS,
+    NAVIGATE,
+    GO_BACK,
+    GO_FORWARD,
+    RELOAD,
+    GET_STATE,
+    SET_ZOOM,
+    OPEN_DEVTOOLS,
+    CLOSE_DEVTOOLS,
+    CLEAR_SESSION,
+    GET_MEMORY,
+    GET_CPU,
+    GET_ALL);
 }
 ```
 
@@ -205,8 +229,8 @@ BROWSER_VIEW: {
 ```typescript
 // App automatically gets default instance
 await window.dockyard.apps.create({
-  name: "GitHub",
-  url: "https://github.com",
+  name: 'GitHub',
+  url: 'https://github.com',
   workspaceId: workspaceId,
 });
 
@@ -226,8 +250,8 @@ await window.dockyard.apps.update(appId, {
       partitionId: getPartitionName(appId, instanceId, workspaceId, 'shared'),
       hibernated: false,
       lastActive: new Date().toISOString(),
-    }
-  ]
+    },
+  ],
 });
 ```
 
@@ -294,12 +318,14 @@ await window.dockyard.browserView.clearSession(partitionId);
 ## Performance Impact
 
 ### Memory Usage
+
 - BrowserView manager: ~10 MB overhead
 - Each BrowserView: 50-200 MB (depends on content)
 - Hibernated views: Minimal (OS managed)
 - Dashboard UI: ~5 MB
 
 ### CPU Usage
+
 - Hibernation check: <0.1% (runs every 60s)
 - Performance monitoring: <1% (during dashboard display)
 - BrowserView rendering: Varies by app
@@ -330,6 +356,7 @@ await window.dockyard.browserView.clearSession(partitionId);
 ## Future Enhancements
 
 ### Phase 3 Completion (10% remaining)
+
 - [ ] Integrate BrowserView with WorkspaceCanvas
 - [ ] Replace SimulatedBrowserView component
 - [ ] Add hibernation settings UI
@@ -337,6 +364,7 @@ await window.dockyard.browserView.clearSession(partitionId);
 - [ ] Implement IPC event debugger
 
 ### Phase 3+ (Nice to have)
+
 - [ ] Advanced memory profiling
 - [ ] Network activity monitoring
 - [ ] Custom hibernation rules
@@ -350,6 +378,7 @@ await window.dockyard.browserView.clearSession(partitionId);
 ### For Existing Apps
 
 Apps created before this update will be migrated automatically:
+
 - If no instances exist, a default instance is created
 - Partition ID is generated based on workspace session mode
 - Existing data is preserved
@@ -357,10 +386,14 @@ Apps created before this update will be migrated automatically:
 ### For Developers
 
 **Using BrowserView APIs:**
+
 ```typescript
 // Show app
 await window.dockyard.browserView.show(appId, instanceId, {
-  x: 0, y: 0, width: 800, height: 600
+  x: 0,
+  y: 0,
+  width: 800,
+  height: 600,
 });
 
 // Navigate
@@ -376,6 +409,7 @@ const cpu = await window.dockyard.browserView.getCPU(appId, instanceId);
 ## Acknowledgments
 
 This phase builds on the foundation established in:
+
 - Phase 1: Core Architecture
 - Phase 2: Workspace & App Management
 - Phase 4: Notifications & Layout

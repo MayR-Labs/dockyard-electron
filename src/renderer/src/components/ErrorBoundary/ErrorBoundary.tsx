@@ -73,14 +73,12 @@ export class ErrorBoundary extends Component<Props, State> {
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h1 className="text-2xl font-bold text-red-400 mb-2">
-                    Something went wrong
-                  </h1>
+                  <h1 className="text-2xl font-bold text-red-400 mb-2">Something went wrong</h1>
                   <p className="text-gray-300 mb-4">
-                    The application encountered an unexpected error. You can try restarting or
-                    check the details below.
+                    The application encountered an unexpected error. You can try restarting or check
+                    the details below.
                   </p>
-                  
+
                   {this.state.error && (
                     <div className="bg-gray-900 rounded-lg p-4 mb-4 overflow-auto">
                       <p className="text-red-400 font-mono text-sm mb-2">

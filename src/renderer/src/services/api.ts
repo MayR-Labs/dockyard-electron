@@ -102,7 +102,12 @@ export const settingsAPI = {
  * Notification API Service
  */
 export const notificationAPI = {
-  show: (options: { title: string; body: string; icon?: string; silent?: boolean }): Promise<void> => {
+  show: (options: {
+    title: string;
+    body: string;
+    icon?: string;
+    silent?: boolean;
+  }): Promise<void> => {
     return window.dockyard.notifications.show(options);
   },
 

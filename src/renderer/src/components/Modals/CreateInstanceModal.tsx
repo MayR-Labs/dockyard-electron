@@ -15,11 +15,11 @@ interface CreateInstanceModalProps {
   onCreateInstance: (appId: string, instance: AppInstance) => Promise<void>;
 }
 
-export function CreateInstanceModal({ 
-  isOpen, 
-  app, 
-  onClose, 
-  onCreateInstance 
+export function CreateInstanceModal({
+  isOpen,
+  app,
+  onClose,
+  onCreateInstance,
 }: CreateInstanceModalProps) {
   const [instanceName, setInstanceName] = useState('');
   const [sessionMode, setSessionMode] = useState<'isolated' | 'shared'>('isolated');
@@ -45,7 +45,7 @@ export function CreateInstanceModal({
       };
 
       await onCreateInstance(app.id, newInstance);
-      
+
       // Reset form and close
       setInstanceName('');
       setSessionMode('isolated');
@@ -72,12 +72,19 @@ export function CreateInstanceModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">New Instance</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-800 rounded-lg transition"
-          >
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-lg transition">
+            <svg
+              className="w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -109,9 +116,7 @@ export function CreateInstanceModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Session Mode
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Session Mode</label>
             <div className="space-y-2">
               <label className="flex items-start p-3 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-750 transition">
                 <input
@@ -129,7 +134,7 @@ export function CreateInstanceModal({
                   </div>
                 </div>
               </label>
-              
+
               <label className="flex items-start p-3 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-750 transition">
                 <input
                   type="radio"

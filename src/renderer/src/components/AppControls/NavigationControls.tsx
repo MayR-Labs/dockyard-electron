@@ -30,9 +30,7 @@ export function NavigationControls({
         onClick={onBack}
         disabled={!canGoBack}
         className={`p-2 rounded-lg transition ${
-          canGoBack
-            ? 'hover:bg-gray-700 text-gray-300'
-            : 'text-gray-600 cursor-not-allowed'
+          canGoBack ? 'hover:bg-gray-700 text-gray-300' : 'text-gray-600 cursor-not-allowed'
         }`}
         title="Go Back"
       >
@@ -46,9 +44,7 @@ export function NavigationControls({
         onClick={onForward}
         disabled={!canGoForward}
         className={`p-2 rounded-lg transition ${
-          canGoForward
-            ? 'hover:bg-gray-700 text-gray-300'
-            : 'text-gray-600 cursor-not-allowed'
+          canGoForward ? 'hover:bg-gray-700 text-gray-300' : 'text-gray-600 cursor-not-allowed'
         }`}
         title="Go Forward"
       >

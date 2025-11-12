@@ -10,7 +10,11 @@ interface CreateWorkspaceModalProps {
   }) => Promise<void>;
 }
 
-export function CreateWorkspaceModal({ isOpen, onClose, onCreateWorkspace }: CreateWorkspaceModalProps) {
+export function CreateWorkspaceModal({
+  isOpen,
+  onClose,
+  onCreateWorkspace,
+}: CreateWorkspaceModalProps) {
   const [name, setName] = useState('');
   const [sessionMode, setSessionMode] = useState<'isolated' | 'shared'>('isolated');
   const [dockPosition, setDockPosition] = useState<'top' | 'bottom' | 'left' | 'right'>('left');
@@ -33,14 +37,14 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreateWorkspace }: Cre
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Prevent double submission
     if (isSubmitting) {
       return;
     }
-    
+
     setError('');
-    
+
     if (!name.trim()) {
       setError('Workspace name is required');
       return;
@@ -53,7 +57,7 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreateWorkspace }: Cre
         sessionMode,
         dockPosition,
       });
-      
+
       // Reset form and close
       setName('');
       setSessionMode('isolated');
@@ -80,12 +84,19 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreateWorkspace }: Cre
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">Create Workspace</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-800 rounded-lg transition"
-          >
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-lg transition">
+            <svg
+              className="w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -93,9 +104,7 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreateWorkspace }: Cre
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Workspace Name
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Workspace Name</label>
             <input
               type="text"
               value={name}
@@ -108,9 +117,7 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreateWorkspace }: Cre
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Session Mode
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Session Mode</label>
             <div className="space-y-2">
               <label className="flex items-start gap-3 p-3 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-750 transition">
                 <input
@@ -148,9 +155,7 @@ export function CreateWorkspaceModal({ isOpen, onClose, onCreateWorkspace }: Cre
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Dock Position
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Dock Position</label>
             <select
               value={dockPosition}
               onChange={(e) => setDockPosition(e.target.value as any)}

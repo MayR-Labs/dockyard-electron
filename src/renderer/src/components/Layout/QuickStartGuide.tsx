@@ -18,28 +18,28 @@ const SAMPLE_APPS = [
     url: 'https://mail.google.com',
     icon: '📧',
     color: 'from-red-500 to-pink-500',
-    description: 'Email & Communication'
+    description: 'Email & Communication',
   },
   {
     name: 'GitHub',
     url: 'https://github.com',
     icon: '🐙',
     color: 'from-gray-700 to-gray-900',
-    description: 'Code & Collaboration'
+    description: 'Code & Collaboration',
   },
   {
     name: 'Notion',
     url: 'https://notion.so',
     icon: '📝',
     color: 'from-slate-600 to-slate-800',
-    description: 'Notes & Documentation'
+    description: 'Notes & Documentation',
   },
   {
     name: 'Slack',
     url: 'https://slack.com',
     icon: '💬',
     color: 'from-purple-600 to-pink-600',
-    description: 'Team Chat'
+    description: 'Team Chat',
   },
 ];
 
@@ -62,12 +62,8 @@ export function QuickStartGuide({ onAddSampleApps, onAddCustomApp }: QuickStartG
           className="text-center mb-12"
         >
           <div className="text-7xl mb-6 animate-bounce">🚀</div>
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Your Workspace is Ready!
-          </h2>
-          <p className="text-xl text-gray-300">
-            Add your favorite web apps to get started
-          </p>
+          <h2 className="text-4xl font-bold text-white mb-4">Your Workspace is Ready!</h2>
+          <p className="text-xl text-gray-300">Add your favorite web apps to get started</p>
         </motion.div>
 
         {/* Quick Actions */}
@@ -94,7 +90,9 @@ export function QuickStartGuide({ onAddSampleApps, onAddCustomApp }: QuickStartG
                   </p>
                   <div className="flex gap-2">
                     {SAMPLE_APPS.slice(0, 4).map((app, idx) => (
-                      <span key={idx} className="text-2xl">{app.icon}</span>
+                      <span key={idx} className="text-2xl">
+                        {app.icon}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -117,15 +115,11 @@ export function QuickStartGuide({ onAddSampleApps, onAddCustomApp }: QuickStartG
               <div className="flex items-start gap-4">
                 <div className="text-4xl">🌐</div>
                 <div className="flex-1 text-left">
-                  <h3 className="text-xl font-bold text-white mb-2">
-                    Add Custom Web App
-                  </h3>
+                  <h3 className="text-xl font-bold text-white mb-2">Add Custom Web App</h3>
                   <p className="text-gray-400 text-sm mb-3">
                     Add any website or web app by entering its URL
                   </p>
-                  <div className="text-sm text-teal-400 font-medium">
-                    Click to get started →
-                  </div>
+                  <div className="text-sm text-teal-400 font-medium">Click to get started →</div>
                 </div>
               </div>
             </div>
@@ -156,11 +150,13 @@ export function QuickStartGuide({ onAddSampleApps, onAddCustomApp }: QuickStartG
                 onHoverEnd={() => setHoveredApp(null)}
                 className="relative group cursor-pointer"
               >
-                <div className={`
+                <div
+                  className={`
                   bg-gradient-to-br ${app.color} rounded-xl p-4 h-full
                   transform transition-all duration-300
                   ${hoveredApp === idx ? 'shadow-2xl shadow-purple-500/20' : 'shadow-lg'}
-                `}>
+                `}
+                >
                   <div className="text-4xl mb-2">{app.icon}</div>
                   <div className="text-sm font-bold text-white">{app.name}</div>
                   <div className="text-xs text-white/70">{app.description}</div>
@@ -177,7 +173,10 @@ export function QuickStartGuide({ onAddSampleApps, onAddCustomApp }: QuickStartG
           transition={{ delay: 0.9, duration: 0.5 }}
           className="mt-8 text-center text-sm text-gray-500"
         >
-          <p>💡 <span className="text-gray-400">Tip:</span> You can add multiple instances of the same app for different accounts</p>
+          <p>
+            💡 <span className="text-gray-400">Tip:</span> You can add multiple instances of the
+            same app for different accounts
+          </p>
         </motion.div>
       </motion.div>
     </div>

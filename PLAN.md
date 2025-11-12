@@ -8,17 +8,17 @@ This document provides a detailed technical plan for implementing Dockyard, cove
 
 ### **Technology Stack**
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Desktop Shell | Electron 39+ | Cross-platform desktop application framework |
-| Frontend | React 18+ | UI component library |
-| Build Tool | Vite 5+ | Fast development and production builds |
-| Styling | TailwindCSS 3+ | Utility-first CSS framework |
-| Animation | Framer Motion | Smooth transitions and UI animations |
-| State Management | Zustand or React Context | Application state management |
-| Data Persistence | electron-store | Local JSON-based storage |
-| TypeScript | 5.0+ | Type safety and better DX |
-| Packaging | Electron Forge | Build and distribution |
+| Layer            | Technology               | Purpose                                      |
+| ---------------- | ------------------------ | -------------------------------------------- |
+| Desktop Shell    | Electron 39+             | Cross-platform desktop application framework |
+| Frontend         | React 18+                | UI component library                         |
+| Build Tool       | Vite 5+                  | Fast development and production builds       |
+| Styling          | TailwindCSS 3+           | Utility-first CSS framework                  |
+| Animation        | Framer Motion            | Smooth transitions and UI animations         |
+| State Management | Zustand or React Context | Application state management                 |
+| Data Persistence | electron-store           | Local JSON-based storage                     |
+| TypeScript       | 5.0+                     | Type safety and better DX                    |
+| Packaging        | Electron Forge           | Build and distribution                       |
 
 ### **Project Structure**
 
@@ -83,6 +83,7 @@ dockyard-electron/
 ### **1.1 TypeScript & Build Setup**
 
 #### Tasks:
+
 1. **Configure TypeScript**
    - Set up `tsconfig.json` with strict mode
    - Separate configs for main, renderer, and preload
@@ -100,11 +101,13 @@ dockyard-electron/
    - Configure app icons and metadata
 
 #### Technical Decisions:
+
 - **TypeScript strict mode**: Catch errors early, improve maintainability
 - **Path aliases**: `@main`, `@renderer`, `@shared` for cleaner imports
 - **Separate tsconfig files**: Different compiler options for each process
 
 #### Implementation Steps:
+
 ```bash
 # 1. Install dependencies
 npm install -D typescript @types/node @types/react @types/react-dom
@@ -124,27 +127,32 @@ npm install react react-dom zustand framer-motion electron-store
 #### Core Components:
 
 **`src/main/index.ts`**
+
 - Entry point for main process
 - Initialize app, handle lifecycle events
 - Set up IPC handlers
 - Manage command-line arguments
 
 **`src/main/window-manager.ts`**
+
 - Create and manage BrowserWindows
 - Handle window state (minimize, maximize, close)
 - Multi-window support for detached apps
 
 **`src/main/ipc-handlers.ts`**
+
 - Register IPC handlers for renderer communication
-- Namespace handlers by domain (profile:*, workspace:*, app:*)
+- Namespace handlers by domain (profile:_, workspace:_, app:\*)
 - Validate and sanitize IPC messages
 
 **`src/main/profile-manager.ts`**
+
 - Profile creation, deletion, and switching
 - Manage per-profile data stores
 - Handle `--profile=<name>` command-line flag
 
 **`src/main/app-manager.ts`**
+
 - Manage app instances (BrowserViews)
 - Handle app lifecycle (create, destroy, suspend, resume)
 - Manage session partitions
@@ -179,6 +187,7 @@ const IPC_CHANNELS = {
 ```
 
 #### Security Considerations:
+
 - Use `contextBridge` in preload scripts (never expose full Node.js)
 - Validate all IPC inputs in main process
 - Sanitize URLs before loading in BrowserViews
@@ -191,6 +200,7 @@ const IPC_CHANNELS = {
 #### Data Schema:
 
 **Profile Data** (`profiles.json` - root config)
+
 ```typescript
 interface ProfileMetadata {
   id: string;
@@ -208,12 +218,13 @@ interface ProfilesConfig {
 ```
 
 **Workspace Data** (per-profile: `profile-{name}/workspaces.json`)
+
 ```typescript
 interface Workspace {
   id: string;
   name: string;
   icon?: string;
-  apps: string[];  // Array of app IDs
+  apps: string[]; // Array of app IDs
   layout: {
     dockPosition: 'top' | 'bottom' | 'left' | 'right';
     dockSize: number;
@@ -238,12 +249,13 @@ interface WorkspacesConfig {
 ```
 
 **App Data** (per-profile: `profile-{name}/apps.json`)
+
 ```typescript
 interface App {
   id: string;
   name: string;
   url: string;
-  icon?: string;  // Path or URL to icon
+  icon?: string; // Path or URL to icon
   customCSS?: string;
   customJS?: string;
   workspaceId: string;
@@ -255,7 +267,7 @@ interface App {
 interface AppInstance {
   id: string;
   appId: string;
-  name?: string;  // Optional label for instance
+  name?: string; // Optional label for instance
   partitionId: string;
   hibernated: boolean;
   lastActive: string;
@@ -267,6 +279,7 @@ interface AppsConfig {
 ```
 
 **Settings Data** (per-profile: `profile-{name}/settings.json`)
+
 ```typescript
 interface Settings {
   general: {
@@ -289,7 +302,7 @@ interface Settings {
     blockThirdPartyCookies: boolean;
   };
   shortcuts: {
-    [action: string]: string;  // e.g., "switchWorkspace": "Cmd+Tab"
+    [action: string]: string; // e.g., "switchWorkspace": "Cmd+Tab"
   };
   advanced: {
     devToolsEnabled: boolean;
@@ -337,6 +350,7 @@ class StoreManager {
 ### **1.4 Preload Scripts for IPC Security**
 
 **`src/preload/index.ts`**
+
 ```typescript
 import { contextBridge, ipcRenderer } from 'electron';
 
@@ -354,7 +368,8 @@ contextBridge.exposeInMainWorld('dockyard', {
   workspaces: {
     list: () => ipcRenderer.invoke('workspace:list'),
     create: (data: Partial<Workspace>) => ipcRenderer.invoke('workspace:create', data),
-    update: (id: string, data: Partial<Workspace>) => ipcRenderer.invoke('workspace:update', id, data),
+    update: (id: string, data: Partial<Workspace>) =>
+      ipcRenderer.invoke('workspace:update', id, data),
     delete: (id: string) => ipcRenderer.invoke('workspace:delete', id),
     switch: (id: string) => ipcRenderer.invoke('workspace:switch', id),
   },
@@ -390,6 +405,7 @@ contextBridge.exposeInMainWorld('dockyard', {
 ```
 
 **Type definitions for renderer** (`src/shared/types/preload.d.ts`)
+
 ```typescript
 export interface DockyardAPI {
   profiles: {
@@ -398,9 +414,15 @@ export interface DockyardAPI {
     delete: (id: string) => Promise<void>;
     switch: (id: string) => Promise<void>;
   };
-  workspaces: { /* ... */ };
-  apps: { /* ... */ };
-  settings: { /* ... */ };
+  workspaces: {
+    /* ... */
+  };
+  apps: {
+    /* ... */
+  };
+  settings: {
+    /* ... */
+  };
   on: (channel: string, callback: (...args: any[]) => void) => void;
   off: (channel: string, callback: (...args: any[]) => void) => void;
 }
@@ -419,11 +441,13 @@ declare global {
 #### State Management Strategy:
 
 **Option 1: Zustand (Recommended)**
+
 - Lightweight, minimal boilerplate
 - Good TypeScript support
 - Easy to test and debug
 
 **Option 2: React Context**
+
 - No external dependencies
 - Good for smaller state trees
 - More boilerplate
@@ -512,6 +536,7 @@ export function App() {
 ### **2.1 BrowserView Implementation**
 
 #### Why BrowserView over WebView?
+
 - Better performance
 - Modern Electron API
 - More control over sessions and partitions
@@ -562,7 +587,7 @@ class AppViewManager {
     const bounds = window.getBounds();
     // Calculate position based on dock settings
     view.setBounds({
-      x: 60,  // Dock width
+      x: 60, // Dock width
       y: 0,
       width: bounds.width - 60,
       height: bounds.height,
@@ -594,11 +619,7 @@ class AppViewManager {
 ```typescript
 // src/main/partition-manager.ts
 export class PartitionManager {
-  static getPartitionForApp(
-    app: App,
-    instance: AppInstance,
-    workspace: Workspace
-  ): string {
+  static getPartitionForApp(app: App, instance: AppInstance, workspace: Workspace): string {
     if (workspace.sessionMode === 'shared') {
       return `persist:workspace-${workspace.id}`;
     }
@@ -640,7 +661,7 @@ export class HibernationManager {
       }
     };
 
-    const timer = setInterval(checkIdle, 60000);  // Check every minute
+    const timer = setInterval(checkIdle, 60000); // Check every minute
     this.idleTimers.set(appId, timer);
   }
 
@@ -657,10 +678,10 @@ export class HibernationManager {
     if (view) {
       // Method 1: Hide the view (lighter)
       view.webContents.setBackgroundThrottling(true);
-      
+
       // Method 2: Destroy and recreate on resume (heavier)
       // this.viewManager.destroyView(appId);
-      
+
       this.emit('app-hibernated', appId);
     }
   }
@@ -684,7 +705,7 @@ export class PerformanceMonitor {
     const view = this.viewManager.getView(appId);
     if (view) {
       const info = view.webContents.getProcessMemoryInfo();
-      return info.residentSet;  // Memory in KB
+      return info.residentSet; // Memory in KB
     }
     return 0;
   }
@@ -692,7 +713,7 @@ export class PerformanceMonitor {
   getCPUUsage(appId: string): Promise<number> {
     const view = this.viewManager.getView(appId);
     if (view) {
-      return view.webContents.getProcessCPUUsage().then(info => {
+      return view.webContents.getProcessCPUUsage().then((info) => {
         return info.percentCPUUsage;
       });
     }
@@ -754,6 +775,7 @@ export class NotificationManager {
 ```
 
 **Webview Integration:**
+
 ```typescript
 // In renderer process
 view.webContents.on('notification', (event, title, options) => {
@@ -779,7 +801,7 @@ export function LayoutManager({ layout, apps }: Props) {
     switch (layout.type) {
       case 'single':
         return <AppView appId={layout.apps[0]?.appId} />;
-      
+
       case 'split-horizontal':
         return (
           <div className="flex flex-row h-full">
@@ -792,7 +814,7 @@ export function LayoutManager({ layout, apps }: Props) {
             ))}
           </div>
         );
-      
+
       // ... other layout types
     }
   };
@@ -806,22 +828,26 @@ export function LayoutManager({ layout, apps }: Props) {
 ## 🧪 **Testing Strategy**
 
 ### **Unit Tests** (Jest)
+
 - Data models and utilities
 - State management logic
 - IPC message handlers (mocked)
 
 ### **Integration Tests** (Spectron/Playwright)
+
 - IPC communication flows
 - Data persistence
 - Window management
 
 ### **E2E Tests** (Playwright)
+
 - Complete user workflows
 - Profile creation and switching
 - App management
 - Workspace operations
 
 ### **Test Structure:**
+
 ```
 tests/
 ├─ unit/
@@ -846,6 +872,7 @@ tests/
 ## 🔒 **Security Considerations**
 
 ### **1. Electron Security Checklist**
+
 - ✅ Enable `contextIsolation`
 - ✅ Disable `nodeIntegration`
 - ✅ Enable `sandbox`
@@ -856,12 +883,14 @@ tests/
 - ✅ Keep Electron updated
 
 ### **2. Session Security**
+
 - Each partition is isolated by default
 - Clear sensitive data on app exit (optional)
 - Provide UI to clear cache/cookies per app
 - Consider enabling `webSecurity` for all views
 
 ### **3. Data Security**
+
 - All data stored locally, no network calls
 - Consider encrypting sensitive profile data
 - Implement secure backup/export with user password
@@ -873,36 +902,39 @@ tests/
 ### **Build Configuration**
 
 **Electron Forge Makers:**
+
 ```javascript
 // forge.config.js
 {
   makers: [
     {
-      name: '@electron-forge/maker-squirrel',  // Windows
-      config: { name: 'dockyard-electron' }
+      name: '@electron-forge/maker-squirrel', // Windows
+      config: { name: 'dockyard-electron' },
     },
     {
-      name: '@electron-forge/maker-zip',  // macOS
-      platforms: ['darwin']
+      name: '@electron-forge/maker-zip', // macOS
+      platforms: ['darwin'],
     },
     {
-      name: '@electron-forge/maker-deb',  // Linux (Debian)
-      config: {}
+      name: '@electron-forge/maker-deb', // Linux (Debian)
+      config: {},
     },
     {
-      name: '@electron-forge/maker-rpm',  // Linux (Red Hat)
-      config: {}
-    }
-  ]
+      name: '@electron-forge/maker-rpm', // Linux (Red Hat)
+      config: {},
+    },
+  ];
 }
 ```
 
 ### **Auto-Update Setup**
+
 - Use `electron-updater` or Electron Forge's publisher
 - GitHub Releases for distribution
 - Update checks on app launch (optional, user-controlled)
 
 ### **Code Signing**
+
 - macOS: Apple Developer certificate
 - Windows: EV Code Signing certificate
 - Linux: Not required
@@ -911,25 +943,27 @@ tests/
 
 ## 📊 **Performance Targets**
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| App launch time | < 3 seconds | Time to show first window |
-| Memory usage (idle, 5 apps) | < 500 MB | Activity Monitor / Task Manager |
-| Memory usage (active, 10 apps) | < 1.5 GB | Activity Monitor / Task Manager |
-| App switch latency | < 100ms | Perceived responsiveness |
-| Hibernation resume time | < 500ms | Time to restore suspended app |
+| Metric                         | Target      | Measurement                     |
+| ------------------------------ | ----------- | ------------------------------- |
+| App launch time                | < 3 seconds | Time to show first window       |
+| Memory usage (idle, 5 apps)    | < 500 MB    | Activity Monitor / Task Manager |
+| Memory usage (active, 10 apps) | < 1.5 GB    | Activity Monitor / Task Manager |
+| App switch latency             | < 100ms     | Perceived responsiveness        |
+| Hibernation resume time        | < 500ms     | Time to restore suspended app   |
 
 ---
 
 ## 🛠️ **Development Tools & Workflow**
 
 ### **Code Quality Tools**
+
 - **ESLint**: Linting JavaScript/TypeScript
 - **Prettier**: Code formatting
 - **Husky**: Git hooks for pre-commit checks
 - **lint-staged**: Run linters on staged files
 
 ### **Development Workflow**
+
 1. Fork and clone the repository
 2. Create feature branch: `feature/your-feature-name`
 3. Make changes and test locally
@@ -938,6 +972,7 @@ tests/
 6. Push and create Pull Request
 
 ### **Conventional Commits**
+
 ```
 feat: add workspace template feature
 fix: resolve memory leak in app hibernation
@@ -951,6 +986,7 @@ test: add tests for profile manager
 ## 🎯 **Success Criteria for Each Phase**
 
 ### **Phase 1 Success Criteria:**
+
 - ✅ App launches and shows main window
 - ✅ Can create and switch profiles
 - ✅ Basic settings are persisted
@@ -958,6 +994,7 @@ test: add tests for profile manager
 - ✅ Code passes all linters and tests
 
 ### **Phase 2 Success Criteria:**
+
 - ✅ Can create and manage workspaces
 - ✅ Can add custom apps by URL
 - ✅ Apps load correctly in BrowserViews
@@ -965,6 +1002,7 @@ test: add tests for profile manager
 - ✅ UI is responsive and polished
 
 ### **Phase 3 Success Criteria:**
+
 - ✅ Auto-hibernation works reliably
 - ✅ Memory usage stays within targets
 - ✅ Performance monitoring is accurate

@@ -12,7 +12,7 @@ export function getFaviconUrl(url: string): string {
   try {
     const urlObj = new URL(url);
     const domain = urlObj.hostname;
-    
+
     // Use Google's favicon service which is reliable and fast
     return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
   } catch {
@@ -28,7 +28,7 @@ export function getFaviconUrl(url: string): string {
  */
 export function generateAppAvatar(name: string): { letter: string; color: string } {
   const letter = name.charAt(0).toUpperCase();
-  
+
   // Generate consistent color based on first letter
   const colors = [
     'bg-indigo-600',
@@ -42,7 +42,7 @@ export function generateAppAvatar(name: string): { letter: string; color: string
     'bg-cyan-600',
     'bg-blue-600',
   ];
-  
+
   const index = letter.charCodeAt(0) % colors.length;
   return {
     letter,
@@ -58,13 +58,13 @@ export async function downloadFavicon(url: string): Promise<string | null> {
   try {
     const faviconUrl = getFaviconUrl(url);
     const response = await fetch(faviconUrl);
-    
+
     if (!response.ok) {
       return null;
     }
-    
+
     const blob = await response.blob();
-    
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result as string);

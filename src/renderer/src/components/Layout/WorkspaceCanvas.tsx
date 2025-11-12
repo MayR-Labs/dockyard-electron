@@ -30,7 +30,7 @@ export function WorkspaceCanvas({
   onAppSelect,
   onAddSampleApps,
   onAddCustomApp,
-  onUpdateApp
+  onUpdateApp,
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
@@ -47,7 +47,7 @@ export function WorkspaceCanvas({
   const handleLayoutChange = (mode: LayoutMode, panels?: { appId: string; size?: number }[]) => {
     setLayoutMode(mode);
     if (panels && panels.length > 0) {
-      setActiveAppIds(panels.map(p => p.appId));
+      setActiveAppIds(panels.map((p) => p.appId));
     }
   };
 
@@ -69,10 +69,7 @@ export function WorkspaceCanvas({
       <div className="flex-1 bg-gray-950 flex flex-col">
         {/* Layout Toolbar */}
         <div className="h-12 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4">
-          <LayoutControls
-            currentMode={layoutMode}
-            onModeChange={(mode) => setLayoutMode(mode)}
-          />
+          <LayoutControls currentMode={layoutMode} onModeChange={(mode) => setLayoutMode(mode)} />
 
           <div className="flex items-center gap-2 text-sm text-gray-400">
             <span>{activeAppIds.length} apps displayed</span>
@@ -89,7 +86,7 @@ export function WorkspaceCanvas({
     );
   }
 
-  const activeApp = apps.find(app => app.id === activeAppId);
+  const activeApp = apps.find((app) => app.id === activeAppId);
 
   return (
     <div className="flex-1 bg-gray-950 relative flex flex-col">
@@ -121,8 +118,8 @@ export function WorkspaceCanvas({
               >
                 <option value="">Select app...</option>
                 {apps
-                  .filter(app => !activeAppIds.includes(app.id))
-                  .map(app => (
+                  .filter((app) => !activeAppIds.includes(app.id))
+                  .map((app) => (
                     <option key={app.id} value={app.id}>
                       {app.name}
                     </option>
@@ -305,9 +302,7 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
 
           {/* App Info */}
           <div className="flex items-center gap-2 ml-2 border-l border-gray-700 pl-3">
-            {app.icon && (
-              <img src={app.icon} alt={app.name} className="w-5 h-5 rounded" />
-            )}
+            {app.icon && <img src={app.icon} alt={app.name} className="w-5 h-5 rounded" />}
             <span className="text-sm font-medium text-gray-300">{app.name}</span>
             {app.instances.length > 1 && (
               <select className="text-xs bg-gray-700 text-gray-300 rounded px-2 py-1 border border-gray-600">
@@ -323,26 +318,42 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
 
         <div className="flex items-center gap-3">
           {/* Zoom Controls */}
-          <ZoomControls
-            zoomLevel={zoomLevel}
-            onZoomChange={handleZoomChange}
-          />
+          <ZoomControls zoomLevel={zoomLevel} onZoomChange={handleZoomChange} />
 
-          <button
-            className="p-1 hover:bg-gray-700 rounded transition-colors"
-            title="Settings"
-          >
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          <button className="p-1 hover:bg-gray-700 rounded transition-colors" title="Settings">
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
           </button>
-          <button
-            className="p-1 hover:bg-gray-700 rounded transition-colors"
-            title="Close"
-          >
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <button className="p-1 hover:bg-gray-700 rounded transition-colors" title="Close">
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -422,8 +433,18 @@ function BrowserViewContainer({ app, instanceId }: { app: App; instanceId?: stri
       <div className="flex-1 flex items-center justify-center bg-gray-900">
         <div className="text-center text-gray-400">
           <div className="mb-4">
-            <svg className="w-16 h-16 mx-auto opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-16 h-16 mx-auto opacity-50"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
           </div>
           <p className="text-lg font-medium">Loading app...</p>

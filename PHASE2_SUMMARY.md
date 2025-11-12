@@ -9,6 +9,7 @@ Phase 2 of the Dockyard project has made significant progress, with the UI archi
 ### 1. Complete UI Layout System
 
 **Files Created:**
+
 - `src/renderer/src/components/Layout/WindowChrome.tsx` - Top chrome with profile selector and workspace name
 - `src/renderer/src/components/Layout/Sidebar.tsx` - Workspace list and navigation panel
 - `src/renderer/src/components/Layout/Dock.tsx` - App icon dock with configurable positioning
@@ -16,6 +17,7 @@ Phase 2 of the Dockyard project has made significant progress, with the UI archi
 - `src/renderer/src/components/Layout/StatusBar.tsx` - Bottom status bar with DND toggle
 
 **Features:**
+
 - Flexible layout matching DESIGN.md specifications
 - Support for all 4 dock positions (top, bottom, left, right)
 - Responsive sidebar with collapse/expand
@@ -25,9 +27,11 @@ Phase 2 of the Dockyard project has made significant progress, with the UI archi
 ### 2. Workspace Management
 
 **Files Created:**
+
 - `src/renderer/src/components/Modals/CreateWorkspaceModal.tsx` - Workspace creation dialog
 
 **Features:**
+
 - Create workspaces with custom names
 - Select session mode (isolated vs shared)
 - Choose dock position
@@ -39,10 +43,12 @@ Phase 2 of the Dockyard project has made significant progress, with the UI archi
 ### 3. App Management UI
 
 **Files Created:**
+
 - `src/renderer/src/components/Modals/AddAppModal.tsx` - App creation dialog
 - `src/renderer/src/components/ContextMenu/AppContextMenu.tsx` - Right-click context menu
 
 **Features:**
+
 - Add custom apps by URL
 - Popular app templates (Gmail, Slack, GitHub, Notion, Discord, Trello)
 - URL validation and normalization
@@ -56,6 +62,7 @@ Phase 2 of the Dockyard project has made significant progress, with the UI archi
 ### 4. Keyboard Shortcuts
 
 **Implemented Shortcuts:**
+
 ```
 Cmd/Ctrl+1-9      Switch to workspace by number
 Cmd/Ctrl+B        Toggle sidebar visibility
@@ -66,6 +73,7 @@ Cmd/Ctrl+Space    Quick Launcher (planned)
 ### 5. Empty States & Onboarding
 
 **Features:**
+
 - Welcome screen when no workspaces exist
 - Empty workspace canvas with helpful message
 - First-time user guidance
@@ -73,6 +81,7 @@ Cmd/Ctrl+Space    Quick Launcher (planned)
 ## ✅ Checklist Completion
 
 ### Phase 2.1: Workspace System ✅ 100%
+
 - [x] Workspace creation, editing, and deletion
 - [x] Workspace switching (keyboard shortcuts)
 - [x] Workspace-level settings (theme, layout, hibernation)
@@ -81,6 +90,7 @@ Cmd/Ctrl+Space    Quick Launcher (planned)
 - [x] Welcome screen for first-time users
 
 ### Phase 2.2: App Management 🚧 60%
+
 - [x] Add custom apps by URL
 - [x] Built-in app catalog/templates
 - [x] App creation modal with validation
@@ -90,6 +100,7 @@ Cmd/Ctrl+Space    Quick Launcher (planned)
 - [ ] App deletion (basic implementation complete)
 
 ### Phase 2.3: App Embedding 🚧 0%
+
 - [ ] Implement BrowserView for app embedding
 - [ ] Session partition management
 - [ ] Navigation controls (back, forward, reload)
@@ -97,6 +108,7 @@ Cmd/Ctrl+Space    Quick Launcher (planned)
 - [ ] Webview lifecycle management
 
 ### Phase 2.4: App UI Components 🚧 80%
+
 - [x] App dock/sidebar with icons
 - [x] Dock positioning (top, bottom, left, right)
 - [x] Dock icon badges for multiple instances
@@ -109,6 +121,7 @@ Cmd/Ctrl+Space    Quick Launcher (planned)
 ## 🏗️ Architecture Highlights
 
 ### Component Structure
+
 ```
 src/renderer/src/
 ├── components/
@@ -131,7 +144,9 @@ src/renderer/src/
 ```
 
 ### Layout System
+
 The layout is highly flexible and adapts to user preferences:
+
 - WindowChrome always at top
 - Sidebar toggleable on left
 - Dock can be positioned on any edge
@@ -139,23 +154,25 @@ The layout is highly flexible and adapts to user preferences:
 - StatusBar always at bottom
 
 ### State Management
+
 - Zustand stores for workspaces, apps, and settings
 - IPC communication with main process
 - Local state for UI elements (modals, context menus)
 
 ## 🎯 Phase 2 Goals Achievement
 
-| Goal | Status | Notes |
-|------|--------|-------|
-| Enable workspace creation | ✅ Complete | Full CRUD operations |
-| Workspace switching | ✅ Complete | Sidebar + keyboard shortcuts |
-| Add custom apps | ✅ Complete | Modal with URL input |
-| App UI components | ✅ Mostly Complete | Dock, canvas, tiles working |
-| App embedding | ❌ Not Started | Main remaining task |
+| Goal                      | Status             | Notes                        |
+| ------------------------- | ------------------ | ---------------------------- |
+| Enable workspace creation | ✅ Complete        | Full CRUD operations         |
+| Workspace switching       | ✅ Complete        | Sidebar + keyboard shortcuts |
+| Add custom apps           | ✅ Complete        | Modal with URL input         |
+| App UI components         | ✅ Mostly Complete | Dock, canvas, tiles working  |
+| App embedding             | ❌ Not Started     | Main remaining task          |
 
 ## 🚀 What's Working Now
 
 Users can:
+
 1. Create multiple workspaces with custom settings
 2. Switch between workspaces using sidebar or Cmd/Ctrl+1-9
 3. Add apps to workspaces via URL
@@ -169,12 +186,14 @@ Users can:
 ## 🚧 What's Still Needed
 
 ### Critical for Phase 2 Completion
+
 1. **BrowserView Integration** - Embed actual web content
 2. **Session Partitions** - Implement isolation per app
 3. **Navigation Controls** - Back, forward, reload buttons
 4. **Favicon Fetching** - Auto-download favicons from URLs
 
 ### Nice-to-Have for Phase 2
+
 5. **Drag-and-Drop** - Reorder apps in dock
 6. **App Editing** - Modify app name, URL, icon
 7. **Multiple Instances** - Run same app multiple times
@@ -183,6 +202,7 @@ Users can:
 ## 📊 Technical Specifications
 
 ### Code Quality
+
 - Full TypeScript type safety
 - No type errors or warnings
 - Clean component separation
@@ -190,12 +210,14 @@ Users can:
 - Proper error handling
 
 ### Performance
+
 - Fast UI rendering with React 19
 - Efficient state updates with Zustand
 - Optimized Vite builds
 - Minimal bundle size (~220KB)
 
 ### Accessibility
+
 - Keyboard navigation support
 - Focus management for modals
 - Semantic HTML structure
@@ -219,18 +241,21 @@ Users can:
 ## 🎯 Next Steps for Phase 2 Completion
 
 ### Immediate Priority (Week 1)
+
 1. Implement BrowserView in main process
 2. Add webview lifecycle management
 3. Implement session partition system
 4. Connect canvas tiles to actual webviews
 
 ### Secondary Priority (Week 2)
+
 5. Add navigation controls (back, forward, reload)
 6. Implement favicon fetching utility
 7. Create app settings modal
 8. Add custom icon upload
 
 ### Polish (Week 3)
+
 9. Implement drag-and-drop reordering
 10. Add multiple instance support
 11. Create app editing flow
@@ -259,6 +284,7 @@ Users can:
 ## 🎉 Success Metrics
 
 Phase 2 will be considered complete when:
+
 - [ ] Apps can be embedded with BrowserView (0%)
 - [x] Workspaces can be created and switched (100%)
 - [x] Apps can be added to workspaces (100%)

@@ -34,7 +34,7 @@ export function EditAppModal({ isOpen, app, onClose, onUpdateApp }: EditAppModal
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (!name.trim() || !url.trim()) {
       setError('Name and URL are required');
       return;
@@ -56,7 +56,7 @@ export function EditAppModal({ isOpen, app, onClose, onUpdateApp }: EditAppModal
         url: normalizedUrl,
         icon: icon || undefined,
       });
-      
+
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update app');
@@ -80,12 +80,19 @@ export function EditAppModal({ isOpen, app, onClose, onUpdateApp }: EditAppModal
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white">Edit App</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-800 rounded-lg transition"
-          >
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-lg transition">
+            <svg
+              className="w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -93,9 +100,7 @@ export function EditAppModal({ isOpen, app, onClose, onUpdateApp }: EditAppModal
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              App Name
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">App Name</label>
             <input
               type="text"
               value={name}
@@ -107,9 +112,7 @@ export function EditAppModal({ isOpen, app, onClose, onUpdateApp }: EditAppModal
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              URL
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">URL</label>
             <input
               type="text"
               value={url}
@@ -132,9 +135,7 @@ export function EditAppModal({ isOpen, app, onClose, onUpdateApp }: EditAppModal
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               disabled={isSubmitting}
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Leave empty to use the default favicon
-            </p>
+            <p className="mt-1 text-xs text-gray-500">Leave empty to use the default favicon</p>
           </div>
 
           {error && (

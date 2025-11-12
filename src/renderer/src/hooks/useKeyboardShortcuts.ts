@@ -19,10 +19,7 @@ export interface KeyboardShortcut {
  * @param shortcuts - Array of keyboard shortcut configurations
  * @param enabled - Whether shortcuts are currently enabled
  */
-export function useKeyboardShortcuts(
-  shortcuts: KeyboardShortcut[],
-  enabled: boolean = true
-) {
+export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[], enabled: boolean = true) {
   useEffect(() => {
     if (!enabled) return;
 
@@ -73,19 +70,14 @@ function checkModifier(
 /**
  * Hook for workspace switching shortcuts (Cmd/Ctrl+1-9)
  */
-export function useWorkspaceSwitchShortcuts(
-  workspaces: any[],
-  onSwitch: (id: string) => void
-) {
-  const shortcuts: KeyboardShortcut[] = workspaces
-    .slice(0, 9)
-    .map((workspace, index) => ({
-      key: `Digit${index + 1}`,
-      modifier: 'ctrlOrMeta',
-      shiftKey: false,
-      action: () => onSwitch(workspace.id),
-      description: `Switch to workspace ${index + 1}`,
-    }));
+export function useWorkspaceSwitchShortcuts(workspaces: any[], onSwitch: (id: string) => void) {
+  const shortcuts: KeyboardShortcut[] = workspaces.slice(0, 9).map((workspace, index) => ({
+    key: `Digit${index + 1}`,
+    modifier: 'ctrlOrMeta',
+    shiftKey: false,
+    action: () => onSwitch(workspace.id),
+    description: `Switch to workspace ${index + 1}`,
+  }));
 
   useKeyboardShortcuts(shortcuts);
 }

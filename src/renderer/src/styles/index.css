@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Keep custom styles minimal; Tailwind Preflight already normalizes styles */
 #root {

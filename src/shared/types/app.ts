@@ -1,7 +1,7 @@
 export interface AppInstance {
   id: string;
   appId: string;
-  name?: string;  // Optional label for instance
+  name?: string; // Optional label for instance
   partitionId: string;
   hibernated: boolean;
   lastActive: string;
@@ -14,14 +14,14 @@ export interface AppNotificationSettings {
 }
 
 export interface AppDisplaySettings {
-  zoomLevel: number;  // 0.5 to 2.0, default 1.0
+  zoomLevel: number; // 0.5 to 2.0, default 1.0
 }
 
 export interface App {
   id: string;
   name: string;
   url: string;
-  icon?: string;  // Path or URL to icon
+  icon?: string; // Path or URL to icon
   customCSS?: string;
   customJS?: string;
   workspaceId: string;

@@ -35,7 +35,10 @@ export interface DockyardAPI {
     goBack: (appId: string, instanceId: string) => Promise<void>;
     goForward: (appId: string, instanceId: string) => Promise<void>;
     reload: (appId: string, instanceId: string) => Promise<void>;
-    getState: (appId: string, instanceId: string) => Promise<{
+    getState: (
+      appId: string,
+      instanceId: string
+    ) => Promise<{
       canGoBack: boolean;
       canGoForward: boolean;
       isLoading: boolean;
@@ -45,25 +48,35 @@ export interface DockyardAPI {
     openDevTools: (appId: string, instanceId: string) => Promise<void>;
     closeDevTools: (appId: string, instanceId: string) => Promise<void>;
     clearSession: (partitionId: string) => Promise<void>;
-    getMemory: (appId: string, instanceId: string) => Promise<{
+    getMemory: (
+      appId: string,
+      instanceId: string
+    ) => Promise<{
       workingSetSize: number;
       privateBytes: number;
     }>;
     getCPU: (appId: string, instanceId: string) => Promise<number>;
-    getAll: () => Promise<Array<{
-      appId: string;
-      instanceId: string;
-      partitionId: string;
-      lastActive: number;
-      isActive: boolean;
-    }>>;
+    getAll: () => Promise<
+      Array<{
+        appId: string;
+        instanceId: string;
+        partitionId: string;
+        lastActive: number;
+        isActive: boolean;
+      }>
+    >;
   };
   settings: {
     get: () => Promise<Settings>;
     update: (data: Partial<Settings>) => Promise<Settings>;
   };
   notifications: {
-    show: (options: { title: string; body: string; icon?: string; silent?: boolean }) => Promise<void>;
+    show: (options: {
+      title: string;
+      body: string;
+      icon?: string;
+      silent?: boolean;
+    }) => Promise<void>;
     updateBadge: (appId: string, count: number) => Promise<App>;
   };
   on: (channel: string, callback: (...args: any[]) => void) => void;

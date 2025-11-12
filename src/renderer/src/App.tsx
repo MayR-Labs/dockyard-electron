@@ -26,15 +26,22 @@ import { App as AppType, AppInstance } from '../../shared/types/app';
 
 function App() {
   // Store hooks
-  const { loadWorkspaces, workspaces, activeWorkspaceId, setActiveWorkspace, createWorkspace, updateWorkspace } = useWorkspaceStore();
+  const {
+    loadWorkspaces,
+    workspaces,
+    activeWorkspaceId,
+    setActiveWorkspace,
+    createWorkspace,
+    updateWorkspace,
+  } = useWorkspaceStore();
   const { loadApps, apps, createApp, updateApp, deleteApp, hibernateApp } = useAppStore();
   const { loadSettings, settings, updateSettings } = useSettingsStore();
-  
+
   // UI state
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
-  
+
   // Modal state
   const [isAddAppModalOpen, setIsAddAppModalOpen] = useState(false);
   const [isEditAppModalOpen, setIsEditAppModalOpen] = useState(false);
@@ -43,7 +50,7 @@ function App() {
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppType | null>(null);
-  
+
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{
     appId: string;
@@ -56,11 +63,7 @@ function App() {
     // Load all data on startup
     const loadData = async () => {
       try {
-        await Promise.all([
-          loadWorkspaces(),
-          loadApps(),
-          loadSettings(),
-        ]);
+        await Promise.all([loadWorkspaces(), loadApps(), loadSettings()]);
       } catch (error) {
         console.error('Failed to load data:', error);
       } finally {
@@ -106,7 +109,7 @@ function App() {
     {
       key: 'KeyB',
       modifier: 'ctrlOrMeta',
-      action: () => setIsSidebarOpen(prev => !prev),
+      action: () => setIsSidebarOpen((prev) => !prev),
       description: 'Toggle sidebar',
     },
     // Toggle DND: Cmd/Ctrl+Shift+D
@@ -127,11 +130,11 @@ function App() {
     })),
   ]);
 
-  const activeWorkspace = workspaces.find(w => w.id === activeWorkspaceId);
-  
+  const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId);
+
   // Sort apps by the order defined in workspace.apps
   const workspaceApps = apps
-    .filter(app => app.workspaceId === activeWorkspaceId)
+    .filter((app) => app.workspaceId === activeWorkspaceId)
     .sort((a, b) => {
       const orderA = activeWorkspace?.apps.indexOf(a.id) ?? -1;
       const orderB = activeWorkspace?.apps.indexOf(b.id) ?? -1;
@@ -156,11 +159,7 @@ function App() {
     });
   };
 
-  const handleAddApp = async (appData: {
-    name: string;
-    url: string;
-    icon?: string;
-  }) => {
+  const handleAddApp = async (appData: { name: string; url: string; icon?: string }) => {
     if (!activeWorkspaceId || !activeWorkspace) return;
 
     const newApp = await createApp({
@@ -234,7 +233,7 @@ function App() {
   };
 
   const handleCreateInstance = async (appId: string, instance: AppInstance) => {
-    const app = apps.find(a => a.id === appId);
+    const app = apps.find((a) => a.id === appId);
     if (!app) return;
 
     // Add the new instance to the app
@@ -244,7 +243,7 @@ function App() {
   };
 
   const handleOpenSettings = (appId: string) => {
-    const app = apps.find(a => a.id === appId);
+    const app = apps.find((a) => a.id === appId);
     if (app) {
       setSelectedApp(app);
       setIsEditAppModalOpen(true);
@@ -252,7 +251,7 @@ function App() {
   };
 
   const handleOpenNewInstance = (appId: string) => {
-    const app = apps.find(a => a.id === appId);
+    const app = apps.find((a) => a.id === appId);
     if (app) {
       setSelectedApp(app);
       setIsCreateInstanceModalOpen(true);
@@ -264,7 +263,7 @@ function App() {
 
     const currentApps = [...activeWorkspace.apps];
     const draggedIndex = currentApps.indexOf(draggedAppId);
-    
+
     if (draggedIndex === -1) {
       // App not in order list, add it
       currentApps.splice(targetIndex, 0, draggedAppId);
@@ -300,10 +299,13 @@ function App() {
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl -top-20 -left-20 animate-pulse" />
-          <div className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -bottom-20 -right-20 animate-pulse" style={{ animationDelay: '1s' }} />
+          <div
+            className="absolute w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -bottom-20 -right-20 animate-pulse"
+            style={{ animationDelay: '1s' }}
+          />
         </div>
-        
-        <motion.div 
+
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -387,9 +389,12 @@ function App() {
         />
 
         {/* Dock and Canvas Container */}
-        <div className="flex-1 flex" style={{
-          flexDirection: dockPosition === 'top' || dockPosition === 'bottom' ? 'column' : 'row'
-        }}>
+        <div
+          className="flex-1 flex"
+          style={{
+            flexDirection: dockPosition === 'top' || dockPosition === 'bottom' ? 'column' : 'row',
+          }}
+        >
           {/* Dock - positioned based on workspace settings */}
           {(dockPosition === 'top' || dockPosition === 'left') && (
             <Dock
@@ -400,7 +405,7 @@ function App() {
               onAppClick={setActiveAppId}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();
-                const app = workspaceApps.find(a => a.id === appId);
+                const app = workspaceApps.find((a) => a.id === appId);
                 if (app) {
                   setContextMenu({
                     appId,
@@ -435,7 +440,7 @@ function App() {
               onAppClick={setActiveAppId}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();
-                const app = workspaceApps.find(a => a.id === appId);
+                const app = workspaceApps.find((a) => a.id === appId);
                 if (app) {
                   setContextMenu({
                     appId,
@@ -523,10 +528,7 @@ function App() {
         <PerformanceDashboard onClose={() => setIsPerformanceDashboardOpen(false)} />
       )}
       {isSessionManagerOpen && (
-        <SessionManager 
-          apps={workspaceApps}
-          onClose={() => setIsSessionManagerOpen(false)} 
-        />
+        <SessionManager apps={workspaceApps} onClose={() => setIsSessionManagerOpen(false)} />
       )}
     </div>
   );

@@ -31,8 +31,10 @@ const dockyardAPI: DockyardAPI = {
     create: (data) => ipcRenderer.invoke(IPC_CHANNELS.APP.CREATE, data),
     update: (id, data) => ipcRenderer.invoke(IPC_CHANNELS.APP.UPDATE, id, data),
     delete: (id) => ipcRenderer.invoke(IPC_CHANNELS.APP.DELETE, id),
-    hibernate: (appId: string, instanceId: string) => ipcRenderer.invoke(IPC_CHANNELS.APP.HIBERNATE, appId, instanceId),
-    resume: (appId: string, instanceId: string) => ipcRenderer.invoke(IPC_CHANNELS.APP.RESUME, appId, instanceId),
+    hibernate: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.APP.HIBERNATE, appId, instanceId),
+    resume: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.APP.RESUME, appId, instanceId),
   },
 
   // BrowserView APIs

@@ -1,12 +1,12 @@
 import Store from 'electron-store';
 import { app } from 'electron';
 import path from 'path';
-import { 
-  ProfilesConfig, 
-  WorkspacesConfig, 
-  AppsConfig, 
+import {
+  ProfilesConfig,
+  WorkspacesConfig,
+  AppsConfig,
   Settings,
-  DEFAULT_SETTINGS 
+  DEFAULT_SETTINGS,
 } from '../shared/types';
 
 export class StoreManager {

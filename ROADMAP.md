@@ -7,6 +7,7 @@ This roadmap outlines the phased development plan for Dockyard, an open-source, 
 ## 🎯 **Vision & Goals**
 
 Build a privacy-focused, flexible desktop workspace that allows users to:
+
 - Manage multiple web apps in one unified environment
 - Maintain complete control over their data and workflow
 - Customize every aspect of their workspace
@@ -20,6 +21,7 @@ Build a privacy-focused, flexible desktop workspace that allows users to:
 **Version**: 0.5.0 (Phase 3: Session Management & Performance - 85% complete)
 
 The application now has:
+
 - ✅ Complete Phase 1: Core Architecture (TypeScript, React, Electron, Zustand)
 - ✅ Complete Phase 2: Workspace & App Management (100%)
 - 🚧 Phase 3: Session Management & Performance (85%)
@@ -42,7 +44,7 @@ The application now has:
 
 ## 🚀 **Development Phases**
 
-### **Phase 0: Foundation** ✅ *[Complete]*
+### **Phase 0: Foundation** ✅ _[Complete]_
 
 **Goal**: Establish project structure and tooling
 
@@ -60,11 +62,12 @@ The application now has:
 
 ---
 
-### **Phase 1: MVP - Core Architecture** ✅ *[Complete]*
+### **Phase 1: MVP - Core Architecture** ✅ _[Complete]_
 
 **Goal**: Build the foundational architecture for profiles, workspaces, and apps
 
 #### 1.1 Basic Electron Architecture
+
 - [x] Set up TypeScript configuration
 - [x] Implement main process structure
 - [x] Create preload scripts for IPC security
@@ -73,18 +76,21 @@ The application now has:
 - [x] Establish IPC communication patterns
 
 #### 1.2 Data Layer
+
 - [x] Implement `electron-store` for local persistence
 - [x] Design data schemas for profiles, workspaces, and apps
 - [x] Create data access layer and utilities
 - [ ] Implement backup and restore functionality (deferred to Phase 7)
 
 #### 1.3 Profile Management
+
 - [x] Profile creation and deletion
 - [x] Profile switching and multi-instance support
 - [x] Command-line argument handling (`--profile=<name>`)
 - [x] Profile-specific data isolation
 
 #### 1.4 Basic UI Shell
+
 - [x] Main window layout structure
 - [x] Top bar with basic navigation
 - [x] Settings panel foundation
@@ -95,11 +101,12 @@ The application now has:
 
 ---
 
-### **Phase 2: Workspace & App Management** ✅ *[Complete - 100%]*
+### **Phase 2: Workspace & App Management** ✅ _[Complete - 100%]_
 
 **Goal**: Enable users to create workspaces and add apps
 
 #### 2.1 Workspace System
+
 - [x] Workspace creation, editing, and deletion
 - [x] Workspace switching (keyboard shortcuts: Cmd/Ctrl+1-9)
 - [x] Workspace-level settings (theme, layout, hibernation)
@@ -108,6 +115,7 @@ The application now has:
 - [x] Welcome screen for first-time users
 
 #### 2.2 App Management
+
 - [x] Add custom apps by URL
 - [x] Built-in app catalog/templates (popular apps quick-add)
 - [x] Favicon fetching and custom icon upload
@@ -115,6 +123,7 @@ The application now has:
 - [x] App editing and deletion
 
 #### 2.3 App Embedding
+
 - [x] Implement BrowserView for app embedding
 - [x] Session partition management
 - [x] Navigation controls (back, forward, reload)
@@ -122,6 +131,7 @@ The application now has:
 - [x] Complete integration with WorkspaceCanvas
 
 #### 2.4 App UI Components
+
 - [x] App dock/sidebar with icons
 - [x] Dock positioning (top, bottom, left, right)
 - [x] Dock icon badges for multiple instances
@@ -135,23 +145,26 @@ The application now has:
 
 ---
 
-### **Phase 3: Session Management & Performance** 🚧 *[In Progress - 85% Complete]*
+### **Phase 3: Session Management & Performance** 🚧 _[In Progress - 85% Complete]_
 
 **Goal**: Implement session isolation, auto-hibernation, and performance optimization
 
 #### 3.1 Session Isolation
+
 - [x] Per-app partition implementation (`persist:app-{appId}-{instanceId}`)
 - [ ] Workspace-shared sessions (`persist:workspace-{workspaceId}`)
 - [x] Session management UI
 - [x] Clear cache/cookies per app
 
 #### 3.2 Auto-Hibernation
+
 - [x] Idle detection system
 - [x] Auto-suspend inactive apps (default 15 min)
 - [x] Smart resume on app activation
 - [ ] Hibernation settings per app/workspace (UI pending)
 
 #### 3.3 Performance Monitoring
+
 - [x] Memory usage tracking per app
 - [x] CPU usage monitoring
 - [x] Performance dashboard in DevTools
@@ -159,6 +172,7 @@ The application now has:
 - [ ] Resource usage warnings (thresholds)
 
 #### 3.4 Developer Tools
+
 - [x] Per-app DevTools toggle
 - [x] Performance monitoring dashboard
 - [x] Session manager UI
@@ -170,23 +184,26 @@ The application now has:
 
 ---
 
-### **Phase 4: Notifications & Layout** ✅ *[Complete]*
+### **Phase 4: Notifications & Layout** ✅ _[Complete]_
 
 **Goal**: Implement native notifications and advanced layout features
 
 #### 4.1 Notifications
+
 - [x] Native OS notifications via Electron API
 - [x] Per-app notification badges
 - [x] Global "Do Not Disturb" toggle
 - [x] Notification preferences per app
 
 #### 4.2 Advanced Layout
+
 - [x] Multi-app tiling (side-by-side views)
 - [x] Split layout save and restore
 - [ ] Detachable windows (deferred to Phase 6)
 - [x] Resizable panels
 
 #### 4.3 Zoom & Display
+
 - [x] Per-app zoom level controls
 - [ ] Multi-display support (deferred to Phase 6)
 - [ ] Full-screen mode per app (deferred to Phase 6)
@@ -196,22 +213,25 @@ The application now has:
 
 ---
 
-### **Phase 5: Theming & Customization** 🗓️ *[Planned]*
+### **Phase 5: Theming & Customization** 🗓️ _[Planned]_
 
 **Goal**: Provide comprehensive theming and customization options
 
 #### 5.1 Theme System
+
 - [ ] Light, dark, and system theme modes
 - [ ] Custom accent colors
 - [ ] Background styles (glass, solid, minimal)
 - [ ] Theme presets
 
 #### 5.2 Custom Styling
+
 - [ ] Per-app custom CSS injection
 - [ ] Custom JavaScript injection for apps
 - [ ] Theme import/export
 
 #### 5.3 UI Customization
+
 - [ ] Customizable keyboard shortcuts
 - [ ] Layout templates
 - [ ] Icon customization
@@ -221,26 +241,30 @@ The application now has:
 
 ---
 
-### **Phase 6: Productivity Features** 🗓️ *[Planned]*
+### **Phase 6: Productivity Features** 🗓️ _[Planned]_
 
 **Goal**: Add productivity enhancements and power-user features
 
 #### 6.1 Focus Mode
+
 - [ ] Temporarily hide/mute distracting apps
 - [ ] Focus timer integration
 - [ ] Focus mode profiles
 
 #### 6.2 Quick Launcher
+
 - [ ] Global quick launcher (Ctrl/Cmd + Space)
 - [ ] Fuzzy search for apps and workspaces
 - [ ] Recent apps and quick actions
 
 #### 6.3 Automation
+
 - [ ] Simple automation rules (e.g., auto-mute music)
 - [ ] Scheduled actions
 - [ ] Event-based triggers
 
 #### 6.4 Workspace Templates
+
 - [ ] Predefined workspace configurations
 - [ ] Community-shared templates
 - [ ] Template import/export
@@ -250,21 +274,24 @@ The application now has:
 
 ---
 
-### **Phase 7: Backup, Sync & Export** 🗓️ *[Planned]*
+### **Phase 7: Backup, Sync & Export** 🗓️ _[Planned]_
 
 **Goal**: Enable data portability and backup solutions
 
 #### 7.1 Backup System
+
 - [ ] Local backup to JSON/ZIP
 - [ ] Automatic backup scheduling
 - [ ] Backup restoration UI
 
 #### 7.2 Folder-Based Sync
+
 - [ ] Export profiles and workspaces to folder
 - [ ] Sync via Dropbox, Google Drive, etc.
 - [ ] Import from synced folder
 
 #### 7.3 Data Portability
+
 - [ ] Profile export/import
 - [ ] Workspace export/import
 - [ ] Settings migration tools
@@ -274,26 +301,30 @@ The application now has:
 
 ---
 
-### **Phase 8: Community & Extensibility** 🧪 *[Experimental]*
+### **Phase 8: Community & Extensibility** 🧪 _[Experimental]_
 
 **Goal**: Build an ecosystem around Dockyard
 
 #### 8.1 App Store
+
 - [ ] Local JSON catalog of curated apps
 - [ ] Community-contributed apps
 - [ ] App discovery and installation
 
 #### 8.2 Plugin API
+
 - [ ] IPC-based plugin hooks
 - [ ] Plugin development documentation
 - [ ] Example plugins
 
 #### 8.3 Theme Marketplace
+
 - [ ] Community theme sharing
 - [ ] Theme installation from URL
 - [ ] Theme rating and discovery
 
 #### 8.4 Documentation & Tutorials
+
 - [ ] User guide
 - [ ] Developer documentation
 - [ ] Video tutorials
@@ -320,22 +351,26 @@ These features are under consideration but not yet scheduled:
 ## 📊 **Success Metrics**
 
 ### Alpha Release (Phase 1-2 Complete)
+
 - Basic app management works reliably
 - At least 10 beta testers actively using it
 - Core features are stable
 
 ### Beta Release (Phase 3-5 Complete)
+
 - 100+ active users
 - Performance meets targets (smooth with 10+ apps)
 - No critical bugs in core functionality
 
 ### v1.0 Release (Phase 6-7 Complete)
+
 - 1,000+ active users
 - Community contributions (issues, PRs, themes)
 - Cross-platform builds for Windows, macOS, Linux
 - Positive feedback on privacy and performance
 
 ### v2.0 Release (Phase 8+ Complete)
+
 - Active plugin/theme ecosystem
 - 10,000+ downloads
 - Self-sustaining community
@@ -357,16 +392,16 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) (coming soon) for detailed guidelines.
 
 ## 📅 **Release Schedule**
 
-| Release | Target Date | Key Features |
-|---------|-------------|--------------|
-| v0.1.0 (Alpha) | Q1 2025 | Profiles, Basic Workspaces, App Management |
-| v0.2.0 (Alpha) | Q2 2025 | Session Isolation, Auto-Hibernation |
-| v0.5.0 (Beta) | Q3 2025 | Notifications, Layout, Theming |
-| v0.8.0 (Beta) | Q4 2025 | Productivity Features, Polish |
-| v1.0.0 (Stable) | Q1 2026 | Backup/Export, Production Ready |
-| v2.0.0 (Mature) | Q3 2026+ | Plugins, App Store, Ecosystem |
+| Release         | Target Date | Key Features                               |
+| --------------- | ----------- | ------------------------------------------ |
+| v0.1.0 (Alpha)  | Q1 2025     | Profiles, Basic Workspaces, App Management |
+| v0.2.0 (Alpha)  | Q2 2025     | Session Isolation, Auto-Hibernation        |
+| v0.5.0 (Beta)   | Q3 2025     | Notifications, Layout, Theming             |
+| v0.8.0 (Beta)   | Q4 2025     | Productivity Features, Polish              |
+| v1.0.0 (Stable) | Q1 2026     | Backup/Export, Production Ready            |
+| v2.0.0 (Mature) | Q3 2026+    | Plugins, App Store, Ecosystem              |
 
-*Note: Dates are aspirational and subject to change based on community feedback and development progress.*
+_Note: Dates are aspirational and subject to change based on community feedback and development progress._
 
 ---
 
