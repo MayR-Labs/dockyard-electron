@@ -4,11 +4,12 @@
  * Single Responsibility: Workspace content display
  */
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 import { LayoutMode } from '../../../../shared/types/workspace';
 import { NavigationControls } from '../AppControls/NavigationControls';
+import { URLBar } from '../AppControls/URLBar';
 import { ZoomControls } from '../AppControls/ZoomControls';
 import { LayoutControls } from './LayoutControls';
 import { SplitLayout } from './SplitLayout';
@@ -160,13 +161,62 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
   if (!isActive) return null;
 
   const [zoomLevel, setZoomLevel] = useState(app.display?.zoomLevel || 1.0);
+  const [navigationState, setNavigationState] = useState({
+    canGoBack: false,
+    canGoForward: false,
+    isLoading: false,
+    url: app.url,
+  });
 
-  // Placeholder handlers for navigation controls
-  // These will be connected to BrowserView in Phase 2.3
-  const handleBack = () => console.log('Navigate back');
-  const handleForward = () => console.log('Navigate forward');
-  const handleReload = () => console.log('Reload');
-  const handleHome = () => console.log('Navigate home');
+  // Get the first instance for now (TODO: handle multiple instances)
+  const instanceId = app.instances[0]?.id;
+
+  // Poll navigation state
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (instanceId) {
+        try {
+          const state = await window.dockyard.browserView.getState(app.id, instanceId);
+          setNavigationState(state);
+        } catch (error) {
+          console.error('Failed to get navigation state:', error);
+        }
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [app.id, instanceId]);
+
+  // Navigation handlers
+  const handleBack = async () => {
+    if (instanceId) {
+      await window.dockyard.browserView.goBack(app.id, instanceId);
+    }
+  };
+
+  const handleForward = async () => {
+    if (instanceId) {
+      await window.dockyard.browserView.goForward(app.id, instanceId);
+    }
+  };
+
+  const handleReload = async () => {
+    if (instanceId) {
+      await window.dockyard.browserView.reload(app.id, instanceId);
+    }
+  };
+
+  const handleHome = async () => {
+    if (instanceId) {
+      await window.dockyard.browserView.navigate(app.id, instanceId, app.url);
+    }
+  };
+
+  const handleNavigate = async (url: string) => {
+    if (instanceId) {
+      await window.dockyard.browserView.navigate(app.id, instanceId, url);
+    }
+  };
 
   const handleZoomChange = (level: number) => {
     setZoomLevel(level);
@@ -189,17 +239,24 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
       onClick={onSelect}
     >
       {/* Micro-toolbar */}
-      <div className="h-10 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-4">
-        <div className="flex items-center gap-3">
+      <div className="h-10 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-2">
+        <div className="flex items-center gap-2 flex-1">
           {/* Navigation Controls */}
           <NavigationControls
-            canGoBack={false}
-            canGoForward={false}
-            isLoading={false}
+            canGoBack={navigationState.canGoBack}
+            canGoForward={navigationState.canGoForward}
+            isLoading={navigationState.isLoading}
             onBack={handleBack}
             onForward={handleForward}
             onReload={handleReload}
             onHome={handleHome}
+          />
+          
+          {/* URL Bar */}
+          <URLBar
+            url={navigationState.url || app.url}
+            isLoading={navigationState.isLoading}
+            onNavigate={handleNavigate}
           />
           
           {/* App Info */}
@@ -247,94 +304,86 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
         </div>
       </div>
       
-      {/* App content area - Simulated Browser View */}
-      <SimulatedBrowserView app={app} />
+      {/* App content area - BrowserView Container */}
+      <BrowserViewContainer app={app} instanceId={instanceId} />
     </motion.div>
   );
 }
 
 /**
- * Simulated Browser View
- * Shows a beautiful preview of what the app will look like when embedded
+ * BrowserView Container
+ * Manages the container where the BrowserView will be rendered
  */
-function SimulatedBrowserView({ app }: { app: App }) {
+function BrowserViewContainer({ app, instanceId }: { app: App; instanceId?: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!instanceId) return;
+
+    // Show the BrowserView when the container is mounted
+    const updateBounds = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const bounds = {
+          x: Math.round(rect.left),
+          y: Math.round(rect.top),
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+        };
+
+        window.dockyard.browserView.show(app.id, instanceId, bounds).catch((error) => {
+          console.error('Failed to show BrowserView:', error);
+        });
+      }
+    };
+
+    // Initial bounds update
+    updateBounds();
+
+    // Update bounds on window resize
+    const handleResize = () => {
+      updateBounds();
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Use ResizeObserver for more accurate container size tracking
+    let resizeObserver: ResizeObserver | null = null;
+    if (containerRef.current) {
+      resizeObserver = new ResizeObserver(updateBounds);
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      // Hide the BrowserView when component unmounts
+      window.dockyard.browserView.hide().catch((error) => {
+        console.error('Failed to hide BrowserView:', error);
+      });
+    };
+  }, [app.id, instanceId]);
+
+  if (!instanceId) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-gray-900">
+        <div className="text-center text-gray-400">
+          <p>No instance available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex-1 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-      {/* Animated background pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, currentColor 10px, currentColor 20px)`,
-        }} />
-      </div>
-
-      {/* Mock Browser Chrome */}
-      <div className="absolute top-4 left-4 right-4 bg-white rounded-lg shadow-2xl overflow-hidden">
-        <div className="bg-gray-100 px-4 py-2 border-b border-gray-300 flex items-center gap-2">
-          <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-red-400" />
-            <div className="w-3 h-3 rounded-full bg-yellow-400" />
-            <div className="w-3 h-3 rounded-full bg-green-400" />
-          </div>
-          <div className="flex-1 mx-4">
-            <div className="bg-white rounded px-3 py-1 text-xs text-gray-600 border border-gray-300">
-              🔒 {app.url}
-            </div>
-          </div>
-        </div>
-        
-        {/* Mock Content */}
-        <div className="bg-white p-6 h-64">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="space-y-4"
-          >
-            {/* Simulated content based on app type */}
-            <div className="flex items-center gap-4 mb-6">
-              {app.icon && (
-                <div className="w-16 h-16 flex items-center justify-center text-4xl bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl">
-                  <img src={app.icon} alt={app.name} className="w-12 h-12 rounded-lg" />
-                </div>
-              )}
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800">{app.name}</h3>
-                <p className="text-sm text-gray-500">Web Application</p>
-              </div>
-            </div>
-            
-            {/* Skeleton content */}
-            <div className="space-y-3">
-              <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-3/4 animate-pulse" />
-              <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-1/2 animate-pulse" />
-              <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-5/6 animate-pulse" />
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Center Info */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5, duration: 0.5 }}
-        className="absolute inset-0 flex items-center justify-center"
-        style={{ top: '40%' }}
-      >
-        <div className="text-center bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-2xl max-w-md">
-          <div className="text-5xl mb-4">🚧</div>
-          <h3 className="text-2xl font-bold text-gray-800 mb-3">
-            Live Preview Coming Soon!
-          </h3>
-          <p className="text-gray-600 mb-4">
-            This is a preview of <strong>{app.name}</strong>. The actual web app will load here with BrowserView integration.
-          </p>
-          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm text-indigo-800">
-            <p className="font-semibold mb-1">🎯 Phase 3 Feature</p>
-            <p>Full web app embedding with session management</p>
-          </div>
-        </div>
-      </motion.div>
+    <div 
+      ref={containerRef}
+      className="flex-1 bg-gray-900 relative"
+      style={{ minHeight: 0 }} // Important for flex layout
+    >
+      {/* The BrowserView will be rendered here by Electron */}
+      {/* This div serves as a size reference for positioning the BrowserView */}
     </div>
   );
 }

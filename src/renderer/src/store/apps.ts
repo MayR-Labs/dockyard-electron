@@ -15,7 +15,7 @@ interface AppStore {
 
   // Actions
   loadApps: () => Promise<void>;
-  createApp: (data: Partial<App>) => Promise<void>;
+  createApp: (data: Partial<App>) => Promise<App | null>;
   updateApp: (id: string, data: Partial<App>) => Promise<void>;
   deleteApp: (id: string) => Promise<void>;
   hibernateApp: (id: string) => Promise<void>;
@@ -40,12 +40,14 @@ export const useAppStore = create<AppStore>((set, get) => ({
   createApp: async (data: Partial<App>) => {
     set({ loading: true, error: null });
     try {
-      await appAPI.create(data);
+      const newApp = await appAPI.create(data);
       // Reload apps from storage to ensure consistency
       const apps = await appAPI.list();
       set({ apps, loading: false });
+      return newApp;
     } catch (error: any) {
       set({ error: error.message, loading: false });
+      return null;
     }
   },
 
