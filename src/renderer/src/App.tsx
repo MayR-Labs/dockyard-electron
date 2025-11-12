@@ -428,6 +428,14 @@ function App() {
             onAddSampleApps={handleAddSampleApps}
             onAddCustomApp={() => setIsAddAppModalOpen(true)}
             onUpdateApp={handleUpdateApp}
+            isAnyModalOpen={
+              isAddAppModalOpen ||
+              isEditAppModalOpen ||
+              isCreateWorkspaceModalOpen ||
+              isCreateInstanceModalOpen ||
+              isPerformanceDashboardOpen ||
+              isSessionManagerOpen
+            }
           />
 
           {/* Dock - right or bottom position */}

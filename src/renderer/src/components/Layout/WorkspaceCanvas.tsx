@@ -22,6 +22,7 @@ interface WorkspaceCanvasProps {
   onAddSampleApps?: () => void;
   onAddCustomApp?: () => void;
   onUpdateApp?: (id: string, data: Partial<App>) => void;
+  isAnyModalOpen?: boolean;
 }
 
 export function WorkspaceCanvas({
@@ -31,9 +32,19 @@ export function WorkspaceCanvas({
   onAddSampleApps,
   onAddCustomApp,
   onUpdateApp,
+  isAnyModalOpen = false,
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
+
+  // Hide BrowserView when any modal is open
+  useEffect(() => {
+    if (isAnyModalOpen && window.dockyard?.browserView) {
+      window.dockyard.browserView.hide().catch((error) => {
+        console.error('Failed to hide BrowserView:', error);
+      });
+    }
+  }, [isAnyModalOpen]);
 
   if (apps.length === 0) {
     return (
@@ -139,6 +150,7 @@ export function WorkspaceCanvas({
               isActive={true}
               onSelect={() => onAppSelect(activeApp.id)}
               onUpdateApp={onUpdateApp}
+              isAnyModalOpen={isAnyModalOpen}
             />
           )}
         </AnimatePresence>
@@ -152,9 +164,10 @@ interface AppTileProps {
   isActive: boolean;
   onSelect: () => void;
   onUpdateApp?: (id: string, data: Partial<App>) => void;
+  isAnyModalOpen?: boolean;
 }
 
-function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
+function AppTile({ app, isActive, onSelect, onUpdateApp, isAnyModalOpen = false }: AppTileProps) {
   if (!isActive) return null;
 
   const [zoomLevel, setZoomLevel] = useState(app.display?.zoomLevel || 1.0);
@@ -360,7 +373,7 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
       </div>
 
       {/* App content area - BrowserView Container */}
-      <BrowserViewContainer app={app} instanceId={instanceId} />
+      <BrowserViewContainer app={app} instanceId={instanceId} isAnyModalOpen={isAnyModalOpen} />
     </motion.div>
   );
 }
@@ -369,7 +382,15 @@ function AppTile({ app, isActive, onSelect, onUpdateApp }: AppTileProps) {
  * BrowserView Container
  * Manages the container where the BrowserView will be rendered
  */
-function BrowserViewContainer({ app, instanceId }: { app: App; instanceId?: string }) {
+function BrowserViewContainer({
+  app,
+  instanceId,
+  isAnyModalOpen = false,
+}: {
+  app: App;
+  instanceId?: string;
+  isAnyModalOpen?: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -381,9 +402,17 @@ function BrowserViewContainer({ app, instanceId }: { app: App; instanceId?: stri
       return;
     }
 
+    // Hide BrowserView if any modal is open
+    if (isAnyModalOpen) {
+      window.dockyard.browserView.hide().catch((error) => {
+        console.error('Failed to hide BrowserView:', error);
+      });
+      return;
+    }
+
     // Show the BrowserView when the container is mounted
     const updateBounds = () => {
-      if (containerRef.current && window.dockyard?.browserView) {
+      if (containerRef.current && window.dockyard?.browserView && !isAnyModalOpen) {
         const rect = containerRef.current.getBoundingClientRect();
         const bounds = {
           x: Math.round(rect.left),
@@ -425,7 +454,7 @@ function BrowserViewContainer({ app, instanceId }: { app: App; instanceId?: stri
         console.error('Failed to hide BrowserView:', error);
       });
     };
-  }, [app.id, instanceId]);
+  }, [app.id, instanceId, isAnyModalOpen]);
 
   if (!instanceId) {
     console.log('No instance available for app:', app);
