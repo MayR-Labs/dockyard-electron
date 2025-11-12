@@ -192,15 +192,37 @@ export class IPCHandlers {
       const store = this.storeManager.getAppsStore();
       const apps = store.get('apps', []);
       
+      const appId = generateId();
+      const instanceId = generateId();
+      
+      // Get workspace to determine default session mode
+      const workspaceStore = this.storeManager.getWorkspacesStore();
+      const workspaces = workspaceStore.get('workspaces', []);
+      const workspace = workspaces.find((w: any) => w.id === data.workspaceId);
+      const sessionMode = workspace?.sessionMode || 'isolated';
+      
+      // Create default instance if none provided
+      const instances = data.instances && data.instances.length > 0 
+        ? data.instances 
+        : [{
+            id: instanceId,
+            appId: appId,
+            partitionId: sessionMode === 'shared' 
+              ? `persist:workspace-${data.workspaceId}` 
+              : `persist:app-${appId}-${instanceId}`,
+            hibernated: false,
+            lastActive: getCurrentTimestamp(),
+          }];
+      
       const newApp: App = {
-        id: generateId(),
+        id: appId,
         name: data.name || 'New App',
         url: data.url || '',
         icon: data.icon,
         customCSS: data.customCSS,
         customJS: data.customJS,
         workspaceId: data.workspaceId || '',
-        instances: data.instances || [],
+        instances: instances,
         createdAt: getCurrentTimestamp(),
         updatedAt: getCurrentTimestamp(),
       };
