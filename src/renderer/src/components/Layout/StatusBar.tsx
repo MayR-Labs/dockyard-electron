@@ -2,9 +2,17 @@ interface StatusBarProps {
   memoryUsage?: string;
   doNotDisturb: boolean;
   onToggleDnd: () => void;
+  onOpenPerformance?: () => void;
+  onOpenSessions?: () => void;
 }
 
-export function StatusBar({ memoryUsage, doNotDisturb, onToggleDnd }: StatusBarProps) {
+export function StatusBar({ 
+  memoryUsage, 
+  doNotDisturb, 
+  onToggleDnd,
+  onOpenPerformance,
+  onOpenSessions 
+}: StatusBarProps) {
   return (
     <div className="h-8 bg-gray-900 border-t border-gray-800 flex items-center justify-between px-4 text-xs">
       {/* Left: Status info */}
@@ -20,7 +28,36 @@ export function StatusBar({ memoryUsage, doNotDisturb, onToggleDnd }: StatusBarP
       </div>
 
       {/* Right: Controls */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
+        {/* DevTools buttons */}
+        {onOpenPerformance && (
+          <button
+            onClick={onOpenPerformance}
+            className="flex items-center gap-1 px-2 py-1 rounded text-gray-400 hover:bg-gray-800 transition"
+            title="Performance Monitor"
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span>Performance</span>
+          </button>
+        )}
+        
+        {onOpenSessions && (
+          <button
+            onClick={onOpenSessions}
+            className="flex items-center gap-1 px-2 py-1 rounded text-gray-400 hover:bg-gray-800 transition"
+            title="Session Manager"
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+            </svg>
+            <span>Sessions</span>
+          </button>
+        )}
+        
+        <div className="w-px h-4 bg-gray-700" />
+        
         <button
           onClick={onToggleDnd}
           className={`flex items-center gap-1 px-2 py-1 rounded transition ${

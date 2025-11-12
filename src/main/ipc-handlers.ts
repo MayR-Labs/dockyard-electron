@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron';
 import { IPC_CHANNELS } from '../shared/constants';
 import { StoreManager } from './store-manager';
+import { BrowserViewManager } from './browser-view-manager';
 import { 
   ProfileMetadata, 
   Workspace, 
@@ -11,7 +12,10 @@ import { generateId, getCurrentTimestamp, sanitizeProfileName } from '../shared/
 import { DEFAULTS } from '../shared/constants';
 
 export class IPCHandlers {
-  constructor(private storeManager: StoreManager) {
+  constructor(
+    private storeManager: StoreManager,
+    private browserViewManager: BrowserViewManager
+  ) {
     this.registerHandlers();
   }
 
@@ -21,6 +25,7 @@ export class IPCHandlers {
     this.registerAppHandlers();
     this.registerSettingsHandlers();
     this.registerNotificationHandlers();
+    this.registerBrowserViewHandlers();
   }
 
   private registerProfileHandlers(): void {
@@ -187,15 +192,37 @@ export class IPCHandlers {
       const store = this.storeManager.getAppsStore();
       const apps = store.get('apps', []);
       
+      const appId = generateId();
+      const instanceId = generateId();
+      
+      // Get workspace to determine default session mode
+      const workspaceStore = this.storeManager.getWorkspacesStore();
+      const workspaces = workspaceStore.get('workspaces', []);
+      const workspace = workspaces.find((w: any) => w.id === data.workspaceId);
+      const sessionMode = workspace?.sessionMode || 'isolated';
+      
+      // Create default instance if none provided
+      const instances = data.instances && data.instances.length > 0 
+        ? data.instances 
+        : [{
+            id: instanceId,
+            appId: appId,
+            partitionId: sessionMode === 'shared' 
+              ? `persist:workspace-${data.workspaceId}` 
+              : `persist:app-${appId}-${instanceId}`,
+            hibernated: false,
+            lastActive: getCurrentTimestamp(),
+          }];
+      
       const newApp: App = {
-        id: generateId(),
+        id: appId,
         name: data.name || 'New App',
         url: data.url || '',
         icon: data.icon,
         customCSS: data.customCSS,
         customJS: data.customJS,
         workspaceId: data.workspaceId || '',
-        instances: data.instances || [],
+        instances: instances,
         createdAt: getCurrentTimestamp(),
         updatedAt: getCurrentTimestamp(),
       };
@@ -235,18 +262,42 @@ export class IPCHandlers {
       store.set('apps', filtered);
     });
 
-    // Hibernate app (placeholder - will be implemented with BrowserView)
-    ipcMain.handle(IPC_CHANNELS.APP.HIBERNATE, async (_event, id: string) => {
-      // eslint-disable-next-line no-console
-      console.log(`Hibernating app ${id}`);
-      // TODO: Implement hibernation logic
+    // Hibernate app
+    ipcMain.handle(IPC_CHANNELS.APP.HIBERNATE, async (_event, appId: string, instanceId: string) => {
+      this.browserViewManager.hibernateView(appId, instanceId);
+      
+      // Update app instance state
+      const store = this.storeManager.getAppsStore();
+      const apps = store.get('apps', []);
+      const app = apps.find((a: App) => a.id === appId);
+      
+      if (app) {
+        const instance = app.instances.find((i: any) => i.id === instanceId);
+        if (instance) {
+          instance.hibernated = true;
+          instance.lastActive = new Date().toISOString();
+          store.set('apps', apps);
+        }
+      }
     });
 
-    // Resume app (placeholder - will be implemented with BrowserView)
-    ipcMain.handle(IPC_CHANNELS.APP.RESUME, async (_event, id: string) => {
-      // eslint-disable-next-line no-console
-      console.log(`Resuming app ${id}`);
-      // TODO: Implement resume logic
+    // Resume app
+    ipcMain.handle(IPC_CHANNELS.APP.RESUME, async (_event, appId: string, instanceId: string) => {
+      this.browserViewManager.resumeView(appId, instanceId);
+      
+      // Update app instance state
+      const store = this.storeManager.getAppsStore();
+      const apps = store.get('apps', []);
+      const app = apps.find((a: App) => a.id === appId);
+      
+      if (app) {
+        const instance = app.instances.find((i: any) => i.id === instanceId);
+        if (instance) {
+          instance.hibernated = false;
+          instance.lastActive = new Date().toISOString();
+          store.set('apps', apps);
+        }
+      }
     });
   }
 
@@ -330,6 +381,100 @@ export class IPCHandlers {
 
       store.set('apps', apps);
       return apps[index];
+    });
+  }
+
+  private registerBrowserViewHandlers(): void {
+    // Show BrowserView
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.SHOW, async (_event, appId: string, instanceId: string, bounds?: Electron.Rectangle) => {
+      const store = this.storeManager.getAppsStore();
+      const apps = store.get('apps', []);
+      const app = apps.find((a: App) => a.id === appId);
+      
+      if (!app) {
+        throw new Error(`App with id "${appId}" not found`);
+      }
+
+      const instance = app.instances.find((i: any) => i.id === instanceId);
+      if (!instance) {
+        throw new Error(`Instance with id "${instanceId}" not found`);
+      }
+
+      // Get or create the view
+      const view = this.browserViewManager.getOrCreateView(app, instance);
+      
+      // Show the view
+      this.browserViewManager.showView(appId, instanceId, bounds);
+    });
+
+    // Hide all views
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.HIDE, async () => {
+      this.browserViewManager.hideAllViews();
+    });
+
+    // Update view bounds
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.UPDATE_BOUNDS, async (_event, appId: string, instanceId: string, bounds: Electron.Rectangle) => {
+      this.browserViewManager.updateViewBounds(appId, instanceId, bounds);
+    });
+
+    // Navigate to URL
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.NAVIGATE, async (_event, appId: string, instanceId: string, url: string) => {
+      this.browserViewManager.navigateToURL(appId, instanceId, url);
+    });
+
+    // Go back
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.GO_BACK, async (_event, appId: string, instanceId: string) => {
+      this.browserViewManager.goBack(appId, instanceId);
+    });
+
+    // Go forward
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.GO_FORWARD, async (_event, appId: string, instanceId: string) => {
+      this.browserViewManager.goForward(appId, instanceId);
+    });
+
+    // Reload
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.RELOAD, async (_event, appId: string, instanceId: string) => {
+      this.browserViewManager.reload(appId, instanceId);
+    });
+
+    // Get navigation state
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.GET_STATE, async (_event, appId: string, instanceId: string) => {
+      return this.browserViewManager.getNavigationState(appId, instanceId);
+    });
+
+    // Set zoom level
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.SET_ZOOM, async (_event, appId: string, instanceId: string, zoomFactor: number) => {
+      this.browserViewManager.setZoomLevel(appId, instanceId, zoomFactor);
+    });
+
+    // Open DevTools
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.OPEN_DEVTOOLS, async (_event, appId: string, instanceId: string) => {
+      this.browserViewManager.openDevTools(appId, instanceId);
+    });
+
+    // Close DevTools
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.CLOSE_DEVTOOLS, async (_event, appId: string, instanceId: string) => {
+      this.browserViewManager.closeDevTools(appId, instanceId);
+    });
+
+    // Clear session data
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.CLEAR_SESSION, async (_event, partitionId: string) => {
+      await this.browserViewManager.clearSessionData(partitionId);
+    });
+
+    // Get memory usage
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.GET_MEMORY, async (_event, appId: string, instanceId: string) => {
+      return await this.browserViewManager.getMemoryUsage(appId, instanceId);
+    });
+
+    // Get CPU usage
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.GET_CPU, async (_event, appId: string, instanceId: string) => {
+      return this.browserViewManager.getCPUUsage(appId, instanceId);
+    });
+
+    // Get all active views
+    ipcMain.handle(IPC_CHANNELS.BROWSER_VIEW.GET_ALL, async () => {
+      return this.browserViewManager.getAllViews();
     });
   }
 }

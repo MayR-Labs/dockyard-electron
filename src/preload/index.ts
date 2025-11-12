@@ -29,8 +29,40 @@ const dockyardAPI: DockyardAPI = {
     create: (data) => ipcRenderer.invoke(IPC_CHANNELS.APP.CREATE, data),
     update: (id, data) => ipcRenderer.invoke(IPC_CHANNELS.APP.UPDATE, id, data),
     delete: (id) => ipcRenderer.invoke(IPC_CHANNELS.APP.DELETE, id),
-    hibernate: (id) => ipcRenderer.invoke(IPC_CHANNELS.APP.HIBERNATE, id),
-    resume: (id) => ipcRenderer.invoke(IPC_CHANNELS.APP.RESUME, id),
+    hibernate: (appId: string, instanceId: string) => ipcRenderer.invoke(IPC_CHANNELS.APP.HIBERNATE, appId, instanceId),
+    resume: (appId: string, instanceId: string) => ipcRenderer.invoke(IPC_CHANNELS.APP.RESUME, appId, instanceId),
+  },
+
+  // BrowserView APIs
+  browserView: {
+    show: (appId: string, instanceId: string, bounds?: Electron.Rectangle) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.SHOW, appId, instanceId, bounds),
+    hide: () => ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.HIDE),
+    updateBounds: (appId: string, instanceId: string, bounds: Electron.Rectangle) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.UPDATE_BOUNDS, appId, instanceId, bounds),
+    navigate: (appId: string, instanceId: string, url: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.NAVIGATE, appId, instanceId, url),
+    goBack: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GO_BACK, appId, instanceId),
+    goForward: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GO_FORWARD, appId, instanceId),
+    reload: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.RELOAD, appId, instanceId),
+    getState: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GET_STATE, appId, instanceId),
+    setZoom: (appId: string, instanceId: string, zoomFactor: number) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.SET_ZOOM, appId, instanceId, zoomFactor),
+    openDevTools: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.OPEN_DEVTOOLS, appId, instanceId),
+    closeDevTools: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.CLOSE_DEVTOOLS, appId, instanceId),
+    clearSession: (partitionId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.CLEAR_SESSION, partitionId),
+    getMemory: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GET_MEMORY, appId, instanceId),
+    getCPU: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GET_CPU, appId, instanceId),
+    getAll: () => ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GET_ALL),
   },
 
   // Settings APIs

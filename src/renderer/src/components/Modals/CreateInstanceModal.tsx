@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { App, AppInstance } from '../../../../shared/types/app';
-import { generateId, getCurrentTimestamp } from '../../../../shared/utils';
+import { generateId, getCurrentTimestamp, getPartitionName } from '../../../../shared/utils';
 
 interface CreateInstanceModalProps {
   isOpen: boolean;
@@ -34,13 +34,12 @@ export function CreateInstanceModal({
 
     setIsSubmitting(true);
     try {
+      const instanceId = generateId();
       const newInstance: AppInstance = {
-        id: generateId(),
+        id: instanceId,
         appId: app.id,
         name: instanceName.trim() || undefined,
-        partitionId: sessionMode === 'isolated' 
-          ? `persist:app-${app.id}-${generateId()}`
-          : `persist:shared-${app.workspaceId}`,
+        partitionId: getPartitionName(app.id, instanceId, app.workspaceId, sessionMode),
         hibernated: false,
         lastActive: getCurrentTimestamp(),
       };
