@@ -16,12 +16,13 @@ Build a privacy-focused, flexible desktop workspace that allows users to:
 
 ## 📍 **Current Status**
 
-**Phase**: Alpha / Phase 4 Complete
-**Version**: 0.4.0 (Phase 4: Notifications & Layout complete)
+**Phase**: Alpha / Phase 3 In Progress
+**Version**: 0.5.0 (Phase 3: Session Management & Performance - 85% complete)
 
 The application now has:
 - ✅ Complete Phase 1: Core Architecture (TypeScript, React, Electron, Zustand)
-- ✅ Complete Phase 2: Workspace & App Management (80%)
+- ✅ Complete Phase 2: Workspace & App Management (95%)
+- 🚧 Phase 3: Session Management & Performance (85%)
 - ✅ Complete Phase 4: Notifications & Layout
 - ✅ Profile management system with multi-instance support
 - ✅ Local data persistence with electron-store
@@ -31,7 +32,11 @@ The application now has:
 - ✅ Native OS notifications with badge counts
 - ✅ Multi-app split layout (horizontal, vertical, grid)
 - ✅ Per-app zoom controls
-- 🚧 App embedding with BrowserView (Phase 3 - deferred)
+- ✅ BrowserView manager with full lifecycle management
+- ✅ Session isolation with per-app partitions
+- ✅ Auto-hibernation system (15-min idle timeout)
+- ✅ Performance monitoring (memory/CPU tracking)
+- ✅ DevTools UI (Performance Dashboard, Session Manager)
 
 ---
 
@@ -110,10 +115,11 @@ The application now has:
 - [x] App editing and deletion
 
 #### 2.3 App Embedding
-- [ ] Implement BrowserView for app embedding
-- [ ] Session partition management
-- [ ] Navigation controls (back, forward, reload)
+- [x] Implement BrowserView for app embedding
+- [x] Session partition management
+- [x] Navigation controls (back, forward, reload)
 - [ ] URL bar and security indicators
+- [ ] Complete integration with WorkspaceCanvas
 
 #### 2.4 App UI Components
 - [x] App dock/sidebar with icons
@@ -129,35 +135,38 @@ The application now has:
 
 ---
 
-### **Phase 3: Session Management & Performance** 🗓️ *[Planned]*
+### **Phase 3: Session Management & Performance** 🚧 *[In Progress - 85% Complete]*
 
 **Goal**: Implement session isolation, auto-hibernation, and performance optimization
 
 #### 3.1 Session Isolation
-- [ ] Per-app partition implementation (`persist:app-{appId}-{instanceId}`)
+- [x] Per-app partition implementation (`persist:app-{appId}-{instanceId}`)
 - [ ] Workspace-shared sessions (`persist:workspace-{workspaceId}`)
-- [ ] Session management UI
-- [ ] Clear cache/cookies per app
+- [x] Session management UI
+- [x] Clear cache/cookies per app
 
 #### 3.2 Auto-Hibernation
-- [ ] Idle detection system
-- [ ] Auto-suspend inactive apps (default 15 min)
-- [ ] Smart resume on app activation
-- [ ] Hibernation settings per app/workspace
+- [x] Idle detection system
+- [x] Auto-suspend inactive apps (default 15 min)
+- [x] Smart resume on app activation
+- [ ] Hibernation settings per app/workspace (UI pending)
 
 #### 3.3 Performance Monitoring
-- [ ] Memory usage tracking per app
-- [ ] CPU usage monitoring
-- [ ] Performance dashboard in DevTools
-- [ ] Resource usage warnings
+- [x] Memory usage tracking per app
+- [x] CPU usage monitoring
+- [x] Performance dashboard in DevTools
+- [x] Real-time metrics with auto-refresh
+- [ ] Resource usage warnings (thresholds)
 
 #### 3.4 Developer Tools
-- [ ] Per-app DevTools toggle
-- [ ] IPC event debugger
-- [ ] Webview state inspector
+- [x] Per-app DevTools toggle
+- [x] Performance monitoring dashboard
+- [x] Session manager UI
+- [ ] IPC event debugger (planned)
+- [ ] Advanced webview state inspector (planned)
 
-**Target**: Q2-Q3 2025
-**Status**: Not Started
+**Target**: Q2-Q3 2025 (ahead of schedule)
+**Status**: 🚧 85% Complete (November 2024)
 
 ---
 
