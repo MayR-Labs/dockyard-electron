@@ -127,7 +127,7 @@ export class BrowserViewManager {
 
     // Get all currently added BrowserViews
     const currentViews = this.mainWindow.getBrowserViews();
-    
+
     // Remove each view
     currentViews.forEach((view) => {
       try {
@@ -157,7 +157,7 @@ export class BrowserViewManager {
         // View may already be removed
         console.error('Error removing BrowserView:', e);
       }
-      
+
       if (this.activeViewId === viewId) {
         this.activeViewId = null;
       }

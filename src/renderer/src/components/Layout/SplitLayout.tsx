@@ -39,7 +39,7 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
     // Single app view - shouldn't happen in SplitLayout but handle it gracefully
     const app = apps.find((a) => a.id === activeAppIds[0]);
     const instanceId = app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
-    
+
     return (
       <div className="flex-1 bg-gray-900 flex flex-col">
         <div className="flex items-center justify-between px-3 py-2 bg-gray-800 border-b border-gray-700">
@@ -59,7 +59,8 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
         {activeAppIds.map((appId, index) => {
           const app = apps.find((a) => a.id === appId);
           const size = panelSizes[index] || 50;
-          const instanceId = app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
+          const instanceId =
+            app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
 
           return (
             <motion.div
@@ -178,7 +179,8 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
       >
         {activeAppIds.map((appId) => {
           const app = apps.find((a) => a.id === appId);
-          const instanceId = app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
+          const instanceId =
+            app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
 
           return (
             <motion.div
@@ -245,13 +247,7 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
  * BrowserView Container for Split Panel
  * Similar to BrowserViewContainer but optimized for split layout panels
  */
-function SplitPanelBrowserView({
-  app,
-  instanceId,
-}: {
-  app: App | undefined;
-  instanceId?: string;
-}) {
+function SplitPanelBrowserView({ app, instanceId }: { app: App | undefined; instanceId?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
