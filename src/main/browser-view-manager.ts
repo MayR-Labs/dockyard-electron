@@ -102,16 +102,14 @@ export class BrowserViewManager {
 
     if (!entry) return;
 
-    // Remove current active view
-    if (this.activeViewId && this.activeViewId !== viewId) {
-      const activeEntry = this.views.get(this.activeViewId);
-      if (activeEntry) {
-        this.mainWindow.removeBrowserView(activeEntry.view);
-      }
-    }
+    // Check if the view is already added to the window
+    const currentViews = this.mainWindow.getBrowserViews();
+    const isAlreadyAdded = currentViews.some((v) => v === entry.view);
 
-    // Add and position the new view
-    this.mainWindow.addBrowserView(entry.view);
+    // Add the view if not already added
+    if (!isAlreadyAdded) {
+      this.mainWindow.addBrowserView(entry.view);
+    }
 
     if (bounds) {
       entry.view.setBounds(bounds);
@@ -127,15 +125,43 @@ export class BrowserViewManager {
   hideAllViews(): void {
     if (!this.mainWindow) return;
 
-    this.views.forEach((entry) => {
+    // Get all currently added BrowserViews
+    const currentViews = this.mainWindow.getBrowserViews();
+
+    // Remove each view
+    currentViews.forEach((view) => {
       try {
-        this.mainWindow!.removeBrowserView(entry.view);
+        this.mainWindow!.removeBrowserView(view);
       } catch (e) {
         // View may already be removed
+        console.error('Error removing BrowserView:', e);
       }
     });
 
     this.activeViewId = null;
+  }
+
+  /**
+   * Hide a specific view
+   */
+  hideView(appId: string, instanceId: string): void {
+    if (!this.mainWindow) return;
+
+    const viewId = this.getViewId(appId, instanceId);
+    const entry = this.views.get(viewId);
+
+    if (entry) {
+      try {
+        this.mainWindow.removeBrowserView(entry.view);
+      } catch (e) {
+        // View may already be removed
+        console.error('Error removing BrowserView:', e);
+      }
+
+      if (this.activeViewId === viewId) {
+        this.activeViewId = null;
+      }
+    }
   }
 
   /**

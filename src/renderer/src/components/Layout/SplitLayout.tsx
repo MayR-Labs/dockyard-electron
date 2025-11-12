@@ -36,14 +36,16 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
   }
 
   if (activeAppIds.length === 1 || layoutMode === 'single') {
-    // Single app view
+    // Single app view - shouldn't happen in SplitLayout but handle it gracefully
     const app = apps.find((a) => a.id === activeAppIds[0]);
+    const instanceId = app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
+
     return (
-      <div className="flex-1 bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <h3 className="text-xl font-semibold text-white mb-2">{app?.name}</h3>
-          <p className="text-gray-400">App content will be displayed here</p>
+      <div className="flex-1 bg-gray-900 flex flex-col">
+        <div className="flex items-center justify-between px-3 py-2 bg-gray-800 border-b border-gray-700">
+          <span className="text-sm font-medium text-white">{app?.name}</span>
         </div>
+        <SplitPanelBrowserView app={app} instanceId={instanceId} />
       </div>
     );
   }
@@ -57,6 +59,8 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
         {activeAppIds.map((appId, index) => {
           const app = apps.find((a) => a.id === appId);
           const size = panelSizes[index] || 50;
+          const instanceId =
+            app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
 
           return (
             <motion.div
@@ -102,20 +106,8 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
                 </button>
               </div>
 
-              {/* Panel Content */}
-              <div className="flex-1 flex items-center justify-center p-8">
-                <div className="text-center">
-                  <div className="text-5xl mb-4">
-                    {app?.icon ? (
-                      <img src={app.icon} alt={app.name} className="w-16 h-16 mx-auto rounded-lg" />
-                    ) : (
-                      <span>{app?.name.charAt(0).toUpperCase()}</span>
-                    )}
-                  </div>
-                  <p className="text-gray-400 text-sm">{app?.url}</p>
-                  <p className="text-gray-500 text-xs mt-2">App embedding coming soon...</p>
-                </div>
-              </div>
+              {/* Panel Content - BrowserView */}
+              <SplitPanelBrowserView app={app} instanceId={instanceId} />
 
               {/* Resize Handle */}
               {index < activeAppIds.length - 1 && (
@@ -187,6 +179,8 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
       >
         {activeAppIds.map((appId) => {
           const app = apps.find((a) => a.id === appId);
+          const instanceId =
+            app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
 
           return (
             <motion.div
@@ -233,19 +227,8 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
                 </button>
               </div>
 
-              {/* Panel Content */}
-              <div className="flex-1 flex items-center justify-center p-4">
-                <div className="text-center">
-                  <div className="text-4xl mb-2">
-                    {app?.icon ? (
-                      <img src={app.icon} alt={app.name} className="w-12 h-12 mx-auto rounded-lg" />
-                    ) : (
-                      <span>{app?.name.charAt(0).toUpperCase()}</span>
-                    )}
-                  </div>
-                  <p className="text-gray-500 text-xs">{app?.url}</p>
-                </div>
-              </div>
+              {/* Panel Content - BrowserView */}
+              <SplitPanelBrowserView app={app} instanceId={instanceId} />
             </motion.div>
           );
         })}
@@ -256,6 +239,105 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
   return (
     <div ref={containerRef} className="flex-1 flex flex-col bg-gray-950 p-2">
       {layoutMode === 'grid' ? renderGridView() : renderSplitView()}
+    </div>
+  );
+}
+
+/**
+ * BrowserView Container for Split Panel
+ * Similar to BrowserViewContainer but optimized for split layout panels
+ */
+function SplitPanelBrowserView({ app, instanceId }: { app: App | undefined; instanceId?: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!instanceId || !app) return;
+
+    // Check if window.dockyard is available
+    if (!window.dockyard || !window.dockyard.browserView) {
+      console.error('Dockyard API not available. Preload script may not be loaded.');
+      return;
+    }
+
+    // Show the BrowserView when the container is mounted
+    const updateBounds = () => {
+      if (containerRef.current && window.dockyard?.browserView) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const bounds = {
+          x: Math.round(rect.left),
+          y: Math.round(rect.top),
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+        };
+
+        window.dockyard.browserView.show(app.id, instanceId, bounds).catch((error) => {
+          console.error('Failed to show BrowserView:', error);
+        });
+      }
+    };
+
+    // Initial bounds update
+    updateBounds();
+
+    // Update bounds on window resize
+    const handleResize = () => {
+      updateBounds();
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Use ResizeObserver for more accurate container size tracking
+    let resizeObserver: ResizeObserver | null = null;
+    if (containerRef.current) {
+      resizeObserver = new ResizeObserver(updateBounds);
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      // Hide the BrowserView when component unmounts
+      window.dockyard.browserView.hide().catch((error) => {
+        console.error('Failed to hide BrowserView:', error);
+      });
+    };
+  }, [app?.id, instanceId]);
+
+  if (!instanceId || !app) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-gray-900">
+        <div className="text-center text-gray-400">
+          <div className="mb-4">
+            <svg
+              className="w-12 h-12 mx-auto opacity-50"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </div>
+          <p className="text-sm font-medium">Loading app...</p>
+          {app && <p className="text-xs mt-2">Creating instance for {app.name}</p>}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className="flex-1 bg-gray-900 relative"
+      style={{ minHeight: 0 }} // Important for flex layout
+    >
+      {/* The BrowserView will be rendered here by Electron */}
     </div>
   );
 }
