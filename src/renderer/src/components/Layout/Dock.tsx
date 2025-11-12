@@ -4,6 +4,7 @@
  * Single Responsibility: App icon display and interaction
  */
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 
@@ -15,6 +16,7 @@ interface DockProps {
   onAppClick: (appId: string) => void;
   onAppContextMenu: (appId: string, e: React.MouseEvent) => void;
   onAddApp: () => void;
+  onReorder?: (appId: string, targetIndex: number) => void;
 }
 
 /**
@@ -28,7 +30,10 @@ export function Dock({
   onAppClick,
   onAppContextMenu,
   onAddApp,
+  onReorder,
 }: DockProps) {
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  
   const isHorizontal = position === 'top' || position === 'bottom';
   
   const dockStyle = isHorizontal
@@ -39,16 +44,49 @@ export function Dock({
     isHorizontal ? 'flex-row border-t overflow-x-auto' : 'flex-col border-r overflow-y-auto'
   } items-center ${isHorizontal ? 'px-2 gap-2' : 'py-2 gap-2'}`;
 
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    setDragOverIndex(null);
+    
+    const draggedAppId = e.dataTransfer.getData('application/dockyard-app-id');
+    if (draggedAppId && onReorder) {
+      onReorder(draggedAppId, targetIndex);
+    }
+  };
+
   return (
     <div style={dockStyle} className={containerClass}>
-      {apps.map((app) => (
-        <DockIcon
+      {apps.map((app, index) => (
+        <div
           key={app.id}
-          app={app}
-          isActive={app.id === activeAppId}
-          onClick={() => onAppClick(app.id)}
-          onContextMenu={(e) => onAppContextMenu(app.id, e)}
-        />
+          onDragOver={(e) => handleDragOver(e, index)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e, index)}
+          className={`relative ${
+            dragOverIndex === index 
+              ? isHorizontal 
+                ? 'border-l-2 border-indigo-500' 
+                : 'border-t-2 border-indigo-500'
+              : ''
+          }`}
+        >
+          <DockIcon
+            app={app}
+            isActive={app.id === activeAppId}
+            onClick={() => onAppClick(app.id)}
+            onContextMenu={(e) => onAppContextMenu(app.id, e)}
+          />
+        </div>
       ))}
       
       {/* Add App Button */}
@@ -76,12 +114,27 @@ interface DockIconProps {
  * Individual dock icon component with tooltip and instance badge
  */
 function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragStart = (e: React.DragEvent) => {
+    setIsDragging(true);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('application/dockyard-app-id', app.id);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
   return (
     <motion.div
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      animate={{ scale: 1, opacity: isDragging ? 0.5 : 1 }}
       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
       className="relative group"
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
     >
       <motion.button
         whileHover={{ scale: 1.1, y: -2 }}
@@ -95,6 +148,7 @@ function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
             ? 'bg-indigo-600 ring-2 ring-indigo-400 shadow-lg shadow-indigo-500/50' 
             : 'bg-gray-800 hover:bg-gray-700'
           }
+          ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}
         `}
         title={app.name}
       >

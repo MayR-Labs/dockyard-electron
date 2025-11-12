@@ -26,7 +26,7 @@ import { App as AppType, AppInstance } from '../../shared/types/app';
 
 function App() {
   // Store hooks
-  const { loadWorkspaces, workspaces, activeWorkspaceId, setActiveWorkspace, createWorkspace } = useWorkspaceStore();
+  const { loadWorkspaces, workspaces, activeWorkspaceId, setActiveWorkspace, createWorkspace, updateWorkspace } = useWorkspaceStore();
   const { loadApps, apps, createApp, updateApp, deleteApp, hibernateApp } = useAppStore();
   const { loadSettings, settings, updateSettings } = useSettingsStore();
   
@@ -128,7 +128,18 @@ function App() {
   ]);
 
   const activeWorkspace = workspaces.find(w => w.id === activeWorkspaceId);
-  const workspaceApps = apps.filter(app => app.workspaceId === activeWorkspaceId);
+  
+  // Sort apps by the order defined in workspace.apps
+  const workspaceApps = apps
+    .filter(app => app.workspaceId === activeWorkspaceId)
+    .sort((a, b) => {
+      const orderA = activeWorkspace?.apps.indexOf(a.id) ?? -1;
+      const orderB = activeWorkspace?.apps.indexOf(b.id) ?? -1;
+      if (orderA === -1 && orderB === -1) return 0;
+      if (orderA === -1) return 1;
+      if (orderB === -1) return -1;
+      return orderA - orderB;
+    });
 
   const handleCreateWorkspace = async (data: {
     name: string;
@@ -150,18 +161,25 @@ function App() {
     url: string;
     icon?: string;
   }) => {
-    if (!activeWorkspaceId) return;
+    if (!activeWorkspaceId || !activeWorkspace) return;
 
-    await createApp({
+    const newApp = await createApp({
       name: appData.name,
       url: appData.url,
       icon: appData.icon,
       workspaceId: activeWorkspaceId,
     });
+
+    // Add the new app to the workspace's app order
+    if (newApp) {
+      await updateWorkspace(activeWorkspaceId, {
+        apps: [...activeWorkspace.apps, newApp.id],
+      });
+    }
   };
 
   const handleAddSampleApps = async () => {
-    if (!activeWorkspaceId) return;
+    if (!activeWorkspaceId || !activeWorkspace) return;
 
     const sampleApps = [
       {
@@ -187,19 +205,27 @@ function App() {
     ];
 
     // Add all sample apps
+    const newAppIds: string[] = [];
     for (const appData of sampleApps) {
-      await createApp({
+      const newApp = await createApp({
         name: appData.name,
         url: appData.url,
         icon: appData.icon,
         workspaceId: activeWorkspaceId,
       });
+      if (newApp) {
+        newAppIds.push(newApp.id);
+      }
     }
 
-    // Select the first app
-    const firstApp = apps.find(a => a.workspaceId === activeWorkspaceId);
-    if (firstApp) {
-      setActiveAppId(firstApp.id);
+    // Update workspace with all new app IDs
+    if (newAppIds.length > 0) {
+      await updateWorkspace(activeWorkspaceId, {
+        apps: [...activeWorkspace.apps, ...newAppIds],
+      });
+
+      // Select the first app
+      setActiveAppId(newAppIds[0]);
     }
   };
 
@@ -231,6 +257,29 @@ function App() {
       setSelectedApp(app);
       setIsCreateInstanceModalOpen(true);
     }
+  };
+
+  const handleReorderApps = async (draggedAppId: string, targetIndex: number) => {
+    if (!activeWorkspace) return;
+
+    const currentApps = [...activeWorkspace.apps];
+    const draggedIndex = currentApps.indexOf(draggedAppId);
+    
+    if (draggedIndex === -1) {
+      // App not in order list, add it
+      currentApps.splice(targetIndex, 0, draggedAppId);
+    } else {
+      // Remove from old position
+      currentApps.splice(draggedIndex, 1);
+      // Insert at new position
+      const newIndex = draggedIndex < targetIndex ? targetIndex - 1 : targetIndex;
+      currentApps.splice(newIndex, 0, draggedAppId);
+    }
+
+    // Update workspace with new order
+    await updateWorkspace(activeWorkspace.id, {
+      apps: currentApps,
+    });
   };
 
   if (isLoading) {
@@ -362,6 +411,7 @@ function App() {
                 }
               }}
               onAddApp={() => setIsAddAppModalOpen(true)}
+              onReorder={handleReorderApps}
             />
           )}
 
@@ -396,6 +446,7 @@ function App() {
                 }
               }}
               onAddApp={() => setIsAddAppModalOpen(true)}
+              onReorder={handleReorderApps}
             />
           )}
         </div>
