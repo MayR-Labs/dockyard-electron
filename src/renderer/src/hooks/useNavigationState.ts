@@ -32,9 +32,14 @@ export function useNavigationState(
     if (!isElectron() || !instanceId || !webviewRef?.current) return;
 
     const webview = webviewRef.current;
+    let interval: NodeJS.Timeout | null = null;
+    let isReady = false;
 
     // Update state periodically
     const updateState = () => {
+      // Only update state if webview is ready
+      if (!isReady) return;
+
       try {
         setNavigationState({
           canGoBack: webview.canGoBack?.() || false,
@@ -61,19 +66,24 @@ export function useNavigationState(
       updateState();
     };
 
+    // Wait for dom-ready event before calling webview methods
+    const handleDomReady = () => {
+      isReady = true;
+      // Initial state update after webview is ready
+      updateState();
+      // Start polling state as a backup
+      interval = setInterval(updateState, 1000);
+    };
+
+    webview.addEventListener('dom-ready', handleDomReady);
     webview.addEventListener('did-start-loading', handleLoadStart);
     webview.addEventListener('did-stop-loading', handleLoadStop);
     webview.addEventListener('did-navigate', handleDidNavigate);
     webview.addEventListener('did-navigate-in-page', handleDidNavigate);
 
-    // Initial state
-    updateState();
-
-    // Poll state as a backup
-    const interval = setInterval(updateState, 1000);
-
     return () => {
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
+      webview.removeEventListener('dom-ready', handleDomReady);
       webview.removeEventListener('did-start-loading', handleLoadStart);
       webview.removeEventListener('did-stop-loading', handleLoadStop);
       webview.removeEventListener('did-navigate', handleDidNavigate);
@@ -83,32 +93,52 @@ export function useNavigationState(
 
   // Navigation action handlers
   const goBack = () => {
-    if (webviewRef?.current?.canGoBack?.()) {
-      webviewRef.current.goBack();
+    try {
+      if (webviewRef?.current?.canGoBack?.()) {
+        webviewRef.current.goBack();
+      }
+    } catch (error) {
+      console.error('Failed to go back:', error);
     }
   };
 
   const goForward = () => {
-    if (webviewRef?.current?.canGoForward?.()) {
-      webviewRef.current.goForward();
+    try {
+      if (webviewRef?.current?.canGoForward?.()) {
+        webviewRef.current.goForward();
+      }
+    } catch (error) {
+      console.error('Failed to go forward:', error);
     }
   };
 
   const reload = () => {
-    if (webviewRef?.current) {
-      webviewRef.current.reload();
+    try {
+      if (webviewRef?.current) {
+        webviewRef.current.reload();
+      }
+    } catch (error) {
+      console.error('Failed to reload:', error);
     }
   };
 
   const goHome = () => {
-    if (webviewRef?.current) {
-      webviewRef.current.loadURL(app.url);
+    try {
+      if (webviewRef?.current) {
+        webviewRef.current.loadURL(app.url);
+      }
+    } catch (error) {
+      console.error('Failed to go home:', error);
     }
   };
 
   const navigate = (url: string) => {
-    if (webviewRef?.current) {
-      webviewRef.current.loadURL(url);
+    try {
+      if (webviewRef?.current) {
+        webviewRef.current.loadURL(url);
+      }
+    } catch (error) {
+      console.error('Failed to navigate:', error);
     }
   };
 
