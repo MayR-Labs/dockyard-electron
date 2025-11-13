@@ -15,6 +15,11 @@ export interface AppNotificationSettings {
 
 export interface AppDisplaySettings {
   zoomLevel: number; // 0.5 to 2.0, default 1.0
+  responsiveMode?: {
+    enabled: boolean;
+    width: number;
+    height: number;
+  };
 }
 
 export interface App {

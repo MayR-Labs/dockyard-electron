@@ -121,7 +121,7 @@ export function AppOptionsModal({
 
   const handleResetResponsive = () => {
     if (onResponsiveModeChange) {
-      onResponsiveModeChange(0, 0); // Reset to full size
+      onResponsiveModeChange(0, 0); // Reset to full size by passing 0
     }
     setCustomWidth('');
     setCustomHeight('');

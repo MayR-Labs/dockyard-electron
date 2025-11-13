@@ -116,20 +116,48 @@ export function BrowserViewContainer({
 
   // Electron environment: render webview
   return (
-    <div className="flex-1 bg-gray-900 relative" style={{ minHeight: 0 }}>
-      <webview
-        ref={webviewRef}
-        src={app.url}
-        partition={partition}
-        className="w-full h-full"
-        allowpopups="true"
-        // @ts-ignore - webview is a custom element
-        style={{
-          display: 'flex',
-          width: '100%',
-          height: '100%',
-        }}
-      />
+    <div className="flex-1 bg-gray-900 relative flex items-center justify-center" style={{ minHeight: 0 }}>
+      {app.display?.responsiveMode?.enabled ? (
+        // Responsive mode: constrained viewport
+        <div
+          className="bg-gray-950 border border-gray-700 shadow-2xl overflow-hidden"
+          style={{
+            width: app.display.responsiveMode.width,
+            height: app.display.responsiveMode.height,
+            maxWidth: '100%',
+            maxHeight: '100%',
+          }}
+        >
+          <webview
+            ref={webviewRef}
+            src={app.url}
+            partition={partition}
+            className="w-full h-full"
+            allowpopups="true"
+            // @ts-ignore - webview is a custom element
+            style={{
+              display: 'flex',
+              width: '100%',
+              height: '100%',
+            }}
+          />
+        </div>
+      ) : (
+        // Full size mode
+        <webview
+          ref={webviewRef}
+          src={app.url}
+          partition={partition}
+          className="w-full h-full"
+          allowpopups="true"
+          // @ts-ignore - webview is a custom element
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+          }}
+        />
+      )}
     </div>
   );
 }

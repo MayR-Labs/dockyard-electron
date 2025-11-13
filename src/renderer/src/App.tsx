@@ -560,6 +560,7 @@ function App() {
           if (selectedApp) {
             handleUpdateApp(selectedApp.id, {
               display: {
+                ...selectedApp.display,
                 zoomLevel: level,
               },
             });
@@ -591,6 +592,24 @@ function App() {
             }
             setIsAppOptionsModalOpen(false);
             setSelectedApp(null);
+          }
+        }}
+        onResponsiveModeChange={(width, height) => {
+          if (selectedApp) {
+            handleUpdateApp(selectedApp.id, {
+              display: {
+                ...selectedApp.display,
+                zoomLevel: selectedApp.display?.zoomLevel || 1.0,
+                responsiveMode:
+                  width > 0 && height > 0
+                    ? {
+                        enabled: true,
+                        width,
+                        height,
+                      }
+                    : undefined,
+              },
+            });
           }
         }}
       />
