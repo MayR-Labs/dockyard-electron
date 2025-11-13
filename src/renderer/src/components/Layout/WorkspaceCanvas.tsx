@@ -12,7 +12,6 @@ import { LayoutControls } from './LayoutControls';
 import { SplitLayout } from './SplitLayout';
 import { QuickStartGuide } from './QuickStartGuide';
 import { AppTile } from '../App/AppTile';
-import { isElectron } from '../../utils/environment';
 
 interface WorkspaceCanvasProps {
   apps: App[];
@@ -22,7 +21,6 @@ interface WorkspaceCanvasProps {
   onAddCustomApp?: () => void;
   onUpdateApp?: (id: string, data: Partial<App>) => void;
   onOpenOptions?: (appId: string) => void;
-  isAnyModalOpen?: boolean;
 }
 
 export function WorkspaceCanvas({
@@ -33,19 +31,9 @@ export function WorkspaceCanvas({
   onAddCustomApp,
   onUpdateApp,
   onOpenOptions,
-  isAnyModalOpen = false,
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
-
-  // Hide BrowserView when any modal is open (only in Electron)
-  useEffect(() => {
-    if (isElectron() && isAnyModalOpen && window.dockyard?.browserView) {
-      window.dockyard.browserView.hide().catch((error) => {
-        console.error('Failed to hide BrowserView:', error);
-      });
-    }
-  }, [isAnyModalOpen]);
 
   if (apps.length === 0) {
     return (
@@ -152,7 +140,6 @@ export function WorkspaceCanvas({
               onSelect={() => onAppSelect(activeApp.id)}
               onUpdateApp={onUpdateApp}
               onOpenOptions={() => onOpenOptions?.(activeApp.id)}
-              isAnyModalOpen={isAnyModalOpen}
             />
           )}
         </AnimatePresence>

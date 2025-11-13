@@ -298,10 +298,6 @@ function SplitPanelBrowserView({ app, instanceId }: { app: App | undefined; inst
       if (resizeObserver) {
         resizeObserver.disconnect();
       }
-      // Hide the BrowserView when component unmounts
-      window.dockyard.browserView.hide().catch((error) => {
-        console.error('Failed to hide BrowserView:', error);
-      });
     };
   }, [app?.id, instanceId]);
 

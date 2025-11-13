@@ -13,7 +13,6 @@ import { BrowserDevPlaceholder } from '../DevMode/BrowserDevPlaceholder';
 interface BrowserViewContainerProps {
   app: App;
   instanceId?: string;
-  isAnyModalOpen?: boolean;
   isCreating?: boolean;
   webviewRef?: React.RefObject<HTMLWebViewElement>;
 }
@@ -21,7 +20,6 @@ interface BrowserViewContainerProps {
 export function BrowserViewContainer({
   app,
   instanceId,
-  isAnyModalOpen = false,
   isCreating = false,
   webviewRef: externalWebviewRef,
 }: BrowserViewContainerProps) {
@@ -94,13 +92,6 @@ export function BrowserViewContainer({
     };
   }, [app.display?.zoomLevel]);
 
-  // Hide webview when modal is open
-  useEffect(() => {
-    if (webviewRef.current) {
-      webviewRef.current.style.visibility = isAnyModalOpen ? 'hidden' : 'visible';
-    }
-  }, [isAnyModalOpen]);
-
   // Show loading state while creating instance
   if (isCreating || !instanceId) {
     return (
@@ -128,7 +119,10 @@ export function BrowserViewContainer({
 
   // Electron environment: render webview
   return (
-    <div className="flex-1 bg-gray-900 relative flex items-center justify-center" style={{ minHeight: 0 }}>
+    <div
+      className="flex-1 bg-gray-900 relative flex items-center justify-center"
+      style={{ minHeight: 0 }}
+    >
       {app.display?.responsiveMode?.enabled ? (
         // Responsive mode: constrained viewport
         <div

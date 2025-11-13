@@ -437,15 +437,6 @@ function App() {
                 setIsAppOptionsModalOpen(true);
               }
             }}
-            isAnyModalOpen={
-              isAddAppModalOpen ||
-              isEditAppModalOpen ||
-              isCreateWorkspaceModalOpen ||
-              isCreateInstanceModalOpen ||
-              isAppOptionsModalOpen ||
-              isPerformanceDashboardOpen ||
-              isSessionManagerOpen
-            }
           />
 
           {/* Dock - right or bottom position */}

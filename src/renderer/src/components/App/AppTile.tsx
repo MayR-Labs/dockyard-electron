@@ -4,7 +4,7 @@
  * Single Responsibility: Render individual app view
  */
 
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 import { MenuDotsIcon } from '../Icons';
@@ -19,18 +19,10 @@ interface AppTileProps {
   isActive: boolean;
   onSelect: () => void;
   onUpdateApp?: (id: string, data: Partial<App>) => void;
-  isAnyModalOpen?: boolean;
   onOpenOptions?: () => void;
 }
 
-export function AppTile({
-  app,
-  isActive,
-  onSelect,
-  onUpdateApp,
-  isAnyModalOpen = false,
-  onOpenOptions,
-}: AppTileProps) {
+export function AppTile({ app, isActive, onSelect, onUpdateApp, onOpenOptions }: AppTileProps) {
   if (!isActive) return null;
 
   const webviewRef = useRef<HTMLWebViewElement>(null);
@@ -101,7 +93,6 @@ export function AppTile({
       <BrowserViewContainer
         app={app}
         instanceId={instanceId}
-        isAnyModalOpen={isAnyModalOpen}
         isCreating={isCreating}
         webviewRef={webviewRef}
       />
