@@ -2,6 +2,15 @@
  * BrowserView Container Component
  * Manages the container where BrowserView is rendered or shows dev mode placeholder
  * Single Responsibility: BrowserView positioning and lifecycle
+ * 
+ * ARCHITECTURE NOTE:
+ * BrowserView is rendered by Electron at the OS window level, NOT in the DOM.
+ * This means it always appears "on top" of React components, regardless of z-index.
+ * To show modals/menus/overlays, we must HIDE the BrowserView temporarily.
+ * This is handled by useModalBrowserViewManager hook in App.tsx.
+ * 
+ * The bounds calculated here determine where the BrowserView appears within the window,
+ * but it will always render above DOM elements in that area.
  */
 
 import { useRef, useEffect } from 'react';
