@@ -6,7 +6,7 @@ import type { DockyardAPI } from '../../shared/types/preload';
 
 declare global {
   interface Window {
-    dockyard?: DockyardAPI;
+    dockyard: DockyardAPI;
   }
 }
 
