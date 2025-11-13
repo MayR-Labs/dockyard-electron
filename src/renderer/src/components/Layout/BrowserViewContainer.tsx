@@ -32,12 +32,14 @@ export function BrowserViewContainer({
 
     const webview = webviewRef.current;
 
-    // Apply zoom level if set
-    if (app.display?.zoomLevel) {
-      webview.setZoomFactor(app.display.zoomLevel);
-    }
-
     // Handle webview events
+    const handleDomReady = () => {
+      // Apply zoom level if set (only after webview is ready)
+      if (app.display?.zoomLevel) {
+        webview.setZoomFactor(app.display.zoomLevel);
+      }
+    };
+
     const handleDidFinishLoad = () => {
       // Apply custom CSS if provided
       if (app.customCSS) {
@@ -54,10 +56,12 @@ export function BrowserViewContainer({
       console.error('Webview failed to load:', event);
     };
 
+    webview.addEventListener('dom-ready', handleDomReady);
     webview.addEventListener('did-finish-load', handleDidFinishLoad);
     webview.addEventListener('did-fail-load', handleDidFailLoad);
 
     return () => {
+      webview.removeEventListener('dom-ready', handleDomReady);
       webview.removeEventListener('did-finish-load', handleDidFinishLoad);
       webview.removeEventListener('did-fail-load', handleDidFailLoad);
     };
@@ -65,9 +69,28 @@ export function BrowserViewContainer({
 
   // Update zoom level when it changes
   useEffect(() => {
-    if (webviewRef.current && app.display?.zoomLevel) {
-      webviewRef.current.setZoomFactor(app.display.zoomLevel);
+    if (!webviewRef.current || !app.display?.zoomLevel) return;
+
+    const webview = webviewRef.current;
+
+    // Wait for dom-ready before calling setZoomFactor
+    const handleDomReady = () => {
+      webview.setZoomFactor(app.display.zoomLevel);
+      webview.removeEventListener('dom-ready', handleDomReady);
+    };
+
+    // Check if webview is already ready, otherwise wait for dom-ready
+    try {
+      // Try to set zoom factor - if webview is ready, this will work
+      webview.setZoomFactor(app.display.zoomLevel);
+    } catch (error) {
+      // If it fails, webview is not ready yet, so wait for dom-ready
+      webview.addEventListener('dom-ready', handleDomReady);
     }
+
+    return () => {
+      webview.removeEventListener('dom-ready', handleDomReady);
+    };
   }, [app.display?.zoomLevel]);
 
   // Hide webview when modal is open
