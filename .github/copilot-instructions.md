@@ -76,6 +76,58 @@ npm start            # Run with electron .
 - **Component Structure**: Organize React components by feature (e.g., `renderer/components/AppDock/`, `renderer/components/Workspace/`)
 - **IPC Naming**: Use namespaced channels like `profile:create`, `workspace:switch`, `app:hibernate`
 
+## Engineering Principles
+
+All code contributions must adhere to these core engineering principles:
+
+### Single Responsibility Principle (SRP)
+- Each module, class, or function should have one and only one reason to change
+- Keep components focused on a single task or concern
+- Break down large components into smaller, focused ones
+
+### Separation of Concerns (SoC)
+- Clearly separate UI from business logic
+- Keep data management separate from presentation
+- Isolate side effects from pure functions
+- Use custom hooks to encapsulate complex logic
+
+### Modularization
+- Break code into reusable, independent modules
+- Create shared utilities for common functionality
+- Use consistent module boundaries and interfaces
+- Prefer composition over inheritance
+
+### Clean Code
+- Use descriptive, meaningful names for variables, functions, and components
+- Keep functions small and focused (ideally under 20 lines)
+- Avoid deep nesting (max 3 levels)
+- Write self-documenting code; comments explain "why" not "what"
+- Follow DRY (Don't Repeat Yourself) principle
+
+### Lean Code
+- Remove unused code, dependencies, and imports
+- Avoid premature optimization
+- Keep dependencies minimal and justified
+- Regular refactoring to eliminate cruft
+
+### UI/Logic Separation
+- Keep UI components pure and presentational when possible
+- Move business logic to custom hooks, utilities, or services
+- Use composition to combine logic and presentation
+- Components should receive data via props, not fetch it themselves
+
+### Constants and Configuration
+- Extract magic numbers and strings to named constants
+- Use constants files for shared values (e.g., `constants.ts`)
+- Group related constants together
+- Make configuration values easy to find and modify
+
+### Asset Management
+- Store SVG icons and images in separate files, not inline
+- Use a consistent directory structure for assets
+- Create reusable icon components
+- Keep component files focused on logic, not asset data
+
 ## Testing Strategy (Planned)
 
 - Unit tests: Jest for shared utilities and models
