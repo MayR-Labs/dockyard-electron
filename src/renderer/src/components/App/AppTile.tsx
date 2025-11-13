@@ -4,7 +4,6 @@
  * Single Responsibility: Render individual app view
  */
 
-import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 import { MenuDotsIcon } from '../Icons';
@@ -25,14 +24,11 @@ interface AppTileProps {
 export function AppTile({ app, isActive, onSelect, onUpdateApp, onOpenOptions }: AppTileProps) {
   if (!isActive) return null;
 
-  const webviewRef = useRef<HTMLWebViewElement>(null);
-
   // Use custom hooks for instance and navigation management
   const { instanceId, isCreating } = useAppInstance(app, onUpdateApp);
   const { navigationState, goBack, goForward, reload, goHome, navigate } = useNavigationState(
     app,
-    instanceId,
-    webviewRef
+    instanceId
   );
 
   return (
@@ -90,12 +86,7 @@ export function AppTile({ app, isActive, onSelect, onUpdateApp, onOpenOptions }:
       </div>
 
       {/* App content area - BrowserView Container */}
-      <BrowserViewContainer
-        app={app}
-        instanceId={instanceId}
-        isCreating={isCreating}
-        webviewRef={webviewRef}
-      />
+      <BrowserViewContainer app={app} instanceId={instanceId} isCreating={isCreating} />
     </motion.div>
   );
 }

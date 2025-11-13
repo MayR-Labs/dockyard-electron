@@ -52,7 +52,8 @@ export function ResponsiveMode({ onSizeChange }: ResponsiveModeProps) {
     <div className="space-y-6">
       <div>
         <p className="text-sm text-gray-400 mb-4">
-          Test your app with different screen sizes. Select a device preset or enter custom dimensions.
+          Test your app with different screen sizes. Select a device preset or enter custom
+          dimensions.
         </p>
 
         {/* Device Categories */}

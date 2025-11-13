@@ -30,7 +30,6 @@ export class WindowManager {
         contextIsolation: true,
         nodeIntegration: false,
         sandbox: false, // Temporarily disable sandbox to see if that's the issue
-        webviewTag: true, // Enable webview tag
       },
       show: false, // Don't show until ready
     });

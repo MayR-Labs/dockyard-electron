@@ -31,9 +31,4 @@ export {
   GlobeIcon,
 } from './NavigationIcons';
 
-export {
-  DocumentIcon,
-  WarningIcon,
-  ArrowRightCircleIcon,
-  SpinnerIcon,
-} from './StatusIcons';
+export { DocumentIcon, WarningIcon, ArrowRightCircleIcon, SpinnerIcon } from './StatusIcons';

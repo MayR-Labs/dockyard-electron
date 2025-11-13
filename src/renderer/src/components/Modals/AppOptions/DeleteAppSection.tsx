@@ -28,7 +28,9 @@ export function DeleteAppSection({ appName, onDelete }: DeleteAppSectionProps) {
         <TrashIcon className="w-5 h-5 text-red-400" />
         <div>
           <div className="text-red-400 font-medium">Delete App</div>
-          <div className="text-xs text-red-300/70">Permanently remove this app and all instances</div>
+          <div className="text-xs text-red-300/70">
+            Permanently remove this app and all instances
+          </div>
         </div>
       </button>
     </div>

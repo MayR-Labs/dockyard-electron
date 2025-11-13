@@ -67,7 +67,9 @@ export function URLBar({ url, isLoading = false, onNavigate }: URLBarProps) {
       return <LockIcon className="w-4 h-4 text-green-500" title="Connection is secure (HTTPS)" />;
     }
 
-    return <WarningIcon className="w-4 h-4 text-amber-500" title="Connection is not secure (HTTP)" />;
+    return (
+      <WarningIcon className="w-4 h-4 text-amber-500" title="Connection is not secure (HTTP)" />
+    );
   };
 
   return (

@@ -1,10 +1,10 @@
 /**
  * Hook for managing navigation state
  * Single Responsibility: Handle browser navigation and state polling
- * Updated to work with webview elements
+ * Updated to work with BrowserView via IPC
  */
 
-import { useState, useEffect, RefObject } from 'react';
+import { useState, useEffect } from 'react';
 import { App } from '../../../shared/types/app';
 import { isElectron } from '../utils/environment';
 
@@ -17,8 +17,7 @@ interface NavigationState {
 
 export function useNavigationState(
   app: App,
-  instanceId: string | undefined,
-  webviewRef?: RefObject<HTMLWebViewElement>
+  instanceId: string | undefined
 ) {
   const [navigationState, setNavigationState] = useState<NavigationState>({
     canGoBack: false,
@@ -27,119 +26,77 @@ export function useNavigationState(
     url: app.url,
   });
 
-  // Poll navigation state for webview
+  // Poll navigation state from BrowserView via IPC
   useEffect(() => {
-    if (!isElectron() || !instanceId || !webviewRef?.current) return;
+    if (!isElectron() || !instanceId) return;
 
-    const webview = webviewRef.current;
+    if (!window.dockyard?.browserView) {
+      console.error('Dockyard API not available for navigation state');
+      return;
+    }
+
     let interval: NodeJS.Timeout | null = null;
-    let isReady = false;
 
-    // Update state periodically
-    const updateState = () => {
-      // Only update state if webview is ready
-      if (!isReady) return;
-
+    // Update state periodically via IPC
+    const updateState = async () => {
       try {
-        setNavigationState({
-          canGoBack: webview.canGoBack?.() || false,
-          canGoForward: webview.canGoForward?.() || false,
-          isLoading: webview.isLoading?.() || false,
-          url: webview.getURL?.() || app.url,
-        });
+        const state = await window.dockyard.browserView.getState(app.id, instanceId);
+        setNavigationState(state);
       } catch (error) {
         console.error('Failed to get navigation state:', error);
       }
     };
 
-    // Event listeners for webview events
-    const handleLoadStart = () => {
-      setNavigationState((prev) => ({ ...prev, isLoading: true }));
-    };
+    // Initial state update
+    updateState();
 
-    const handleLoadStop = () => {
-      updateState();
-      setNavigationState((prev) => ({ ...prev, isLoading: false }));
-    };
-
-    const handleDidNavigate = () => {
-      updateState();
-    };
-
-    // Wait for dom-ready event before calling webview methods
-    const handleDomReady = () => {
-      isReady = true;
-      // Initial state update after webview is ready
-      updateState();
-      // Start polling state as a backup
-      interval = setInterval(updateState, 1000);
-    };
-
-    webview.addEventListener('dom-ready', handleDomReady);
-    webview.addEventListener('did-start-loading', handleLoadStart);
-    webview.addEventListener('did-stop-loading', handleLoadStop);
-    webview.addEventListener('did-navigate', handleDidNavigate);
-    webview.addEventListener('did-navigate-in-page', handleDidNavigate);
+    // Poll state periodically
+    interval = setInterval(updateState, 1000);
 
     return () => {
       if (interval) clearInterval(interval);
-      webview.removeEventListener('dom-ready', handleDomReady);
-      webview.removeEventListener('did-start-loading', handleLoadStart);
-      webview.removeEventListener('did-stop-loading', handleLoadStop);
-      webview.removeEventListener('did-navigate', handleDidNavigate);
-      webview.removeEventListener('did-navigate-in-page', handleDidNavigate);
     };
-  }, [app.id, app.url, instanceId, webviewRef]);
+  }, [app.id, instanceId]);
 
-  // Navigation action handlers
+  // Navigation action handlers using IPC
   const goBack = () => {
-    try {
-      if (webviewRef?.current?.canGoBack?.()) {
-        webviewRef.current.goBack();
-      }
-    } catch (error) {
+    if (!instanceId || !window.dockyard?.browserView) return;
+    
+    window.dockyard.browserView.goBack(app.id, instanceId).catch((error) => {
       console.error('Failed to go back:', error);
-    }
+    });
   };
 
   const goForward = () => {
-    try {
-      if (webviewRef?.current?.canGoForward?.()) {
-        webviewRef.current.goForward();
-      }
-    } catch (error) {
+    if (!instanceId || !window.dockyard?.browserView) return;
+    
+    window.dockyard.browserView.goForward(app.id, instanceId).catch((error) => {
       console.error('Failed to go forward:', error);
-    }
+    });
   };
 
   const reload = () => {
-    try {
-      if (webviewRef?.current) {
-        webviewRef.current.reload();
-      }
-    } catch (error) {
+    if (!instanceId || !window.dockyard?.browserView) return;
+    
+    window.dockyard.browserView.reload(app.id, instanceId).catch((error) => {
       console.error('Failed to reload:', error);
-    }
+    });
   };
 
   const goHome = () => {
-    try {
-      if (webviewRef?.current) {
-        webviewRef.current.loadURL(app.url);
-      }
-    } catch (error) {
+    if (!instanceId || !window.dockyard?.browserView) return;
+    
+    window.dockyard.browserView.navigate(app.id, instanceId, app.url).catch((error) => {
       console.error('Failed to go home:', error);
-    }
+    });
   };
 
   const navigate = (url: string) => {
-    try {
-      if (webviewRef?.current) {
-        webviewRef.current.loadURL(url);
-      }
-    } catch (error) {
+    if (!instanceId || !window.dockyard?.browserView) return;
+    
+    window.dockyard.browserView.navigate(app.id, instanceId, url).catch((error) => {
       console.error('Failed to navigate:', error);
-    }
+    });
   };
 
   return {

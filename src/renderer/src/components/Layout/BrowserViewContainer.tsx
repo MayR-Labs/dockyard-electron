@@ -1,7 +1,7 @@
 /**
  * BrowserView Container Component
- * Manages the container where webview is rendered or shows dev mode placeholder
- * Single Responsibility: Webview positioning and lifecycle
+ * Manages the container where BrowserView is rendered or shows dev mode placeholder
+ * Single Responsibility: BrowserView positioning and lifecycle
  */
 
 import { useRef, useEffect } from 'react';
@@ -14,83 +14,87 @@ interface BrowserViewContainerProps {
   app: App;
   instanceId?: string;
   isCreating?: boolean;
-  webviewRef?: React.RefObject<HTMLWebViewElement>;
 }
 
 export function BrowserViewContainer({
   app,
   instanceId,
   isCreating = false,
-  webviewRef: externalWebviewRef,
 }: BrowserViewContainerProps) {
-  const internalWebviewRef = useRef<HTMLWebViewElement | null>(null);
-  const webviewRef = externalWebviewRef || internalWebviewRef;
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!isElectron() || !instanceId || !webviewRef.current) return;
+    if (!isElectron() || !instanceId || !containerRef.current) return;
 
-    const webview = webviewRef.current;
+    // Check if window.dockyard is available
+    if (!window.dockyard || !window.dockyard.browserView) {
+      console.error('Dockyard API not available. Preload script may not be loaded.');
+      return;
+    }
 
-    // Handle webview events
-    const handleDomReady = () => {
-      // Apply zoom level if set (only after webview is ready)
-      if (app.display?.zoomLevel) {
-        webview.setZoomFactor(app.display.zoomLevel);
+    // Show the BrowserView when the container is mounted
+    const updateBounds = () => {
+      if (containerRef.current && window.dockyard?.browserView) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const bounds = {
+          x: Math.round(rect.left),
+          y: Math.round(rect.top),
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+        };
+
+        window.dockyard.browserView.show(app.id, instanceId, bounds).catch((error) => {
+          console.error('Failed to show BrowserView:', error);
+        });
       }
     };
 
-    const handleDidFinishLoad = () => {
-      // Apply custom CSS if provided
-      if (app.customCSS) {
-        webview.insertCSS(app.customCSS);
-      }
+    // Initial bounds update
+    updateBounds();
 
-      // Apply custom JS if provided
-      if (app.customJS) {
-        webview.executeJavaScript(app.customJS);
-      }
+    // Update bounds on window resize
+    const handleResize = () => {
+      updateBounds();
     };
 
-    const handleDidFailLoad = (event: any) => {
-      console.error('Webview failed to load:', event);
-    };
+    window.addEventListener('resize', handleResize);
 
-    webview.addEventListener('dom-ready', handleDomReady);
-    webview.addEventListener('did-finish-load', handleDidFinishLoad);
-    webview.addEventListener('did-fail-load', handleDidFailLoad);
+    // Use ResizeObserver for more accurate container size tracking
+    let resizeObserver: ResizeObserver | null = null;
+    if (containerRef.current) {
+      resizeObserver = new ResizeObserver(updateBounds);
+      resizeObserver.observe(containerRef.current);
+    }
 
-    return () => {
-      webview.removeEventListener('dom-ready', handleDomReady);
-      webview.removeEventListener('did-finish-load', handleDidFinishLoad);
-      webview.removeEventListener('did-fail-load', handleDidFailLoad);
-    };
-  }, [app.customCSS, app.customJS, app.display?.zoomLevel, instanceId]);
-
-  // Update zoom level when it changes
-  useEffect(() => {
-    if (!webviewRef.current || !app.display?.zoomLevel) return;
-
-    const webview = webviewRef.current;
-
-    // Wait for dom-ready before calling setZoomFactor
-    const handleDomReady = () => {
-      webview.setZoomFactor(app.display.zoomLevel);
-      webview.removeEventListener('dom-ready', handleDomReady);
-    };
-
-    // Check if webview is already ready, otherwise wait for dom-ready
-    try {
-      // Try to set zoom factor - if webview is ready, this will work
-      webview.setZoomFactor(app.display.zoomLevel);
-    } catch (error) {
-      // If it fails, webview is not ready yet, so wait for dom-ready
-      webview.addEventListener('dom-ready', handleDomReady);
+    // Apply zoom level if set
+    if (app.display?.zoomLevel) {
+      window.dockyard.browserView
+        .setZoom(app.id, instanceId, app.display.zoomLevel)
+        .catch((error) => {
+          console.error('Failed to set zoom level:', error);
+        });
     }
 
     return () => {
-      webview.removeEventListener('dom-ready', handleDomReady);
+      window.removeEventListener('resize', handleResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
     };
-  }, [app.display?.zoomLevel]);
+  }, [app.id, app.display?.zoomLevel, instanceId]);
+
+  // Update zoom level when it changes
+  useEffect(() => {
+    if (!isElectron() || !instanceId || !app.display?.zoomLevel) return;
+
+    if (window.dockyard?.browserView) {
+      window.dockyard.browserView
+        .setZoom(app.id, instanceId, app.display.zoomLevel)
+        .catch((error) => {
+          console.error('Failed to update zoom level:', error);
+        });
+    }
+  }, [app.id, instanceId, app.display?.zoomLevel]);
 
   // Show loading state while creating instance
   if (isCreating || !instanceId) {
@@ -113,57 +117,10 @@ export function BrowserViewContainer({
     return <BrowserDevPlaceholder appName={app.name} appUrl={app.url} appIcon={app.icon} />;
   }
 
-  // Find the partition for this instance
-  const instance = app.instances.find((inst) => inst.id === instanceId);
-  const partition = instance?.partitionId || `persist:app-${app.id}-${instanceId}`;
-
-  // Electron environment: render webview
+  // Electron environment: render container for BrowserView
   return (
-    <div
-      className="flex-1 bg-gray-900 relative flex items-center justify-center"
-      style={{ minHeight: 0 }}
-    >
-      {app.display?.responsiveMode?.enabled ? (
-        // Responsive mode: constrained viewport
-        <div
-          className="bg-gray-950 border border-gray-700 shadow-2xl overflow-hidden"
-          style={{
-            width: app.display.responsiveMode.width,
-            height: app.display.responsiveMode.height,
-            maxWidth: '100%',
-            maxHeight: '100%',
-          }}
-        >
-          <webview
-            ref={webviewRef}
-            src={app.url}
-            partition={partition}
-            className="w-full h-full"
-            allowpopups="true"
-            // @ts-ignore - webview is a custom element
-            style={{
-              display: 'flex',
-              width: '100%',
-              height: '100%',
-            }}
-          />
-        </div>
-      ) : (
-        // Full size mode
-        <webview
-          ref={webviewRef}
-          src={app.url}
-          partition={partition}
-          className="w-full h-full"
-          allowpopups="true"
-          // @ts-ignore - webview is a custom element
-          style={{
-            display: 'flex',
-            width: '100%',
-            height: '100%',
-          }}
-        />
-      )}
+    <div ref={containerRef} className="flex-1 bg-gray-900 relative" style={{ minHeight: 0 }}>
+      {/* The BrowserView will be rendered here by Electron */}
     </div>
   );
 }
