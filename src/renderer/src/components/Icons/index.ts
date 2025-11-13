@@ -20,3 +20,20 @@ export {
   MenuDotsIcon,
   LoadingIcon,
 } from './CommonIcons';
+
+export {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  RefreshIcon,
+  HomeIcon,
+  SearchIcon,
+  LockIcon,
+  GlobeIcon,
+} from './NavigationIcons';
+
+export {
+  DocumentIcon,
+  WarningIcon,
+  ArrowRightCircleIcon,
+  SpinnerIcon,
+} from './StatusIcons';

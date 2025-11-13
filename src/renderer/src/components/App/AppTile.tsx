@@ -7,6 +7,7 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
+import { MenuDotsIcon } from '../Icons';
 import { NavigationControls } from '../AppControls/NavigationControls';
 import { URLBar } from '../AppControls/URLBar';
 import { BrowserViewContainer } from '../Layout/BrowserViewContainer';
@@ -91,19 +92,7 @@ export function AppTile({
             className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-400 hover:text-white"
             title="Options"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-              />
-            </svg>
+            <MenuDotsIcon className="w-4 h-4" />
           </button>
         </div>
       </div>
