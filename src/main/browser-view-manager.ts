@@ -195,7 +195,11 @@ export class BrowserViewManager {
     const viewId = this.getViewId(appId, instanceId);
     const entry = this.views.get(viewId);
 
-    if (entry && !entry.view.webContents.isDestroyed() && entry.view.webContents.canGoBack()) {
+    if (
+      entry &&
+      !entry.view.webContents.isDestroyed() &&
+      entry.view.webContents.navigationHistory.canGoBack()
+    ) {
       entry.view.webContents.goBack();
     }
   }
@@ -204,7 +208,11 @@ export class BrowserViewManager {
     const viewId = this.getViewId(appId, instanceId);
     const entry = this.views.get(viewId);
 
-    if (entry && !entry.view.webContents.isDestroyed() && entry.view.webContents.canGoForward()) {
+    if (
+      entry &&
+      !entry.view.webContents.isDestroyed() &&
+      entry.view.webContents.navigationHistory.canGoForward()
+    ) {
       entry.view.webContents.goForward();
     }
   }
@@ -243,8 +251,8 @@ export class BrowserViewManager {
     }
 
     return {
-      canGoBack: entry.view.webContents.canGoBack(),
-      canGoForward: entry.view.webContents.canGoForward(),
+      canGoBack: entry.view.webContents.navigationHistory.canGoBack(),
+      canGoForward: entry.view.webContents.navigationHistory.canGoForward(),
       isLoading: entry.view.webContents.isLoading(),
       url: entry.view.webContents.getURL(),
     };

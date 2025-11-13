@@ -35,10 +35,6 @@ export class IPCHandlers {
     this.appHandlers = new AppHandlers(this.storeManager, this.browserViewManager);
     this.settingsHandlers = new SettingsHandlers(this.storeManager);
     this.notificationHandlers = new NotificationHandlers(this.storeManager);
-    this.browserViewHandlers = new BrowserViewHandlers(
-      this.storeManager,
-      this.browserViewManager
-    );
+    this.browserViewHandlers = new BrowserViewHandlers(this.storeManager, this.browserViewManager);
   }
 }
-
