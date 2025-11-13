@@ -68,9 +68,11 @@ export function BrowserViewContainer({
 
     // Apply zoom level if set
     if (app.display?.zoomLevel) {
-      window.dockyard.browserView.setZoom(app.id, instanceId, app.display.zoomLevel).catch((error) => {
-        console.error('Failed to set zoom level:', error);
-      });
+      window.dockyard.browserView
+        .setZoom(app.id, instanceId, app.display.zoomLevel)
+        .catch((error) => {
+          console.error('Failed to set zoom level:', error);
+        });
     }
 
     return () => {
@@ -86,9 +88,11 @@ export function BrowserViewContainer({
     if (!isElectron() || !instanceId || !app.display?.zoomLevel) return;
 
     if (window.dockyard?.browserView) {
-      window.dockyard.browserView.setZoom(app.id, instanceId, app.display.zoomLevel).catch((error) => {
-        console.error('Failed to update zoom level:', error);
-      });
+      window.dockyard.browserView
+        .setZoom(app.id, instanceId, app.display.zoomLevel)
+        .catch((error) => {
+          console.error('Failed to update zoom level:', error);
+        });
     }
   }, [app.id, instanceId, app.display?.zoomLevel]);
 
@@ -115,11 +119,7 @@ export function BrowserViewContainer({
 
   // Electron environment: render container for BrowserView
   return (
-    <div
-      ref={containerRef}
-      className="flex-1 bg-gray-900 relative"
-      style={{ minHeight: 0 }}
-    >
+    <div ref={containerRef} className="flex-1 bg-gray-900 relative" style={{ minHeight: 0 }}>
       {/* The BrowserView will be rendered here by Electron */}
     </div>
   );

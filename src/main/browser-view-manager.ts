@@ -116,12 +116,12 @@ export class BrowserViewManager {
     }
 
     entry.lastActive = Date.now();
-    
+
     // Hide the previously active view if switching to a new one
     if (this.activeViewId && this.activeViewId !== viewId) {
       this.hideViewOffScreen(this.activeViewId);
     }
-    
+
     this.activeViewId = viewId;
   }
 

@@ -86,11 +86,7 @@ export function AppTile({ app, isActive, onSelect, onUpdateApp, onOpenOptions }:
       </div>
 
       {/* App content area - BrowserView Container */}
-      <BrowserViewContainer
-        app={app}
-        instanceId={instanceId}
-        isCreating={isCreating}
-      />
+      <BrowserViewContainer app={app} instanceId={instanceId} isCreating={isCreating} />
     </motion.div>
   );
 }
