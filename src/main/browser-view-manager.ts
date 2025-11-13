@@ -116,25 +116,38 @@ export class BrowserViewManager {
     }
 
     entry.lastActive = Date.now();
+    
+    // Hide the previously active view if switching to a new one
+    if (this.activeViewId && this.activeViewId !== viewId) {
+      this.hideViewOffScreen(this.activeViewId);
+    }
+    
     this.activeViewId = viewId;
   }
 
   /**
-   * Hide all views
+   * Hide a view by moving it off-screen instead of removing it
+   * This keeps the view alive and maintains its state
+   */
+  private hideViewOffScreen(viewId: string): void {
+    const entry = this.views.get(viewId);
+    if (entry && !entry.view.webContents.isDestroyed()) {
+      // Move view off-screen to hide it while keeping it alive
+      entry.view.setBounds({ x: -10000, y: -10000, width: 1, height: 1 });
+    }
+  }
+
+  /**
+   * Hide all views by moving them off-screen
+   * This keeps views alive and maintains their state
    */
   hideAllViews(): void {
     if (!this.mainWindow) return;
 
-    // Get all currently added BrowserViews
-    const currentViews = this.mainWindow.getBrowserViews();
-
-    // Remove each view
-    currentViews.forEach((view) => {
-      try {
-        this.mainWindow!.removeBrowserView(view);
-      } catch (e) {
-        // View may already be removed
-        console.error('Error removing BrowserView:', e);
+    // Hide all views off-screen instead of removing them
+    this.views.forEach((entry, viewId) => {
+      if (!entry.view.webContents.isDestroyed()) {
+        this.hideViewOffScreen(viewId);
       }
     });
 
@@ -142,25 +155,16 @@ export class BrowserViewManager {
   }
 
   /**
-   * Hide a specific view
+   * Hide a specific view by moving it off-screen
    */
   hideView(appId: string, instanceId: string): void {
     if (!this.mainWindow) return;
 
     const viewId = this.getViewId(appId, instanceId);
-    const entry = this.views.get(viewId);
+    this.hideViewOffScreen(viewId);
 
-    if (entry) {
-      try {
-        this.mainWindow.removeBrowserView(entry.view);
-      } catch (e) {
-        // View may already be removed
-        console.error('Error removing BrowserView:', e);
-      }
-
-      if (this.activeViewId === viewId) {
-        this.activeViewId = null;
-      }
+    if (this.activeViewId === viewId) {
+      this.activeViewId = null;
     }
   }
 
@@ -296,20 +300,29 @@ export class BrowserViewManager {
 
   /**
    * Hibernate (suspend) a view to save resources
+   * This actually removes the view from the window to free memory
    */
   hibernateView(appId: string, instanceId: string): void {
     const viewId = this.getViewId(appId, instanceId);
     const entry = this.views.get(viewId);
 
     if (entry && !entry.view.webContents.isDestroyed()) {
-      // Remove from window but keep in memory
-      if (this.mainWindow && this.activeViewId === viewId) {
-        this.mainWindow.removeBrowserView(entry.view);
+      // Remove from window to save resources
+      if (this.mainWindow) {
+        try {
+          this.mainWindow.removeBrowserView(entry.view);
+        } catch (e) {
+          // View may already be removed
+          console.error('Error removing BrowserView during hibernation:', e);
+        }
+      }
+
+      if (this.activeViewId === viewId) {
         this.activeViewId = null;
       }
 
-      // Note: We don't destroy the view, just hide it
-      // The OS/Electron will manage memory for background tabs
+      // Note: We don't destroy the view, just remove it from window
+      // The view can be re-added when needed
       console.log(`Hibernated view: ${viewId}`);
     }
   }
