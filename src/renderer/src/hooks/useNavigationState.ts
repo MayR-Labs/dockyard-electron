@@ -1,9 +1,10 @@
 /**
  * Hook for managing navigation state
  * Single Responsibility: Handle browser navigation and state polling
+ * Updated to work with webview elements
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, RefObject } from 'react';
 import { App } from '../../../shared/types/app';
 import { isElectron } from '../utils/environment';
 
@@ -14,7 +15,11 @@ interface NavigationState {
   url: string;
 }
 
-export function useNavigationState(app: App, instanceId: string | undefined) {
+export function useNavigationState(
+  app: App,
+  instanceId: string | undefined,
+  webviewRef?: RefObject<HTMLWebViewElement>
+) {
   const [navigationState, setNavigationState] = useState<NavigationState>({
     canGoBack: false,
     canGoForward: false,
@@ -22,52 +27,88 @@ export function useNavigationState(app: App, instanceId: string | undefined) {
     url: app.url,
   });
 
-  // Poll navigation state in Electron environment
+  // Poll navigation state for webview
   useEffect(() => {
-    if (!isElectron() || !instanceId) return;
+    if (!isElectron() || !instanceId || !webviewRef?.current) return;
 
-    const interval = setInterval(async () => {
-      if (window.dockyard?.browserView) {
-        try {
-          const state = await window.dockyard.browserView.getState(app.id, instanceId);
-          setNavigationState(state);
-        } catch (error) {
-          console.error('Failed to get navigation state:', error);
-        }
+    const webview = webviewRef.current;
+
+    // Update state periodically
+    const updateState = () => {
+      try {
+        setNavigationState({
+          canGoBack: webview.canGoBack?.() || false,
+          canGoForward: webview.canGoForward?.() || false,
+          isLoading: webview.isLoading?.() || false,
+          url: webview.getURL?.() || app.url,
+        });
+      } catch (error) {
+        console.error('Failed to get navigation state:', error);
       }
-    }, 500);
+    };
 
-    return () => clearInterval(interval);
-  }, [app.id, instanceId]);
+    // Event listeners for webview events
+    const handleLoadStart = () => {
+      setNavigationState((prev) => ({ ...prev, isLoading: true }));
+    };
+
+    const handleLoadStop = () => {
+      updateState();
+      setNavigationState((prev) => ({ ...prev, isLoading: false }));
+    };
+
+    const handleDidNavigate = () => {
+      updateState();
+    };
+
+    webview.addEventListener('did-start-loading', handleLoadStart);
+    webview.addEventListener('did-stop-loading', handleLoadStop);
+    webview.addEventListener('did-navigate', handleDidNavigate);
+    webview.addEventListener('did-navigate-in-page', handleDidNavigate);
+
+    // Initial state
+    updateState();
+
+    // Poll state as a backup
+    const interval = setInterval(updateState, 1000);
+
+    return () => {
+      clearInterval(interval);
+      webview.removeEventListener('did-start-loading', handleLoadStart);
+      webview.removeEventListener('did-stop-loading', handleLoadStop);
+      webview.removeEventListener('did-navigate', handleDidNavigate);
+      webview.removeEventListener('did-navigate-in-page', handleDidNavigate);
+    };
+  }, [app.id, app.url, instanceId, webviewRef]);
 
   // Navigation action handlers
-  const goBack = async () => {
-    if (isElectron() && instanceId && window.dockyard?.browserView) {
-      await window.dockyard.browserView.goBack(app.id, instanceId);
+  const goBack = () => {
+    if (webviewRef?.current?.canGoBack?.()) {
+      webviewRef.current.goBack();
     }
   };
 
-  const goForward = async () => {
-    if (isElectron() && instanceId && window.dockyard?.browserView) {
-      await window.dockyard.browserView.goForward(app.id, instanceId);
+  const goForward = () => {
+    if (webviewRef?.current?.canGoForward?.()) {
+      webviewRef.current.goForward();
     }
   };
 
-  const reload = async () => {
-    if (isElectron() && instanceId && window.dockyard?.browserView) {
-      await window.dockyard.browserView.reload(app.id, instanceId);
+  const reload = () => {
+    if (webviewRef?.current) {
+      webviewRef.current.reload();
     }
   };
 
-  const goHome = async () => {
-    if (isElectron() && instanceId && window.dockyard?.browserView) {
-      await window.dockyard.browserView.navigate(app.id, instanceId, app.url);
+  const goHome = () => {
+    if (webviewRef?.current) {
+      webviewRef.current.loadURL(app.url);
     }
   };
 
-  const navigate = async (url: string) => {
-    if (isElectron() && instanceId && window.dockyard?.browserView) {
-      await window.dockyard.browserView.navigate(app.id, instanceId, url);
+  const navigate = (url: string) => {
+    if (webviewRef?.current) {
+      webviewRef.current.loadURL(url);
     }
   };
 

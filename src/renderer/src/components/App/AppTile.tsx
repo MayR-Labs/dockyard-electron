@@ -4,7 +4,7 @@
  * Single Responsibility: Render individual app view
  */
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 import { NavigationControls } from '../AppControls/NavigationControls';
@@ -32,11 +32,14 @@ export function AppTile({
 }: AppTileProps) {
   if (!isActive) return null;
 
+  const webviewRef = useRef<HTMLWebViewElement>(null);
+
   // Use custom hooks for instance and navigation management
   const { instanceId, isCreating } = useAppInstance(app, onUpdateApp);
   const { navigationState, goBack, goForward, reload, goHome, navigate } = useNavigationState(
     app,
-    instanceId
+    instanceId,
+    webviewRef
   );
 
   return (
@@ -111,6 +114,7 @@ export function AppTile({
         instanceId={instanceId}
         isAnyModalOpen={isAnyModalOpen}
         isCreating={isCreating}
+        webviewRef={webviewRef}
       />
     </motion.div>
   );
