@@ -4,12 +4,13 @@
  * Refactored to follow SOLID principles with proper separation of concerns
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useWorkspaceStore } from './store/workspaces';
 import { useAppStore } from './store/apps';
 import { useSettingsStore } from './store/settings';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useModalBrowserViewManager } from './hooks/useModalBrowserViewManager';
 import { WindowChrome } from './components/Layout/WindowChrome';
 import { Sidebar } from './components/Layout/Sidebar';
 import { Dock } from './components/Layout/Dock';
@@ -60,6 +61,30 @@ function App() {
     x: number;
     y: number;
   } | null>(null);
+
+  // Track if any modal is open to manage BrowserView visibility
+  const isAnyModalOpen = useMemo(
+    () =>
+      isAddAppModalOpen ||
+      isEditAppModalOpen ||
+      isCreateWorkspaceModalOpen ||
+      isCreateInstanceModalOpen ||
+      isAppOptionsModalOpen ||
+      isPerformanceDashboardOpen ||
+      isSessionManagerOpen,
+    [
+      isAddAppModalOpen,
+      isEditAppModalOpen,
+      isCreateWorkspaceModalOpen,
+      isCreateInstanceModalOpen,
+      isAppOptionsModalOpen,
+      isPerformanceDashboardOpen,
+      isSessionManagerOpen,
+    ]
+  );
+
+  // Automatically hide BrowserView when any modal is open
+  useModalBrowserViewManager(isAnyModalOpen);
 
   useEffect(() => {
     // Load all data on startup
