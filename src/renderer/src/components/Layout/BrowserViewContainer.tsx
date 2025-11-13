@@ -6,6 +6,7 @@
 
 import { useRef, useEffect } from 'react';
 import { App } from '../../../../shared/types/app';
+import { LoadingIcon } from '../Icons';
 import { isElectron } from '../../utils/environment';
 import { BrowserDevPlaceholder } from '../DevMode/BrowserDevPlaceholder';
 
@@ -105,20 +106,8 @@ export function BrowserViewContainer({
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-900">
         <div className="text-center text-gray-400">
-          <div className="mb-4">
-            <svg
-              className="w-16 h-16 mx-auto opacity-50 animate-spin"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+          <div className="mb-4 flex justify-center">
+            <LoadingIcon className="w-16 h-16 opacity-50 animate-spin" />
           </div>
           <p className="text-lg font-medium">Loading app...</p>
           <p className="text-sm mt-2">Creating instance for {app.name}</p>
