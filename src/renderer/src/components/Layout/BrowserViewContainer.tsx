@@ -1,7 +1,7 @@
 /**
  * BrowserView Container Component
- * Manages the container where BrowserView is rendered or shows dev mode placeholder
- * Single Responsibility: BrowserView positioning and lifecycle
+ * Manages the container where webview is rendered or shows dev mode placeholder
+ * Single Responsibility: Webview positioning and lifecycle
  */
 
 import { useRef, useEffect } from 'react';
@@ -14,6 +14,7 @@ interface BrowserViewContainerProps {
   instanceId?: string;
   isAnyModalOpen?: boolean;
   isCreating?: boolean;
+  webviewRef?: React.RefObject<HTMLWebViewElement>;
 }
 
 export function BrowserViewContainer({
@@ -21,65 +22,60 @@ export function BrowserViewContainer({
   instanceId,
   isAnyModalOpen = false,
   isCreating = false,
+  webviewRef: externalWebviewRef,
 }: BrowserViewContainerProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const internalWebviewRef = useRef<HTMLWebViewElement | null>(null);
+  const webviewRef = externalWebviewRef || internalWebviewRef;
 
   useEffect(() => {
-    if (!isElectron() || !instanceId) return;
+    if (!isElectron() || !instanceId || !webviewRef.current) return;
 
-    // Hide BrowserView if any modal is open
-    if (isAnyModalOpen) {
-      window.dockyard?.browserView?.hide().catch((error) => {
-        console.error('Failed to hide BrowserView:', error);
-      });
-      return;
+    const webview = webviewRef.current;
+
+    // Apply zoom level if set
+    if (app.display?.zoomLevel) {
+      webview.setZoomFactor(app.display.zoomLevel);
     }
 
-    // Show the BrowserView when the container is mounted
-    const updateBounds = () => {
-      if (containerRef.current && window.dockyard?.browserView && !isAnyModalOpen) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const bounds = {
-          x: Math.round(rect.left),
-          y: Math.round(rect.top),
-          width: Math.round(rect.width),
-          height: Math.round(rect.height),
-        };
+    // Handle webview events
+    const handleDidFinishLoad = () => {
+      // Apply custom CSS if provided
+      if (app.customCSS) {
+        webview.insertCSS(app.customCSS);
+      }
 
-        window.dockyard.browserView.show(app.id, instanceId, bounds).catch((error) => {
-          console.error('Failed to show BrowserView:', error);
-        });
+      // Apply custom JS if provided
+      if (app.customJS) {
+        webview.executeJavaScript(app.customJS);
       }
     };
 
-    // Initial bounds update
-    updateBounds();
-
-    // Update bounds on window resize
-    const handleResize = () => {
-      updateBounds();
+    const handleDidFailLoad = (event: any) => {
+      console.error('Webview failed to load:', event);
     };
 
-    window.addEventListener('resize', handleResize);
-
-    // Use ResizeObserver for more accurate container size tracking
-    let resizeObserver: ResizeObserver | null = null;
-    if (containerRef.current) {
-      resizeObserver = new ResizeObserver(updateBounds);
-      resizeObserver.observe(containerRef.current);
-    }
+    webview.addEventListener('did-finish-load', handleDidFinishLoad);
+    webview.addEventListener('did-fail-load', handleDidFailLoad);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-      // Hide the BrowserView when component unmounts
-      window.dockyard?.browserView?.hide().catch((error) => {
-        console.error('Failed to hide BrowserView:', error);
-      });
+      webview.removeEventListener('did-finish-load', handleDidFinishLoad);
+      webview.removeEventListener('did-fail-load', handleDidFailLoad);
     };
-  }, [app.id, instanceId, isAnyModalOpen]);
+  }, [app.customCSS, app.customJS, app.display?.zoomLevel, instanceId]);
+
+  // Update zoom level when it changes
+  useEffect(() => {
+    if (webviewRef.current && app.display?.zoomLevel) {
+      webviewRef.current.setZoomFactor(app.display.zoomLevel);
+    }
+  }, [app.display?.zoomLevel]);
+
+  // Hide webview when modal is open
+  useEffect(() => {
+    if (webviewRef.current) {
+      webviewRef.current.style.visibility = isAnyModalOpen ? 'hidden' : 'visible';
+    }
+  }, [isAnyModalOpen]);
 
   // Show loading state while creating instance
   if (isCreating || !instanceId) {
@@ -114,15 +110,54 @@ export function BrowserViewContainer({
     return <BrowserDevPlaceholder appName={app.name} appUrl={app.url} appIcon={app.icon} />;
   }
 
-  // Electron environment: render container for BrowserView
+  // Find the partition for this instance
+  const instance = app.instances.find((inst) => inst.id === instanceId);
+  const partition = instance?.partitionId || `persist:app-${app.id}-${instanceId}`;
+
+  // Electron environment: render webview
   return (
-    <div
-      ref={containerRef}
-      className="flex-1 bg-gray-900 relative"
-      style={{ minHeight: 0 }} // Important for flex layout
-    >
-      {/* The BrowserView will be rendered here by Electron */}
-      {/* This div serves as a size reference for positioning the BrowserView */}
+    <div className="flex-1 bg-gray-900 relative flex items-center justify-center" style={{ minHeight: 0 }}>
+      {app.display?.responsiveMode?.enabled ? (
+        // Responsive mode: constrained viewport
+        <div
+          className="bg-gray-950 border border-gray-700 shadow-2xl overflow-hidden"
+          style={{
+            width: app.display.responsiveMode.width,
+            height: app.display.responsiveMode.height,
+            maxWidth: '100%',
+            maxHeight: '100%',
+          }}
+        >
+          <webview
+            ref={webviewRef}
+            src={app.url}
+            partition={partition}
+            className="w-full h-full"
+            allowpopups="true"
+            // @ts-ignore - webview is a custom element
+            style={{
+              display: 'flex',
+              width: '100%',
+              height: '100%',
+            }}
+          />
+        </div>
+      ) : (
+        // Full size mode
+        <webview
+          ref={webviewRef}
+          src={app.url}
+          partition={partition}
+          className="w-full h-full"
+          allowpopups="true"
+          // @ts-ignore - webview is a custom element
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+          }}
+        />
+      )}
     </div>
   );
 }
