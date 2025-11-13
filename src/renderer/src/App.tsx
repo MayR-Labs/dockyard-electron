@@ -62,7 +62,8 @@ function App() {
     y: number;
   } | null>(null);
 
-  // Track if any modal is open to manage BrowserView visibility
+  // Track if any modal or overlay is open to manage BrowserView visibility
+  // This ensures BrowserView is hidden when any UI element needs to appear on top
   const isAnyModalOpen = useMemo(
     () =>
       isAddAppModalOpen ||
@@ -71,7 +72,8 @@ function App() {
       isCreateInstanceModalOpen ||
       isAppOptionsModalOpen ||
       isPerformanceDashboardOpen ||
-      isSessionManagerOpen,
+      isSessionManagerOpen ||
+      contextMenu !== null, // Include context menu in overlay detection
     [
       isAddAppModalOpen,
       isEditAppModalOpen,
@@ -80,6 +82,7 @@ function App() {
       isAppOptionsModalOpen,
       isPerformanceDashboardOpen,
       isSessionManagerOpen,
+      contextMenu,
     ]
   );
 
