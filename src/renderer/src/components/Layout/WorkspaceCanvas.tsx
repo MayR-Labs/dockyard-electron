@@ -21,6 +21,7 @@ interface WorkspaceCanvasProps {
   onAddSampleApps?: () => void;
   onAddCustomApp?: () => void;
   onUpdateApp?: (id: string, data: Partial<App>) => void;
+  onOpenOptions?: (appId: string) => void;
   isAnyModalOpen?: boolean;
 }
 
@@ -31,6 +32,7 @@ export function WorkspaceCanvas({
   onAddSampleApps,
   onAddCustomApp,
   onUpdateApp,
+  onOpenOptions,
   isAnyModalOpen = false,
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
@@ -149,6 +151,7 @@ export function WorkspaceCanvas({
               isActive={true}
               onSelect={() => onAppSelect(activeApp.id)}
               onUpdateApp={onUpdateApp}
+              onOpenOptions={() => onOpenOptions?.(activeApp.id)}
               isAnyModalOpen={isAnyModalOpen}
             />
           )}

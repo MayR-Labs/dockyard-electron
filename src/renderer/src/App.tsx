@@ -19,6 +19,7 @@ import { AddAppModal } from './components/Modals/AddAppModal';
 import { EditAppModal } from './components/Modals/EditAppModal';
 import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal';
 import { CreateInstanceModal } from './components/Modals/CreateInstanceModal';
+import { AppOptionsModal } from './components/Modals/AppOptionsModal';
 import { AppContextMenu } from './components/ContextMenu/AppContextMenu';
 import { PerformanceDashboard } from './components/DevTools/PerformanceDashboard';
 import { SessionManager } from './components/DevTools/SessionManager';
@@ -47,6 +48,7 @@ function App() {
   const [isEditAppModalOpen, setIsEditAppModalOpen] = useState(false);
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
   const [isCreateInstanceModalOpen, setIsCreateInstanceModalOpen] = useState(false);
+  const [isAppOptionsModalOpen, setIsAppOptionsModalOpen] = useState(false);
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppType | null>(null);
@@ -428,11 +430,19 @@ function App() {
             onAddSampleApps={handleAddSampleApps}
             onAddCustomApp={() => setIsAddAppModalOpen(true)}
             onUpdateApp={handleUpdateApp}
+            onOpenOptions={(appId) => {
+              const app = workspaceApps.find((a) => a.id === appId);
+              if (app) {
+                setSelectedApp(app);
+                setIsAppOptionsModalOpen(true);
+              }
+            }}
             isAnyModalOpen={
               isAddAppModalOpen ||
               isEditAppModalOpen ||
               isCreateWorkspaceModalOpen ||
               isCreateInstanceModalOpen ||
+              isAppOptionsModalOpen ||
               isPerformanceDashboardOpen ||
               isSessionManagerOpen
             }
@@ -517,7 +527,12 @@ function App() {
             handleOpenNewInstance(contextMenu.appId);
           }}
           onSettings={() => {
-            handleOpenSettings(contextMenu.appId);
+            const app = workspaceApps.find((a) => a.id === contextMenu.appId);
+            if (app) {
+              setSelectedApp(app);
+              setIsAppOptionsModalOpen(true);
+            }
+            setContextMenu(null);
           }}
           onHibernate={() => {
             hibernateApp(contextMenu.appId);
@@ -530,6 +545,55 @@ function App() {
           }}
         />
       )}
+
+      {/* App Options Modal */}
+      <AppOptionsModal
+        isOpen={isAppOptionsModalOpen}
+        app={selectedApp}
+        instanceId={selectedApp?.instances[0]?.id}
+        zoomLevel={selectedApp?.display?.zoomLevel || 1.0}
+        onClose={() => {
+          setIsAppOptionsModalOpen(false);
+          setSelectedApp(null);
+        }}
+        onZoomChange={(level) => {
+          if (selectedApp) {
+            handleUpdateApp(selectedApp.id, {
+              display: {
+                zoomLevel: level,
+              },
+            });
+          }
+        }}
+        onDuplicate={() => {
+          if (selectedApp) {
+            handleOpenNewInstance(selectedApp.id);
+          }
+        }}
+        onSettings={() => {
+          if (selectedApp) {
+            setIsAppOptionsModalOpen(false);
+            setIsEditAppModalOpen(true);
+          }
+        }}
+        onHibernate={() => {
+          if (selectedApp) {
+            hibernateApp(selectedApp.id);
+            setIsAppOptionsModalOpen(false);
+            setSelectedApp(null);
+          }
+        }}
+        onDelete={async () => {
+          if (selectedApp) {
+            await deleteApp(selectedApp.id);
+            if (activeAppId === selectedApp.id) {
+              setActiveAppId(null);
+            }
+            setIsAppOptionsModalOpen(false);
+            setSelectedApp(null);
+          }
+        }}
+      />
 
       {/* DevTools */}
       {isPerformanceDashboardOpen && (
