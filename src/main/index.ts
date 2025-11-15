@@ -1,19 +1,20 @@
+import electronSquirrelStartup from 'electron-squirrel-startup';
 import { app, BrowserWindow } from 'electron';
 import { WindowManager } from './window-manager';
 import { StoreManager } from './store-manager';
 import { IPCHandlers } from './ipc-handlers';
 import { BrowserViewManager } from './browser-view-manager';
 import { WebViewManager } from './webview-manager';
+import { ProfileMetadata } from '../shared/types';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling
-if (require('electron-squirrel-startup')) {
+if (electronSquirrelStartup) {
   app.quit();
 }
 
 // Global instances
 let windowManager: WindowManager;
 let storeManager: StoreManager;
-let ipcHandlers: IPCHandlers;
 let browserViewManager: BrowserViewManager;
 let webViewManager: WebViewManager;
 
@@ -29,7 +30,7 @@ function parseProfileFromArgs(): string {
 /**
  * Initialize the application
  */
-async function initialize() {
+async function initialize(): Promise<void> {
   // Get profile from command line or use default
   const profileName = parseProfileFromArgs();
 
@@ -44,7 +45,7 @@ async function initialize() {
   webViewManager = new WebViewManager();
 
   // Initialize IPC handlers
-  ipcHandlers = new IPCHandlers(storeManager, browserViewManager, webViewManager);
+  new IPCHandlers(storeManager, browserViewManager, webViewManager);
 
   // Initialize window manager
   windowManager = new WindowManager();
@@ -59,8 +60,8 @@ async function initialize() {
   const rootStore = storeManager.getRootStore();
   rootStore.set('lastActiveProfile', profileName);
 
-  const profiles = rootStore.get('profiles', []);
-  const currentProfile = profiles.find((p: any) => p.id === profileName);
+  const profiles = rootStore.get('profiles');
+  const currentProfile = profiles.find((profileEntry: ProfileMetadata) => profileEntry.id === profileName);
   if (currentProfile) {
     currentProfile.lastAccessed = new Date().toISOString();
     rootStore.set('profiles', profiles);
@@ -99,7 +100,7 @@ if (!gotTheLock) {
   console.log('Another instance is already running with this profile');
   app.quit();
 } else {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
+  app.on('second-instance', (_event, _commandLine, _workingDirectory) => {
     // Someone tried to run a second instance, focus our window
     const mainWindow = windowManager?.getMainWindow();
     if (mainWindow) {

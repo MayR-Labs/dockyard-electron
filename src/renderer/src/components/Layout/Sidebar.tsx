@@ -4,7 +4,7 @@
  * Single Responsibility: Workspace navigation UI
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Workspace } from '../../../../shared/types/workspace';
 
 interface SidebarProps {

@@ -4,7 +4,7 @@
  * Single Responsibility: Modal container and tab management
  */
 
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 import { CloseIcon } from '../Icons';
@@ -13,7 +13,6 @@ import { ZoomControls, AppActions, DeleteAppSection, ResponsiveMode } from './Ap
 interface AppOptionsModalProps {
   isOpen: boolean;
   app: App | null;
-  instanceId?: string;
   zoomLevel: number;
   onClose: () => void;
   onZoomChange: (level: number) => void;
@@ -27,7 +26,6 @@ interface AppOptionsModalProps {
 export function AppOptionsModal({
   isOpen,
   app,
-  instanceId,
   zoomLevel,
   onClose,
   onZoomChange,

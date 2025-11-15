@@ -7,6 +7,7 @@
 import { create } from 'zustand';
 import { App } from '../../../shared/types';
 import { appAPI } from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 
 interface AppStore {
   apps: App[];
@@ -22,7 +23,7 @@ interface AppStore {
   resumeApp: (appId: string, instanceId: string) => Promise<void>;
 }
 
-export const useAppStore = create<AppStore>((set, get) => ({
+export const useAppStore = create<AppStore>((set) => ({
   apps: [],
   loading: false,
   error: null,
@@ -32,8 +33,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
     try {
       const apps = await appAPI.list();
       set({ apps, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
     }
   },
 
@@ -45,8 +46,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       const apps = await appAPI.list();
       set({ apps, loading: false });
       return newApp;
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
       return null;
     }
   },
@@ -58,8 +59,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       // Reload apps from storage to ensure consistency
       const apps = await appAPI.list();
       set({ apps, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
     }
   },
 
@@ -70,8 +71,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       // Reload apps from storage to ensure consistency
       const apps = await appAPI.list();
       set({ apps, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
     }
   },
 
@@ -80,8 +81,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       await appAPI.hibernate(appId, instanceId);
       const apps = await appAPI.list();
       set({ apps });
-    } catch (error: any) {
-      set({ error: error.message });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error) });
     }
   },
 
@@ -90,8 +91,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       await appAPI.resume(appId, instanceId);
       const apps = await appAPI.list();
       set({ apps });
-    } catch (error: any) {
-      set({ error: error.message });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error) });
     }
   },
 }));

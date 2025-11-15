@@ -344,14 +344,6 @@ function App() {
     });
   };
 
-  const handleOpenSettings = (appId: string) => {
-    const app = apps.find((a) => a.id === appId);
-    if (app) {
-      setSelectedApp(app);
-      setIsEditAppModalOpen(true);
-    }
-  };
-
   const handleOpenNewInstance = (appId: string) => {
     const app = apps.find((a) => a.id === appId);
     if (app) {
@@ -581,7 +573,6 @@ function App() {
       {/* Modals */}
       <AddAppModal
         isOpen={isAddAppModalOpen}
-        workspaceId={activeWorkspaceId || ''}
         onClose={() => setIsAddAppModalOpen(false)}
         onAddApp={handleAddApp}
       />
@@ -697,7 +688,6 @@ function App() {
       <AppOptionsModal
         isOpen={isAppOptionsModalOpen}
         app={selectedApp}
-        instanceId={selectedApp?.instances[0]?.id}
         zoomLevel={selectedApp?.display?.zoomLevel || 1.0}
         onClose={() => {
           setIsAppOptionsModalOpen(false);

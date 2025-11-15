@@ -61,6 +61,7 @@ export function AppContextMenu({
       ref={menuRef}
       className="fixed bg-gray-800 border border-gray-700 rounded-lg shadow-2xl py-1 z-50 min-w-48"
       style={{ left: x, top: y }}
+      data-app-id={appId}
     >
       <div className="px-3 py-2 border-b border-gray-700">
         <p className="text-xs font-medium text-gray-400 truncate">{appName}</p>

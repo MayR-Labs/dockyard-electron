@@ -108,7 +108,7 @@ export function CreateInstanceModal({
               disabled={isSubmitting}
             />
             <p className="mt-1 text-xs text-gray-500">
-              Give this instance a memorable name, like "Personal" or "Work"
+              Give this instance a memorable name, like &ldquo;Personal&rdquo; or &ldquo;Work&rdquo;
             </p>
           </div>
 

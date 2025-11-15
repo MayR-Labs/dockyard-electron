@@ -1,5 +1,6 @@
 import { BrowserWindow } from 'electron';
 import path from 'path';
+import { existsSync } from 'fs';
 
 export class WindowManager {
   private mainWindow: BrowserWindow | null = null;
@@ -13,8 +14,7 @@ export class WindowManager {
     console.log('__dirname:', __dirname);
 
     // Check if preload file exists
-    const fs = require('fs');
-    if (fs.existsSync(preloadPath)) {
+    if (existsSync(preloadPath)) {
       console.log('✓ Preload script found');
     } else {
       console.error('✗ Preload script NOT found at:', preloadPath);

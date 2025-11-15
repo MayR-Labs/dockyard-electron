@@ -7,6 +7,7 @@
 import { create } from 'zustand';
 import { Workspace } from '../../../shared/types';
 import { workspaceAPI } from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 
 interface WorkspaceStore {
   workspaces: Workspace[];
@@ -22,7 +23,7 @@ interface WorkspaceStore {
   deleteWorkspace: (id: string) => Promise<void>;
 }
 
-export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
+export const useWorkspaceStore = create<WorkspaceStore>((set) => ({
   workspaces: [],
   activeWorkspaceId: null,
   loading: false,
@@ -38,8 +39,8 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
         activeWorkspaceId: activeWorkspace?.id || null,
         loading: false,
       });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
     }
   },
 
@@ -47,8 +48,8 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
     try {
       await workspaceAPI.switch(id);
       set({ activeWorkspaceId: id });
-    } catch (error: any) {
-      set({ error: error.message });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error) });
     }
   },
 
@@ -68,8 +69,8 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
         activeWorkspaceId: activeId,
         loading: false,
       });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
     }
   },
 
@@ -80,8 +81,8 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
       // Reload workspaces from storage to ensure consistency
       const workspaces = await workspaceAPI.list();
       set({ workspaces, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
     }
   },
 
@@ -97,8 +98,8 @@ export const useWorkspaceStore = create<WorkspaceStore>((set, get) => ({
         activeWorkspaceId: activeWorkspace?.id || null,
         loading: false,
       });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
     }
   },
 }));

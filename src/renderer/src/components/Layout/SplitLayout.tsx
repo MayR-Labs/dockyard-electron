@@ -28,7 +28,13 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
     // Initialize panel sizes equally
     const count = activeAppIds.length;
     if (count > 0) {
-      setPanelSizes(new Array(count).fill(100 / count));
+      const frameId = window.requestAnimationFrame(() => {
+        setPanelSizes(new Array(count).fill(100 / count));
+      });
+
+      return () => {
+        window.cancelAnimationFrame(frameId);
+      };
     }
   }, [activeAppIds.length]);
 

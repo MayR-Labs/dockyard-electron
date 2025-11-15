@@ -1,4 +1,4 @@
-import { BrowserView, BrowserWindow, session } from 'electron';
+import { app, BrowserView, BrowserWindow, session } from 'electron';
 import { App, AppInstance } from '../shared/types/app';
 
 interface BrowserViewEntry {
@@ -62,15 +62,17 @@ export class BrowserViewManager {
     view.webContents.loadURL(app.url);
 
     // Apply custom CSS/JS if provided
-    if (app.customCSS) {
+    const customCSS = app.customCSS;
+    if (customCSS) {
       view.webContents.on('did-finish-load', () => {
-        view.webContents.insertCSS(app.customCSS!);
+        view.webContents.insertCSS(customCSS);
       });
     }
 
-    if (app.customJS) {
+    const customJS = app.customJS;
+    if (customJS) {
       view.webContents.on('did-finish-load', () => {
-        view.webContents.executeJavaScript(app.customJS!);
+        void view.webContents.executeJavaScript(customJS);
       });
     }
 
@@ -311,9 +313,9 @@ export class BrowserViewManager {
       if (this.mainWindow) {
         try {
           this.mainWindow.removeBrowserView(entry.view);
-        } catch (e) {
+        } catch (error) {
           // View may already be removed
-          console.error('Error removing BrowserView during hibernation:', e);
+          console.error('Error removing BrowserView during hibernation:', error);
         }
       }
 
@@ -352,15 +354,15 @@ export class BrowserViewManager {
       if (this.mainWindow && this.activeViewId === viewId) {
         try {
           this.mainWindow.removeBrowserView(entry.view);
-        } catch (e) {
-          // View may already be removed
+        } catch (error) {
+          console.warn('BrowserView removal failed during destroyView', error);
         }
         this.activeViewId = null;
       }
 
       // Destroy the view
       if (!entry.view.webContents.isDestroyed()) {
-        (entry.view.webContents as any).destroy();
+        entry.view.webContents.destroy();
       }
 
       this.views.delete(viewId);
@@ -407,8 +409,8 @@ export class BrowserViewManager {
     try {
       // Use process manager to get memory info
       const pid = entry.view.webContents.getOSProcessId();
-      const appMetrics = require('electron').app.getAppMetrics();
-      const processMetrics = appMetrics.find((m: any) => m.pid === pid);
+      const appMetrics = app.getAppMetrics();
+      const processMetrics = appMetrics.find((metric) => metric.pid === pid);
 
       if (processMetrics && processMetrics.memory) {
         return {
@@ -416,8 +418,8 @@ export class BrowserViewManager {
           privateBytes: processMetrics.memory.privateBytes || 0,
         };
       }
-    } catch (e) {
-      console.error('Failed to get memory usage:', e);
+    } catch (error) {
+      console.error('Failed to get memory usage:', error);
     }
 
     return { workingSetSize: 0, privateBytes: 0 };
@@ -437,14 +439,14 @@ export class BrowserViewManager {
     try {
       // Use process manager to get CPU usage
       const pid = entry.view.webContents.getOSProcessId();
-      const appMetrics = require('electron').app.getAppMetrics();
-      const processMetrics = appMetrics.find((m: any) => m.pid === pid);
+      const appMetrics = app.getAppMetrics();
+      const processMetrics = appMetrics.find((metric) => metric.pid === pid);
 
       if (processMetrics && processMetrics.cpu) {
         return processMetrics.cpu.percentCPUUsage || 0;
       }
-    } catch (e) {
-      console.error('Failed to get CPU usage:', e);
+    } catch (error) {
+      console.error('Failed to get CPU usage:', error);
     }
 
     return 0;
@@ -522,7 +524,7 @@ export class BrowserViewManager {
 
     this.views.forEach((entry) => {
       if (!entry.view.webContents.isDestroyed()) {
-        (entry.view.webContents as any).destroy();
+        entry.view.webContents.destroy();
       }
     });
 

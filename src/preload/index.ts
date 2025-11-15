@@ -2,6 +2,51 @@ import { contextBridge, ipcRenderer } from 'electron';
 import { IPC_CHANNELS, IPC_EVENTS } from '../shared/constants';
 import type { DockyardAPI } from '../shared/types/preload';
 
+const validEventChannels = [
+  IPC_EVENTS.WORKSPACE_CHANGED,
+  IPC_EVENTS.APP_UPDATED,
+  IPC_EVENTS.NOTIFICATION,
+] as const;
+
+type DockyardEventChannel = (typeof validEventChannels)[number];
+type DockyardEventListener = (...args: unknown[]) => void;
+type IpcRendererListener = Parameters<typeof ipcRenderer.on>[1];
+
+const listenerMap = new Map<DockyardEventChannel, Map<DockyardEventListener, IpcRendererListener>>();
+
+const isValidChannel = (channel: string): channel is DockyardEventChannel =>
+  validEventChannels.includes(channel as DockyardEventChannel);
+
+const registerListener = (channel: DockyardEventChannel, callback: DockyardEventListener): void => {
+  const wrappedListener: IpcRendererListener = (_event, ...args) => {
+    callback(...args);
+  };
+
+  const channelListeners = listenerMap.get(channel) ?? new Map();
+  channelListeners.set(callback, wrappedListener);
+  listenerMap.set(channel, channelListeners);
+  ipcRenderer.on(channel, wrappedListener);
+};
+
+const unregisterListener = (channel: DockyardEventChannel, callback: DockyardEventListener): void => {
+  const channelListeners = listenerMap.get(channel);
+  if (!channelListeners) {
+    return;
+  }
+
+  const wrappedListener = channelListeners.get(callback);
+  if (!wrappedListener) {
+    return;
+  }
+
+  ipcRenderer.removeListener(channel, wrappedListener);
+  channelListeners.delete(callback);
+
+  if (channelListeners.size === 0) {
+    listenerMap.delete(channel);
+  }
+};
+
 console.log('🔧 Preload script is executing...');
 
 // Expose safe API to renderer process
@@ -125,19 +170,16 @@ const dockyardAPI: DockyardAPI = {
   },
 
   // Event listeners
-  on: (channel: string, callback: (...args: any[]) => void) => {
-    const validChannels: string[] = [
-      IPC_EVENTS.WORKSPACE_CHANGED,
-      IPC_EVENTS.APP_UPDATED,
-      IPC_EVENTS.NOTIFICATION,
-    ];
-    if (validChannels.includes(channel)) {
-      ipcRenderer.on(channel, (_event, ...args) => callback(...args));
+  on: (channel: string, callback: DockyardEventListener) => {
+    if (isValidChannel(channel)) {
+      registerListener(channel, callback);
     }
   },
 
-  off: (channel: string, callback: (...args: any[]) => void) => {
-    ipcRenderer.removeListener(channel, callback);
+  off: (channel: string, callback: DockyardEventListener) => {
+    if (isValidChannel(channel)) {
+      unregisterListener(channel, callback);
+    }
   },
 };
 

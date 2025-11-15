@@ -7,7 +7,7 @@ import { ipcMain } from 'electron';
 import { IPC_CHANNELS } from '../../shared/constants';
 import { StoreManager } from '../store-manager';
 import { BrowserViewManager } from '../browser-view-manager';
-import { App, Workspace } from '../../shared/types';
+import { App, AppInstance, Workspace } from '../../shared/types';
 import { generateId, getCurrentTimestamp, getPartitionName } from '../../shared/utils';
 
 export class AppHandlers {
@@ -207,7 +207,7 @@ export class AppHandlers {
         const app = apps.find((a: App) => a.id === appId);
 
         if (app) {
-          const instance = app.instances.find((i: any) => i.id === instanceId);
+          const instance = app.instances.find((instanceEntry: AppInstance) => instanceEntry.id === instanceId);
           if (instance) {
             instance.hibernated = true;
             instance.lastActive = new Date().toISOString();
@@ -228,7 +228,7 @@ export class AppHandlers {
       const app = apps.find((a: App) => a.id === appId);
 
       if (app) {
-        const instance = app.instances.find((i: any) => i.id === instanceId);
+        const instance = app.instances.find((instanceEntry: AppInstance) => instanceEntry.id === instanceId);
         if (instance) {
           instance.hibernated = false;
           instance.lastActive = new Date().toISOString();
@@ -262,7 +262,7 @@ export class AppHandlers {
 
         // Generate new instance with proper partition
         const instanceId = generateId();
-        const newInstance = {
+        const newInstance: AppInstance = {
           id: instanceId,
           appId: app.id,
           name: data.name,

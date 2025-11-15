@@ -4,7 +4,7 @@
  * Single Responsibility: URL display and input
  */
 
-import { useState, useEffect, KeyboardEvent } from 'react';
+import { useState, KeyboardEvent } from 'react';
 import { LockIcon, DocumentIcon, WarningIcon, SpinnerIcon, ArrowRightCircleIcon } from '../Icons';
 
 interface URLBarProps {
@@ -14,14 +14,8 @@ interface URLBarProps {
 }
 
 export function URLBar({ url, isLoading = false, onNavigate }: URLBarProps) {
-  const [inputValue, setInputValue] = useState(url);
+  const [draftValue, setDraftValue] = useState(url);
   const [isEditing, setIsEditing] = useState(false);
-
-  useEffect(() => {
-    if (!isEditing) {
-      setInputValue(url);
-    }
-  }, [url, isEditing]);
 
   const isSecure = url.startsWith('https://');
   const isLocalFile = url.startsWith('file://');
@@ -30,14 +24,15 @@ export function URLBar({ url, isLoading = false, onNavigate }: URLBarProps) {
     if (e.key === 'Enter') {
       handleNavigate();
     } else if (e.key === 'Escape') {
-      setInputValue(url);
+      setDraftValue(url);
       setIsEditing(false);
       (e.target as HTMLInputElement).blur();
     }
   };
 
   const handleNavigate = () => {
-    let urlToNavigate = inputValue.trim();
+    const currentValue = isEditing ? draftValue : url;
+    let urlToNavigate = currentValue.trim();
 
     // If no protocol, assume https
     if (urlToNavigate && !urlToNavigate.match(/^[a-z]+:\/\//i)) {
@@ -88,16 +83,17 @@ export function URLBar({ url, isLoading = false, onNavigate }: URLBarProps) {
         {/* URL Input */}
         <input
           type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          value={isEditing ? draftValue : url}
+          onChange={(e) => setDraftValue(e.target.value)}
           onFocus={() => {
             setIsEditing(true);
             // Select all on focus for easy editing
+            setDraftValue(url);
             (document.activeElement as HTMLInputElement)?.select();
           }}
           onBlur={() => {
             setIsEditing(false);
-            setInputValue(url);
+            setDraftValue(url);
           }}
           onKeyDown={handleKeyDown}
           placeholder="Enter URL or search..."
@@ -105,7 +101,7 @@ export function URLBar({ url, isLoading = false, onNavigate }: URLBarProps) {
         />
 
         {/* Navigate/Refresh Button */}
-        {isEditing && inputValue !== url && (
+        {isEditing && draftValue !== url && (
           <button
             onMouseDown={(e) => {
               e.preventDefault(); // Prevent blur

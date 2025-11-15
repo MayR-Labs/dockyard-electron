@@ -58,7 +58,7 @@ export function BrowserDevPlaceholder({ appName, appUrl, appIcon }: BrowserDevPl
                 Browser Development Mode
               </h3>
               <p className="text-gray-300 text-sm mb-3">
-                You're running Dockyard in a regular browser. BrowserView components require
+                You&apos;re running Dockyard in a regular browser. BrowserView components require
                 Electron to function properly.
               </p>
               <div className="bg-gray-800/50 rounded p-3 text-xs text-gray-400 space-y-2">

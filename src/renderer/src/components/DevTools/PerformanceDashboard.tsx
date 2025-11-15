@@ -26,6 +26,15 @@ interface PerformanceDashboardProps {
 export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
   const [metrics, setMetrics] = useState<AppMetrics[]>([]);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     if (!autoRefresh) return;
@@ -79,7 +88,7 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
   };
 
   const formatTime = (timestamp: number): string => {
-    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    const seconds = Math.max(0, Math.floor((currentTime - timestamp) / 1000));
     if (seconds < 60) return `${seconds}s ago`;
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `${minutes}m ago`;

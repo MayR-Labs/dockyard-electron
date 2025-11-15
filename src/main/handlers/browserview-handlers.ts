@@ -7,7 +7,7 @@ import { ipcMain } from 'electron';
 import { IPC_CHANNELS } from '../../shared/constants';
 import { StoreManager } from '../store-manager';
 import { BrowserViewManager } from '../browser-view-manager';
-import { App } from '../../shared/types';
+import { App, AppInstance } from '../../shared/types';
 
 export class BrowserViewHandlers {
   constructor(
@@ -47,13 +47,13 @@ export class BrowserViewHandlers {
           throw new Error(`App with id "${appId}" not found`);
         }
 
-        const instance = app.instances.find((i: any) => i.id === instanceId);
+        const instance = app.instances.find((instanceEntry: AppInstance) => instanceEntry.id === instanceId);
         if (!instance) {
           throw new Error(`Instance with id "${instanceId}" not found`);
         }
 
         // Get or create the view
-        const view = this.browserViewManager.getOrCreateView(app, instance);
+        this.browserViewManager.getOrCreateView(app, instance);
 
         // Show the view
         this.browserViewManager.showView(appId, instanceId, bounds);

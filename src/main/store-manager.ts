@@ -10,13 +10,13 @@ import {
 } from '../shared/types';
 
 export class StoreManager {
-  private stores: Map<string, any> = new Map();
-  private rootStore: any;
+  private stores: Map<string, Store<Record<string, unknown>>> = new Map();
+  private rootStore: Store<ProfilesConfig>;
   private currentProfile: string = 'default';
 
   constructor() {
     // Initialize root store for profile metadata
-    this.rootStore = new Store({
+    this.rootStore = new Store<ProfilesConfig>({
       name: 'profiles',
       defaults: {
         profiles: [
@@ -52,25 +52,25 @@ export class StoreManager {
    * Get current profile metadata
    */
   getCurrentProfileMetadata(): { id: string; name: string } {
-    const profiles = this.rootStore.get('profiles', []);
-    const profile = profiles.find((p: any) => p.id === this.currentProfile);
+    const profiles = this.rootStore.get('profiles');
+    const profile = profiles.find((profileEntry) => profileEntry.id === this.currentProfile);
     return profile || { id: this.currentProfile, name: this.currentProfile };
   }
 
   /**
    * Get the root profiles store
    */
-  getRootStore(): any {
+  getRootStore(): Store<ProfilesConfig> {
     return this.rootStore;
   }
 
   /**
    * Get a profile-specific store for workspaces
    */
-  getWorkspacesStore(): any {
+  getWorkspacesStore(): Store<WorkspacesConfig> {
     const key = `${this.currentProfile}-workspaces`;
     if (!this.stores.has(key)) {
-      const store = new Store({
+      const store = new Store<WorkspacesConfig>({
         name: 'workspaces',
         cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
         defaults: {
@@ -80,16 +80,16 @@ export class StoreManager {
       });
       this.stores.set(key, store);
     }
-    return this.stores.get(key);
+    return this.stores.get(key) as Store<WorkspacesConfig>;
   }
 
   /**
    * Get a profile-specific store for apps
    */
-  getAppsStore(): any {
+  getAppsStore(): Store<AppsConfig> {
     const key = `${this.currentProfile}-apps`;
     if (!this.stores.has(key)) {
-      const store = new Store({
+      const store = new Store<AppsConfig>({
         name: 'apps',
         cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
         defaults: {
@@ -98,23 +98,23 @@ export class StoreManager {
       });
       this.stores.set(key, store);
     }
-    return this.stores.get(key);
+    return this.stores.get(key) as Store<AppsConfig>;
   }
 
   /**
    * Get a profile-specific store for settings
    */
-  getSettingsStore(): any {
+  getSettingsStore(): Store<Settings> {
     const key = `${this.currentProfile}-settings`;
     if (!this.stores.has(key)) {
-      const store = new Store({
+      const store = new Store<Settings>({
         name: 'settings',
         cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
         defaults: DEFAULT_SETTINGS,
       });
       this.stores.set(key, store);
     }
-    return this.stores.get(key);
+    return this.stores.get(key) as Store<Settings>;
   }
 
   /**
