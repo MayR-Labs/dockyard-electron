@@ -22,8 +22,6 @@ interface AppTileProps {
 }
 
 export function AppTile({ app, isActive, onSelect, onUpdateApp, onOpenOptions }: AppTileProps) {
-  if (!isActive) return null;
-
   // Use custom hooks for instance and navigation management
   const { instanceId, isCreating } = useAppInstance(app, onUpdateApp);
   const { navigationState, goBack, goForward, reload, goHome, navigate } = useNavigationState(
@@ -31,13 +29,18 @@ export function AppTile({ app, isActive, onSelect, onUpdateApp, onOpenOptions }:
     instanceId
   );
 
+  // Keep the component mounted but hide it when not active
+  // This preserves the webview state instead of destroying it
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.95 }}
       transition={{ duration: 0.2 }}
       className="absolute inset-0 flex flex-col bg-gray-900"
+      style={{
+        visibility: isActive ? 'visible' : 'hidden',
+        pointerEvents: isActive ? 'auto' : 'none',
+      }}
       onClick={onSelect}
     >
       {/* Micro-toolbar */}
