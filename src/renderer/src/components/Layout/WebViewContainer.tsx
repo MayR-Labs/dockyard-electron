@@ -245,20 +245,6 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
     return <BrowserDevPlaceholder appName={app.name} appUrl={app.url} appIcon={app.icon} />;
   }
 
-  const renderLoadingOverlay = () => {
-    if (!isLoading) return null;
-    return (
-      <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 z-20">
-        <div className="text-center text-gray-300">
-          <div className="mb-3 flex justify-center">
-            <LoadingIcon className="w-10 h-10 opacity-60 animate-spin" />
-          </div>
-          <p className="text-sm">Loading {app.name}…</p>
-        </div>
-      </div>
-    );
-  };
-
   const webviewStyles = responsiveEnabled
     ? {
         width: `${responsiveWidth}px`,
@@ -314,7 +300,6 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
   // Electron environment: render webview
   return (
     <div className="flex-1 bg-gray-900 relative" style={{ minHeight: 0 }}>
-      {renderLoadingOverlay()}
       {webviewElement}
     </div>
   );
