@@ -39,16 +39,42 @@ export function sanitizeProfileName(name: string): string {
 }
 
 /**
- * Get partition name for an app
+ * Generate a slug from a string
+ * Converts to lowercase, removes special characters, replaces spaces with hyphens
+ */
+export function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+}
+
+/**
+ * Get partition name for an app with slugs
+ * Format: persist:{profileSlug}-{workspaceSlug}-{appSlug}-{instanceId}
  */
 export function getPartitionName(
   appId: string,
+  appName: string,
   instanceId: string,
-  workspaceId?: string,
+  workspaceId: string,
+  workspaceName: string,
+  profileId: string,
+  profileName: string,
   sessionMode?: 'isolated' | 'shared'
 ): string {
-  if (sessionMode === 'shared' && workspaceId) {
-    return `persist:workspace-${workspaceId}`;
+  const profileSlug = generateSlug(profileName) || profileId;
+  const workspaceSlug = generateSlug(workspaceName) || workspaceId;
+  const appSlug = generateSlug(appName) || appId;
+
+  if (sessionMode === 'shared') {
+    // Shared session: all apps in workspace share the same partition
+    return `persist:${profileSlug}-${workspaceSlug}-shared`;
   }
-  return `persist:app-${appId}-${instanceId}`;
+
+  // Isolated session: unique partition per app instance
+  return `persist:${profileSlug}-${workspaceSlug}-${appSlug}-${instanceId}`;
 }

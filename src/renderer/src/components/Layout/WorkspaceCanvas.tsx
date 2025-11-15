@@ -5,7 +5,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 import { LayoutMode } from '../../../../shared/types/workspace';
 import { LayoutControls } from './LayoutControls';
@@ -34,6 +33,21 @@ export function WorkspaceCanvas({
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
+  const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
+  const handleWakeApp = (appId: string) => {
+    setAwakeApps((prev) => {
+      if (prev[appId]) return prev;
+      return { ...prev, [appId]: true };
+    });
+  };
+
+
+  // Ensure there is always a selected app when apps exist
+  useEffect(() => {
+    if (!activeAppId && apps.length > 0) {
+      onAppSelect(apps[0].id);
+    }
+  }, [activeAppId, apps, onAppSelect]);
 
   if (apps.length === 0) {
     return (
@@ -86,7 +100,7 @@ export function WorkspaceCanvas({
     );
   }
 
-  const activeApp = apps.find((app) => app.id === activeAppId);
+  const resolvedActiveAppId = activeAppId || apps[0]?.id || null;
 
   return (
     <div className="flex-1 bg-gray-950 relative flex flex-col">
@@ -131,18 +145,18 @@ export function WorkspaceCanvas({
       )}
 
       <div className="flex-1 relative">
-        <AnimatePresence mode="wait">
-          {activeApp && (
-            <AppTile
-              key={activeApp.id}
-              app={activeApp}
-              isActive={true}
-              onSelect={() => onAppSelect(activeApp.id)}
-              onUpdateApp={onUpdateApp}
-              onOpenOptions={() => onOpenOptions?.(activeApp.id)}
-            />
-          )}
-        </AnimatePresence>
+        {apps.map((app) => (
+          <AppTile
+            key={app.id}
+            app={app}
+            isActive={resolvedActiveAppId === app.id}
+            isAwake={!!awakeApps[app.id]}
+            onSelect={() => onAppSelect(app.id)}
+            onWakeApp={() => handleWakeApp(app.id)}
+            onUpdateApp={onUpdateApp}
+            onOpenOptions={() => onOpenOptions?.(app.id)}
+          />
+        ))}
       </div>
     </div>
   );

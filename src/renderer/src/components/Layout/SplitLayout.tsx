@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 import { LayoutMode } from '../../../../shared/types/workspace';
+import { WebViewContainer } from './WebViewContainer';
 
 interface SplitLayoutProps {
   apps: App[];
@@ -248,59 +249,7 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
  * Similar to BrowserViewContainer but optimized for split layout panels
  */
 function SplitPanelBrowserView({ app, instanceId }: { app: App | undefined; instanceId?: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!instanceId || !app) return;
-
-    // Check if window.dockyard is available
-    if (!window.dockyard || !window.dockyard.browserView) {
-      console.error('Dockyard API not available. Preload script may not be loaded.');
-      return;
-    }
-
-    // Show the BrowserView when the container is mounted
-    const updateBounds = () => {
-      if (containerRef.current && window.dockyard?.browserView) {
-        const rect = containerRef.current.getBoundingClientRect();
-        const bounds = {
-          x: Math.round(rect.left),
-          y: Math.round(rect.top),
-          width: Math.round(rect.width),
-          height: Math.round(rect.height),
-        };
-
-        window.dockyard.browserView.show(app.id, instanceId, bounds).catch((error) => {
-          console.error('Failed to show BrowserView:', error);
-        });
-      }
-    };
-
-    // Initial bounds update
-    updateBounds();
-
-    // Update bounds on window resize
-    const handleResize = () => {
-      updateBounds();
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    // Use ResizeObserver for more accurate container size tracking
-    let resizeObserver: ResizeObserver | null = null;
-    if (containerRef.current) {
-      resizeObserver = new ResizeObserver(updateBounds);
-      resizeObserver.observe(containerRef.current);
-    }
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
-    };
-  }, [app?.id, instanceId]);
-
+  // Now using WebViewContainer instead of manual BrowserView management
   if (!instanceId || !app) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-900">
@@ -327,13 +276,5 @@ function SplitPanelBrowserView({ app, instanceId }: { app: App | undefined; inst
     );
   }
 
-  return (
-    <div
-      ref={containerRef}
-      className="flex-1 bg-gray-900 relative"
-      style={{ minHeight: 0 }} // Important for flex layout
-    >
-      {/* The BrowserView will be rendered here by Electron */}
-    </div>
-  );
+  return <WebViewContainer app={app} instanceId={instanceId} isCreating={false} />;
 }

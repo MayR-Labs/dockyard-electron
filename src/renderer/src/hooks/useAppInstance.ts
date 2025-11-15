@@ -22,22 +22,21 @@ export function useAppInstance(
         setIsCreating(true);
         console.log('Creating default instance for app:', app.name);
 
-        // Generate a new instance
-        const newInstanceId = `inst-${Date.now()}`;
-        const newInstance = {
-          id: newInstanceId,
-          appId: app.id,
-          partitionId: `persist:app-${app.id}-${newInstanceId}`,
-          hibernated: false,
-          lastActive: new Date().toISOString(),
-        };
-
-        // Update the app with the new instance
+        // Use the API to create instance with proper partition
         try {
-          await onUpdateApp(app.id, {
-            instances: [newInstance],
-          });
-          console.log('Successfully created instance:', newInstanceId);
+          if (window.dockyard?.apps?.createInstance) {
+            const newInstance = await window.dockyard.apps.createInstance(app.id, {
+              sessionMode: 'isolated',
+            });
+
+            await onUpdateApp(app.id, {
+              instances: [newInstance],
+            });
+            console.log('Successfully created instance:', newInstance.id);
+          } else {
+            console.warn('Instance creation API not available');
+            setIsCreating(false);
+          }
         } catch (error) {
           console.error('Failed to create default instance:', error);
           setIsCreating(false);

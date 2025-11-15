@@ -26,6 +26,10 @@ export interface DockyardAPI {
     delete: (id: string) => Promise<void>;
     hibernate: (appId: string, instanceId: string) => Promise<void>;
     resume: (appId: string, instanceId: string) => Promise<void>;
+    createInstance: (
+      appId: string,
+      data: { name?: string; sessionMode?: 'isolated' | 'shared' }
+    ) => Promise<import('./app').AppInstance>;
   };
   browserView: {
     show: (appId: string, instanceId: string, bounds?: Electron.Rectangle) => Promise<void>;
@@ -65,6 +69,50 @@ export interface DockyardAPI {
         isActive: boolean;
       }>
     >;
+  };
+  webview: {
+    register: (
+      webContentsId: number,
+      appId: string,
+      instanceId: string,
+      partitionId: string
+    ) => Promise<void>;
+    unregister: (appId: string, instanceId: string) => Promise<void>;
+    navigate: (appId: string, instanceId: string, url: string) => Promise<void>;
+    goBack: (appId: string, instanceId: string) => Promise<void>;
+    goForward: (appId: string, instanceId: string) => Promise<void>;
+    reload: (appId: string, instanceId: string) => Promise<void>;
+    getState: (
+      appId: string,
+      instanceId: string
+    ) => Promise<{
+      canGoBack: boolean;
+      canGoForward: boolean;
+      isLoading: boolean;
+      url: string;
+    }>;
+    setZoom: (appId: string, instanceId: string, zoomFactor: number) => Promise<void>;
+    openDevTools: (appId: string, instanceId: string) => Promise<void>;
+    closeDevTools: (appId: string, instanceId: string) => Promise<void>;
+    clearSession: (partitionId: string) => Promise<void>;
+    getMemory: (
+      appId: string,
+      instanceId: string
+    ) => Promise<{
+      workingSetSize: number;
+      privateBytes: number;
+    }>;
+    getCPU: (appId: string, instanceId: string) => Promise<number>;
+    getAll: () => Promise<
+      Array<{
+        appId: string;
+        instanceId: string;
+        partitionId: string;
+        lastActive: number;
+        isActive: boolean;
+      }>
+    >;
+    updateActive: (appId: string, instanceId: string) => Promise<void>;
   };
   settings: {
     get: () => Promise<Settings>;

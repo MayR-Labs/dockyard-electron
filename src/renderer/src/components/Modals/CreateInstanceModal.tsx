@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { App, AppInstance } from '../../../../shared/types/app';
-import { generateId, getCurrentTimestamp, getPartitionName } from '../../../../shared/utils';
+import { appAPI } from '../../services/api';
 
 interface CreateInstanceModalProps {
   isOpen: boolean;
@@ -34,16 +34,13 @@ export function CreateInstanceModal({
 
     setIsSubmitting(true);
     try {
-      const instanceId = generateId();
-      const newInstance: AppInstance = {
-        id: instanceId,
-        appId: app.id,
+      // Create instance via API which will generate proper partition ID with slugs
+      const newInstance = await appAPI.createInstance(app.id, {
         name: instanceName.trim() || undefined,
-        partitionId: getPartitionName(app.id, instanceId, app.workspaceId, sessionMode),
-        hibernated: false,
-        lastActive: getCurrentTimestamp(),
-      };
+        sessionMode,
+      });
 
+      // Notify parent about the new instance
       await onCreateInstance(app.id, newInstance);
 
       // Reset form and close

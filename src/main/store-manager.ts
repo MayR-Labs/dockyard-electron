@@ -42,6 +42,22 @@ export class StoreManager {
   }
 
   /**
+   * Get the current profile ID
+   */
+  getCurrentProfile(): string {
+    return this.currentProfile;
+  }
+
+  /**
+   * Get current profile metadata
+   */
+  getCurrentProfileMetadata(): { id: string; name: string } {
+    const profiles = this.rootStore.get('profiles', []);
+    const profile = profiles.find((p: any) => p.id === this.currentProfile);
+    return profile || { id: this.currentProfile, name: this.currentProfile };
+  }
+
+  /**
    * Get the root profiles store
    */
   getRootStore(): any {
