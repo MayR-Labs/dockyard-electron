@@ -39,7 +39,7 @@ const dockyardAPI: DockyardAPI = {
       ipcRenderer.invoke(IPC_CHANNELS.APP.CREATE_INSTANCE, appId, data),
   },
 
-  // BrowserView APIs
+  // BrowserView APIs (legacy)
   browserView: {
     show: (appId: string, instanceId: string, bounds?: Electron.Rectangle) =>
       ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.SHOW, appId, instanceId, bounds),
@@ -69,6 +69,39 @@ const dockyardAPI: DockyardAPI = {
     getCPU: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GET_CPU, appId, instanceId),
     getAll: () => ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GET_ALL),
+  },
+
+  // WebView APIs (new)
+  webview: {
+    register: (webContentsId: number, appId: string, instanceId: string, partitionId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.REGISTER, webContentsId, appId, instanceId, partitionId),
+    unregister: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.UNREGISTER, appId, instanceId),
+    navigate: (appId: string, instanceId: string, url: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.NAVIGATE, appId, instanceId, url),
+    goBack: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.GO_BACK, appId, instanceId),
+    goForward: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.GO_FORWARD, appId, instanceId),
+    reload: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.RELOAD, appId, instanceId),
+    getState: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.GET_STATE, appId, instanceId),
+    setZoom: (appId: string, instanceId: string, zoomFactor: number) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.SET_ZOOM, appId, instanceId, zoomFactor),
+    openDevTools: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.OPEN_DEVTOOLS, appId, instanceId),
+    closeDevTools: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.CLOSE_DEVTOOLS, appId, instanceId),
+    clearSession: (partitionId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.CLEAR_SESSION, partitionId),
+    getMemory: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.GET_MEMORY, appId, instanceId),
+    getCPU: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.GET_CPU, appId, instanceId),
+    getAll: () => ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.GET_ALL),
+    updateActive: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.UPDATE_ACTIVE, appId, instanceId),
   },
 
   // Settings APIs

@@ -3,6 +3,7 @@ import { WindowManager } from './window-manager';
 import { StoreManager } from './store-manager';
 import { IPCHandlers } from './ipc-handlers';
 import { BrowserViewManager } from './browser-view-manager';
+import { WebViewManager } from './webview-manager';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling
 if (require('electron-squirrel-startup')) {
@@ -14,6 +15,7 @@ let windowManager: WindowManager;
 let storeManager: StoreManager;
 let ipcHandlers: IPCHandlers;
 let browserViewManager: BrowserViewManager;
+let webViewManager: WebViewManager;
 
 // Parse command line arguments for profile selection
 function parseProfileFromArgs(): string {
@@ -35,11 +37,14 @@ async function initialize() {
   storeManager = new StoreManager();
   storeManager.setCurrentProfile(profileName);
 
-  // Initialize browser view manager
+  // Initialize browser view manager (keeping for compatibility)
   browserViewManager = new BrowserViewManager();
 
+  // Initialize webview manager (new)
+  webViewManager = new WebViewManager();
+
   // Initialize IPC handlers
-  ipcHandlers = new IPCHandlers(storeManager, browserViewManager);
+  ipcHandlers = new IPCHandlers(storeManager, browserViewManager, webViewManager);
 
   // Initialize window manager
   windowManager = new WindowManager();
