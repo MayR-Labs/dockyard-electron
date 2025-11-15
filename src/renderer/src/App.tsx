@@ -37,7 +37,7 @@ function App() {
     createWorkspace,
     updateWorkspace,
   } = useWorkspaceStore();
-  const { loadApps, apps, createApp, updateApp, deleteApp, hibernateApp } = useAppStore();
+  const { loadApps, apps, createApp, updateApp, deleteApp, hibernateApp, resumeApp } = useAppStore();
   const { loadSettings, settings, updateSettings } = useSettingsStore();
 
   // UI state
@@ -54,6 +54,7 @@ function App() {
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [isWorkspaceSwitcherOpen, setIsWorkspaceSwitcherOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppType | null>(null);
+  const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{
@@ -134,6 +135,65 @@ function App() {
       });
     }
   };
+
+  const setAppAwakeState = (appId: string, awake: boolean) => {
+    setAwakeApps((prev) => {
+      if (awake) {
+        if (prev[appId]) return prev;
+        return { ...prev, [appId]: true };
+      }
+
+      if (!prev[appId]) return prev;
+      const { [appId]: _removed, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const getInstanceId = (appId: string, explicitInstanceId?: string) => {
+    if (explicitInstanceId) return explicitInstanceId;
+    const app = apps.find((a) => a.id === appId);
+    return app?.instances[0]?.id;
+  };
+
+  const handleWakeAppRequest = async (appId: string, instanceId?: string) => {
+    const targetInstanceId = getInstanceId(appId, instanceId);
+    if (!targetInstanceId) return;
+
+    setAppAwakeState(appId, true);
+    try {
+      await resumeApp(appId, targetInstanceId);
+    } catch (error) {
+      console.error('Failed to resume app instance', error);
+      setAppAwakeState(appId, false);
+    }
+  };
+
+  const handleHibernateAppRequest = async (appId: string, instanceId?: string) => {
+    const targetInstanceId = getInstanceId(appId, instanceId);
+    if (!targetInstanceId) return;
+
+    try {
+      await hibernateApp(appId, targetInstanceId);
+    } catch (error) {
+      console.error('Failed to hibernate app instance', error);
+    } finally {
+      setAppAwakeState(appId, false);
+    }
+  };
+
+  // Clean up awake map when apps list changes
+  useEffect(() => {
+    setAwakeApps((prev) => {
+      const validIds = new Set(apps.map((app) => app.id));
+      const next: Record<string, boolean> = {};
+      for (const id of Object.keys(prev)) {
+        if (validIds.has(id) && prev[id]) {
+          next[id] = true;
+        }
+      }
+      return next;
+    });
+  }, [apps]);
 
   // Keyboard shortcuts using custom hook
   useKeyboardShortcuts([
@@ -468,6 +528,8 @@ function App() {
             apps={workspaceApps}
             activeAppId={activeAppId}
             onAppSelect={setActiveAppId}
+            awakeApps={awakeApps}
+            onWakeApp={handleWakeAppRequest}
             onAddSampleApps={handleAddSampleApps}
             onAddCustomApp={() => setIsAddAppModalOpen(true)}
             onUpdateApp={handleUpdateApp}
@@ -568,9 +630,7 @@ function App() {
           }}
           onHibernate={() => {
             const app = workspaceApps.find((a) => a.id === contextMenu.appId);
-            if (app && app.instances.length > 0) {
-              hibernateApp(contextMenu.appId, app.instances[0].id);
-            }
+            handleHibernateAppRequest(contextMenu.appId, app?.instances[0]?.id);
           }}
           onDelete={async () => {
             await deleteApp(contextMenu.appId);
@@ -605,7 +665,7 @@ function App() {
             );
             for (const app of appsInWorkspace) {
               if (app.instances.length > 0) {
-                await hibernateApp(app.id, app.instances[0].id);
+                await handleHibernateAppRequest(app.id, app.instances[0].id);
               }
             }
           }}
@@ -666,7 +726,7 @@ function App() {
         }}
         onHibernate={() => {
           if (selectedApp && selectedApp.instances.length > 0) {
-            hibernateApp(selectedApp.id, selectedApp.instances[0].id);
+            handleHibernateAppRequest(selectedApp.id, selectedApp.instances[0].id);
             setIsAppOptionsModalOpen(false);
             setSelectedApp(null);
           }

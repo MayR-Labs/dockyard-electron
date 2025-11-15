@@ -78,6 +78,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
   hibernateApp: async (appId: string, instanceId: string) => {
     try {
       await appAPI.hibernate(appId, instanceId);
+      const apps = await appAPI.list();
+      set({ apps });
     } catch (error: any) {
       set({ error: error.message });
     }
@@ -86,6 +88,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
   resumeApp: async (appId: string, instanceId: string) => {
     try {
       await appAPI.resume(appId, instanceId);
+      const apps = await appAPI.list();
+      set({ apps });
     } catch (error: any) {
       set({ error: error.message });
     }
