@@ -22,6 +22,7 @@ export const IPC_CHANNELS = {
     DELETE: 'app:delete',
     HIBERNATE: 'app:hibernate',
     RESUME: 'app:resume',
+    CREATE_INSTANCE: 'app:create-instance',
   },
   BROWSER_VIEW: {
     SHOW: 'browser-view:show',

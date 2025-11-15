@@ -35,6 +35,8 @@ const dockyardAPI: DockyardAPI = {
       ipcRenderer.invoke(IPC_CHANNELS.APP.HIBERNATE, appId, instanceId),
     resume: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.APP.RESUME, appId, instanceId),
+    createInstance: (appId: string, data: { name?: string; sessionMode?: 'isolated' | 'shared' }) =>
+      ipcRenderer.invoke(IPC_CHANNELS.APP.CREATE_INSTANCE, appId, data),
   },
 
   // BrowserView APIs

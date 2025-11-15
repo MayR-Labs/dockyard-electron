@@ -83,6 +83,13 @@ export const appAPI = {
   resume: (id: string): Promise<void> => {
     return window.dockyard.apps.resume(id);
   },
+
+  createInstance: (
+    appId: string,
+    data: { name?: string; sessionMode?: 'isolated' | 'shared' }
+  ) => {
+    return window.dockyard.apps.createInstance(appId, data);
+  },
 };
 
 /**

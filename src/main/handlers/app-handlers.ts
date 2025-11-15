@@ -7,8 +7,8 @@ import { ipcMain } from 'electron';
 import { IPC_CHANNELS } from '../../shared/constants';
 import { StoreManager } from '../store-manager';
 import { BrowserViewManager } from '../browser-view-manager';
-import { App } from '../../shared/types';
-import { generateId, getCurrentTimestamp } from '../../shared/utils';
+import { App, Workspace } from '../../shared/types';
+import { generateId, getCurrentTimestamp, getPartitionName } from '../../shared/utils';
 
 export class AppHandlers {
   constructor(
@@ -25,6 +25,38 @@ export class AppHandlers {
     this.registerDeleteHandler();
     this.registerHibernateHandler();
     this.registerResumeHandler();
+    this.registerCreateInstanceHandler();
+  }
+
+  /**
+   * Helper to generate partition name with profile, workspace, and app slugs
+   */
+  private generatePartitionName(
+    appId: string,
+    appName: string,
+    instanceId: string,
+    workspaceId: string,
+    sessionMode: 'isolated' | 'shared'
+  ): string {
+    // Get workspace info
+    const workspaceStore = this.storeManager.getWorkspacesStore();
+    const workspaces = workspaceStore.get('workspaces', []);
+    const workspace = workspaces.find((w: Workspace) => w.id === workspaceId);
+    const workspaceName = workspace?.name || workspaceId;
+
+    // Get profile info
+    const profile = this.storeManager.getCurrentProfileMetadata();
+
+    return getPartitionName(
+      appId,
+      appName,
+      instanceId,
+      workspaceId,
+      workspaceName,
+      profile.id,
+      profile.name,
+      sessionMode
+    );
   }
 
   private registerListHandler(): void {
@@ -42,7 +74,7 @@ export class AppHandlers {
           // Get workspace to determine default session mode
           const workspaceStore = this.storeManager.getWorkspacesStore();
           const workspaces = workspaceStore.get('workspaces', []);
-          const workspace = workspaces.find((w: any) => w.id === app.workspaceId);
+          const workspace = workspaces.find((w: Workspace) => w.id === app.workspaceId);
           const sessionMode = workspace?.sessionMode || 'isolated';
 
           return {
@@ -51,10 +83,13 @@ export class AppHandlers {
               {
                 id: instanceId,
                 appId: app.id,
-                partitionId:
-                  sessionMode === 'shared'
-                    ? `persist:workspace-${app.workspaceId}`
-                    : `persist:app-${app.id}-${instanceId}`,
+                partitionId: this.generatePartitionName(
+                  app.id,
+                  app.name,
+                  instanceId,
+                  app.workspaceId,
+                  sessionMode
+                ),
                 hibernated: false,
                 lastActive: getCurrentTimestamp(),
               },
@@ -80,11 +115,13 @@ export class AppHandlers {
 
       const appId = generateId();
       const instanceId = generateId();
+      const appName = data.name || 'New App';
+      const workspaceId = data.workspaceId || '';
 
       // Get workspace to determine default session mode
       const workspaceStore = this.storeManager.getWorkspacesStore();
       const workspaces = workspaceStore.get('workspaces', []);
-      const workspace = workspaces.find((w: any) => w.id === data.workspaceId);
+      const workspace = workspaces.find((w: Workspace) => w.id === workspaceId);
       const sessionMode = workspace?.sessionMode || 'isolated';
 
       // Create default instance if none provided
@@ -95,10 +132,13 @@ export class AppHandlers {
               {
                 id: instanceId,
                 appId: appId,
-                partitionId:
-                  sessionMode === 'shared'
-                    ? `persist:workspace-${data.workspaceId}`
-                    : `persist:app-${appId}-${instanceId}`,
+                partitionId: this.generatePartitionName(
+                  appId,
+                  appName,
+                  instanceId,
+                  workspaceId,
+                  sessionMode
+                ),
                 hibernated: false,
                 lastActive: getCurrentTimestamp(),
               },
@@ -106,12 +146,12 @@ export class AppHandlers {
 
       const newApp: App = {
         id: appId,
-        name: data.name || 'New App',
+        name: appName,
         url: data.url || '',
         icon: data.icon,
         customCSS: data.customCSS,
         customJS: data.customJS,
-        workspaceId: data.workspaceId || '',
+        workspaceId: workspaceId,
         instances: instances,
         createdAt: getCurrentTimestamp(),
         updatedAt: getCurrentTimestamp(),
@@ -196,5 +236,54 @@ export class AppHandlers {
         }
       }
     });
+  }
+
+  private registerCreateInstanceHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.APP.CREATE_INSTANCE,
+      async (
+        _event,
+        appId: string,
+        data: { name?: string; sessionMode?: 'isolated' | 'shared' }
+      ) => {
+        const store = this.storeManager.getAppsStore();
+        const apps = store.get('apps', []);
+        const app = apps.find((a: App) => a.id === appId);
+
+        if (!app) {
+          throw new Error(`App with id "${appId}" not found`);
+        }
+
+        // Get workspace info
+        const workspaceStore = this.storeManager.getWorkspacesStore();
+        const workspaces = workspaceStore.get('workspaces', []);
+        const workspace = workspaces.find((w: Workspace) => w.id === app.workspaceId);
+        const sessionMode = data.sessionMode || workspace?.sessionMode || 'isolated';
+
+        // Generate new instance with proper partition
+        const instanceId = generateId();
+        const newInstance = {
+          id: instanceId,
+          appId: app.id,
+          name: data.name,
+          partitionId: this.generatePartitionName(
+            app.id,
+            app.name,
+            instanceId,
+            app.workspaceId,
+            sessionMode
+          ),
+          hibernated: false,
+          lastActive: getCurrentTimestamp(),
+        };
+
+        // Add instance to app
+        app.instances.push(newInstance);
+        app.updatedAt = getCurrentTimestamp();
+        store.set('apps', apps);
+
+        return newInstance;
+      }
+    );
   }
 }

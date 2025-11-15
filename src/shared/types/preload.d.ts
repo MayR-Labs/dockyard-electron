@@ -26,6 +26,10 @@ export interface DockyardAPI {
     delete: (id: string) => Promise<void>;
     hibernate: (appId: string, instanceId: string) => Promise<void>;
     resume: (appId: string, instanceId: string) => Promise<void>;
+    createInstance: (
+      appId: string,
+      data: { name?: string; sessionMode?: 'isolated' | 'shared' }
+    ) => Promise<import('./app').AppInstance>;
   };
   browserView: {
     show: (appId: string, instanceId: string, bounds?: Electron.Rectangle) => Promise<void>;
