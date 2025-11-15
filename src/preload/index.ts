@@ -74,7 +74,13 @@ const dockyardAPI: DockyardAPI = {
   // WebView APIs (new)
   webview: {
     register: (webContentsId: number, appId: string, instanceId: string, partitionId: string) =>
-      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.REGISTER, webContentsId, appId, instanceId, partitionId),
+      ipcRenderer.invoke(
+        IPC_CHANNELS.WEBVIEW.REGISTER,
+        webContentsId,
+        appId,
+        instanceId,
+        partitionId
+      ),
     unregister: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.UNREGISTER, appId, instanceId),
     navigate: (appId: string, instanceId: string, url: string) =>

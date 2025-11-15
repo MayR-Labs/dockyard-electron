@@ -1,7 +1,7 @@
 /**
  * WebView IPC Handlers
  * Single Responsibility: Handle webview-related IPC communications
- * 
+ *
  * Note: Unlike BrowserView which was controlled entirely from main process,
  * webviews are rendered in the DOM. This handler provides control APIs for
  * navigation, zoom, devtools, etc. but doesn't handle positioning/visibility.
@@ -37,7 +37,13 @@ export class WebViewHandlers {
   private registerRegisterHandler(): void {
     ipcMain.handle(
       IPC_CHANNELS.WEBVIEW.REGISTER,
-      async (_event, webContentsId: number, appId: string, instanceId: string, partitionId: string) => {
+      async (
+        _event,
+        webContentsId: number,
+        appId: string,
+        instanceId: string,
+        partitionId: string
+      ) => {
         this.webViewManager.registerWebView(webContentsId, appId, instanceId, partitionId);
       }
     );
@@ -125,12 +131,9 @@ export class WebViewHandlers {
   }
 
   private registerClearSessionHandler(): void {
-    ipcMain.handle(
-      IPC_CHANNELS.WEBVIEW.CLEAR_SESSION,
-      async (_event, partitionId: string) => {
-        await this.webViewManager.clearSessionData(partitionId);
-      }
-    );
+    ipcMain.handle(IPC_CHANNELS.WEBVIEW.CLEAR_SESSION, async (_event, partitionId: string) => {
+      await this.webViewManager.clearSessionData(partitionId);
+    });
   }
 
   private registerGetMemoryHandler(): void {

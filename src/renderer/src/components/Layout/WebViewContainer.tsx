@@ -2,11 +2,11 @@
  * WebView Container Component
  * Manages webview elements with proper session partitioning
  * Single Responsibility: WebView lifecycle and integration
- * 
+ *
  * ARCHITECTURE NOTE:
  * Unlike BrowserView which renders at OS level, webview tags render in the DOM
  * and respect z-index, making overlay management simpler.
- * 
+ *
  * The partition attribute enables persistent sessions with the format:
  * persist:{profileSlug}-{workspaceSlug}-{appSlug}-{instanceId}
  */
@@ -43,11 +43,7 @@ declare global {
   }
 }
 
-export function WebViewContainer({
-  app,
-  instanceId,
-  isCreating = false,
-}: WebViewContainerProps) {
+export function WebViewContainer({ app, instanceId, isCreating = false }: WebViewContainerProps) {
   const webviewRef = useRef<any>(null);
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,7 +89,7 @@ export function WebViewContainer({
 
     const handleDomReady = () => {
       console.log('WebView DOM ready:', app.name);
-      
+
       // Apply zoom level if set
       if (app.display?.zoomLevel) {
         webview.setZoomFactor(app.display.zoomLevel);
@@ -142,7 +138,15 @@ export function WebViewContainer({
         });
       }
     };
-  }, [app.id, app.name, app.customCSS, app.customJS, app.display?.zoomLevel, instanceId, partitionId]);
+  }, [
+    app.id,
+    app.name,
+    app.customCSS,
+    app.customJS,
+    app.display?.zoomLevel,
+    instanceId,
+    partitionId,
+  ]);
 
   // Update zoom when it changes
   useEffect(() => {
@@ -208,7 +212,7 @@ export function WebViewContainer({
           </div>
         </div>
       )}
-      
+
       {/* WebView element */}
       <webview
         ref={webviewRef}

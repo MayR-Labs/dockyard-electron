@@ -84,10 +84,7 @@ export const appAPI = {
     return window.dockyard.apps.resume(id);
   },
 
-  createInstance: (
-    appId: string,
-    data: { name?: string; sessionMode?: 'isolated' | 'shared' }
-  ) => {
+  createInstance: (appId: string, data: { name?: string; sessionMode?: 'isolated' | 'shared' }) => {
     return window.dockyard.apps.createInstance(appId, data);
   },
 };

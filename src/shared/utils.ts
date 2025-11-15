@@ -74,7 +74,7 @@ export function getPartitionName(
     // Shared session: all apps in workspace share the same partition
     return `persist:${profileSlug}-${workspaceSlug}-shared`;
   }
-  
+
   // Isolated session: unique partition per app instance
   return `persist:${profileSlug}-${workspaceSlug}-${appSlug}-${instanceId}`;
 }

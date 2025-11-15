@@ -15,10 +15,7 @@ interface NavigationState {
   url: string;
 }
 
-export function useNavigationState(
-  app: App,
-  instanceId: string | undefined
-) {
+export function useNavigationState(app: App, instanceId: string | undefined) {
   const [navigationState, setNavigationState] = useState<NavigationState>({
     canGoBack: false,
     canGoForward: false,
@@ -61,7 +58,7 @@ export function useNavigationState(
   // Navigation action handlers using IPC
   const goBack = () => {
     if (!instanceId || !window.dockyard?.webview) return;
-    
+
     window.dockyard.webview.goBack(app.id, instanceId).catch((error) => {
       console.error('Failed to go back:', error);
     });
@@ -69,7 +66,7 @@ export function useNavigationState(
 
   const goForward = () => {
     if (!instanceId || !window.dockyard?.webview) return;
-    
+
     window.dockyard.webview.goForward(app.id, instanceId).catch((error) => {
       console.error('Failed to go forward:', error);
     });
@@ -77,7 +74,7 @@ export function useNavigationState(
 
   const reload = () => {
     if (!instanceId || !window.dockyard?.webview) return;
-    
+
     window.dockyard.webview.reload(app.id, instanceId).catch((error) => {
       console.error('Failed to reload:', error);
     });
@@ -85,7 +82,7 @@ export function useNavigationState(
 
   const goHome = () => {
     if (!instanceId || !window.dockyard?.webview) return;
-    
+
     window.dockyard.webview.navigate(app.id, instanceId, app.url).catch((error) => {
       console.error('Failed to go home:', error);
     });
@@ -93,7 +90,7 @@ export function useNavigationState(
 
   const navigate = (url: string) => {
     if (!instanceId || !window.dockyard?.webview) return;
-    
+
     window.dockyard.webview.navigate(app.id, instanceId, url).catch((error) => {
       console.error('Failed to navigate:', error);
     });

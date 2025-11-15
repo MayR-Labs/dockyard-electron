@@ -12,7 +12,7 @@ interface WebViewEntry {
 /**
  * Manages WebView instances for embedded apps
  * Handles session isolation, navigation control, and view lifecycle
- * 
+ *
  * Note: Unlike BrowserView, webviews are managed through their webContents
  * and rendered in the DOM by the renderer process. This manager provides
  * control APIs for navigation, zoom, devtools, etc.
@@ -36,7 +36,7 @@ export class WebViewManager {
     partitionId: string
   ): void {
     const viewId = this.getViewId(appId, instanceId);
-    
+
     this.views.set(viewId, {
       webContentsId,
       appId,
@@ -60,7 +60,7 @@ export class WebViewManager {
   private getWebContents(appId: string, instanceId: string): WebContents | null {
     const viewId = this.getViewId(appId, instanceId);
     const entry = this.views.get(viewId);
-    
+
     if (!entry) return null;
 
     try {
@@ -93,11 +93,7 @@ export class WebViewManager {
 
   goForward(appId: string, instanceId: string): void {
     const webContents = this.getWebContents(appId, instanceId);
-    if (
-      webContents &&
-      !webContents.isDestroyed() &&
-      webContents.navigationHistory.canGoForward()
-    ) {
+    if (webContents && !webContents.isDestroyed() && webContents.navigationHistory.canGoForward()) {
       webContents.goForward();
     }
   }
