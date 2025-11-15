@@ -12,7 +12,6 @@ import { useSettingsStore } from './store/settings';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useModalBrowserViewManager } from './hooks/useModalBrowserViewManager';
 import { WindowChrome } from './components/Layout/WindowChrome';
-import { Sidebar } from './components/Layout/Sidebar';
 import { Dock } from './components/Layout/Dock';
 import { WorkspaceCanvas } from './components/Layout/WorkspaceCanvas';
 import { StatusBar } from './components/Layout/StatusBar';
@@ -22,6 +21,8 @@ import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal';
 import { CreateInstanceModal } from './components/Modals/CreateInstanceModal';
 import { AppOptionsModal } from './components/Modals/AppOptionsModal';
 import { AppContextMenu } from './components/ContextMenu/AppContextMenu';
+import { WorkspaceContextMenu } from './components/ContextMenu/WorkspaceContextMenu';
+import { WorkspaceSwitcherModal } from './components/Modals/WorkspaceSwitcherModal';
 import { PerformanceDashboard } from './components/DevTools/PerformanceDashboard';
 import { SessionManager } from './components/DevTools/SessionManager';
 import { App as AppType, AppInstance } from '../../shared/types/app';
@@ -41,7 +42,6 @@ function App() {
 
   // UI state
   const [isLoading, setIsLoading] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
 
   // Modal state
@@ -52,12 +52,20 @@ function App() {
   const [isAppOptionsModalOpen, setIsAppOptionsModalOpen] = useState(false);
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
+  const [isWorkspaceSwitcherOpen, setIsWorkspaceSwitcherOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppType | null>(null);
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{
     appId: string;
     appName: string;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const [workspaceContextMenu, setWorkspaceContextMenu] = useState<{
+    workspaceId: string;
+    workspaceName: string;
     x: number;
     y: number;
   } | null>(null);
@@ -73,7 +81,9 @@ function App() {
       isAppOptionsModalOpen ||
       isPerformanceDashboardOpen ||
       isSessionManagerOpen ||
-      contextMenu !== null, // Include context menu in overlay detection
+      isWorkspaceSwitcherOpen ||
+      contextMenu !== null ||
+      workspaceContextMenu !== null,
     [
       isAddAppModalOpen,
       isEditAppModalOpen,
@@ -82,7 +92,9 @@ function App() {
       isAppOptionsModalOpen,
       isPerformanceDashboardOpen,
       isSessionManagerOpen,
+      isWorkspaceSwitcherOpen,
       contextMenu,
+      workspaceContextMenu,
     ]
   );
 
@@ -135,12 +147,12 @@ function App() {
       },
       description: 'Open quick launcher',
     },
-    // Toggle Sidebar: Cmd/Ctrl+B
+    // Toggle Workspace Switcher: Cmd/Ctrl+B
     {
       key: 'KeyB',
       modifier: 'ctrlOrMeta',
-      action: () => setIsSidebarOpen((prev) => !prev),
-      description: 'Toggle sidebar',
+      action: () => setIsWorkspaceSwitcherOpen((prev) => !prev),
+      description: 'Toggle workspace switcher',
     },
     // Toggle DND: Cmd/Ctrl+Shift+D
     {
@@ -404,20 +416,21 @@ function App() {
         currentWorkspace={activeWorkspace?.name || ''}
         onProfileClick={() => {}}
         onSearchClick={() => {}}
+        onWorkspaceSwitchClick={() => setIsWorkspaceSwitcherOpen(true)}
+        onWorkspaceContextMenu={(e) => {
+          if (activeWorkspace) {
+            setWorkspaceContextMenu({
+              workspaceId: activeWorkspace.id,
+              workspaceName: activeWorkspace.name,
+              x: e.clientX,
+              y: e.clientY,
+            });
+          }
+        }}
       />
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Sidebar */}
-        <Sidebar
-          workspaces={workspaces}
-          activeWorkspaceId={activeWorkspaceId}
-          isOpen={isSidebarOpen}
-          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-          onWorkspaceSelect={(id) => setActiveWorkspace(id)}
-          onCreateWorkspace={() => setIsCreateWorkspaceModalOpen(true)}
-        />
-
         {/* Dock and Canvas Container */}
         <div
           className="flex-1 flex"
@@ -534,7 +547,7 @@ function App() {
         onCreateInstance={handleCreateInstance}
       />
 
-      {/* Context Menu */}
+      {/* Context Menus */}
       {contextMenu && (
         <AppContextMenu
           x={contextMenu.x}
@@ -554,7 +567,10 @@ function App() {
             setContextMenu(null);
           }}
           onHibernate={() => {
-            hibernateApp(contextMenu.appId);
+            const app = workspaceApps.find((a) => a.id === contextMenu.appId);
+            if (app && app.instances.length > 0) {
+              hibernateApp(contextMenu.appId, app.instances[0].id);
+            }
           }}
           onDelete={async () => {
             await deleteApp(contextMenu.appId);
@@ -564,6 +580,58 @@ function App() {
           }}
         />
       )}
+
+      {workspaceContextMenu && activeWorkspace && (
+        <WorkspaceContextMenu
+          x={workspaceContextMenu.x}
+          y={workspaceContextMenu.y}
+          workspaceId={workspaceContextMenu.workspaceId}
+          workspaceName={workspaceContextMenu.workspaceName}
+          currentDockPosition={activeWorkspace.layout.dockPosition}
+          onClose={() => setWorkspaceContextMenu(null)}
+          onDelete={async () => {
+            // Don't allow deleting the last workspace
+            if (workspaces.length > 1) {
+              const { deleteWorkspace } = useWorkspaceStore.getState();
+              await deleteWorkspace(workspaceContextMenu.workspaceId);
+            } else {
+              alert('Cannot delete the last workspace');
+            }
+          }}
+          onHibernate={async () => {
+            // Hibernate all apps in the workspace
+            const appsInWorkspace = apps.filter(
+              (app) => app.workspaceId === workspaceContextMenu.workspaceId
+            );
+            for (const app of appsInWorkspace) {
+              if (app.instances.length > 0) {
+                await hibernateApp(app.id, app.instances[0].id);
+              }
+            }
+          }}
+          onChangeDockPosition={async (position) => {
+            await updateWorkspace(workspaceContextMenu.workspaceId, {
+              layout: {
+                ...activeWorkspace.layout,
+                dockPosition: position,
+              },
+            });
+          }}
+        />
+      )}
+
+      {/* Workspace Switcher Modal */}
+      <WorkspaceSwitcherModal
+        isOpen={isWorkspaceSwitcherOpen}
+        workspaces={workspaces}
+        activeWorkspaceId={activeWorkspaceId}
+        onClose={() => setIsWorkspaceSwitcherOpen(false)}
+        onSelectWorkspace={(id) => setActiveWorkspace(id)}
+        onCreateWorkspace={() => {
+          setIsWorkspaceSwitcherOpen(false);
+          setIsCreateWorkspaceModalOpen(true);
+        }}
+      />
 
       {/* App Options Modal */}
       <AppOptionsModal
@@ -597,8 +665,8 @@ function App() {
           }
         }}
         onHibernate={() => {
-          if (selectedApp) {
-            hibernateApp(selectedApp.id);
+          if (selectedApp && selectedApp.instances.length > 0) {
+            hibernateApp(selectedApp.id, selectedApp.instances[0].id);
             setIsAppOptionsModalOpen(false);
             setSelectedApp(null);
           }

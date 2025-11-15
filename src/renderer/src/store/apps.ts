@@ -18,8 +18,8 @@ interface AppStore {
   createApp: (data: Partial<App>) => Promise<App | null>;
   updateApp: (id: string, data: Partial<App>) => Promise<void>;
   deleteApp: (id: string) => Promise<void>;
-  hibernateApp: (id: string) => Promise<void>;
-  resumeApp: (id: string) => Promise<void>;
+  hibernateApp: (appId: string, instanceId: string) => Promise<void>;
+  resumeApp: (appId: string, instanceId: string) => Promise<void>;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
@@ -75,17 +75,17 @@ export const useAppStore = create<AppStore>((set, get) => ({
     }
   },
 
-  hibernateApp: async (id: string) => {
+  hibernateApp: async (appId: string, instanceId: string) => {
     try {
-      await appAPI.hibernate(id);
+      await appAPI.hibernate(appId, instanceId);
     } catch (error: any) {
       set({ error: error.message });
     }
   },
 
-  resumeApp: async (id: string) => {
+  resumeApp: async (appId: string, instanceId: string) => {
     try {
-      await appAPI.resume(id);
+      await appAPI.resume(appId, instanceId);
     } catch (error: any) {
       set({ error: error.message });
     }
