@@ -202,7 +202,7 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
   return (
     <div className="flex-1 bg-gray-900 relative" style={{ minHeight: 0 }}>
       {/* Loading overlay */}
-      {isLoading && (
+      {/* {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
           <div className="text-center text-gray-400">
             <div className="mb-4 flex justify-center">
@@ -211,14 +211,13 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
             <p className="text-sm">Loading {app.name}...</p>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* WebView element */}
       <webview
         ref={webviewRef}
         src={app.url}
         partition={partitionId}
-        allowpopups="true"
         webpreferences="contextIsolation=yes, nodeIntegration=no, sandbox=yes"
         style={{
           width: '100%',

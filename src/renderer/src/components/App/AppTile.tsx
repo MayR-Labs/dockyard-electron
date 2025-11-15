@@ -33,15 +33,13 @@ export function AppTile({ app, isActive, onSelect, onUpdateApp, onOpenOptions }:
   // This preserves the webview state instead of destroying it
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.95 }}
+      initial={false}
+      animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.98 }}
       transition={{ duration: 0.2 }}
       className="absolute inset-0 flex flex-col bg-gray-900"
-      style={{
-        visibility: isActive ? 'visible' : 'hidden',
-        pointerEvents: isActive ? 'auto' : 'none',
-      }}
+      style={{ pointerEvents: isActive ? 'auto' : 'none', zIndex: isActive ? 2 : 1 }}
       onClick={onSelect}
+      aria-hidden={!isActive}
     >
       {/* Micro-toolbar */}
       <div className="h-10 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-2">
