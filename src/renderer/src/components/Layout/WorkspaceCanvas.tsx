@@ -33,6 +33,14 @@ export function WorkspaceCanvas({
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
+  const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
+  const handleWakeApp = (appId: string) => {
+    setAwakeApps((prev) => {
+      if (prev[appId]) return prev;
+      return { ...prev, [appId]: true };
+    });
+  };
+
 
   // Ensure there is always a selected app when apps exist
   useEffect(() => {
@@ -142,7 +150,9 @@ export function WorkspaceCanvas({
             key={app.id}
             app={app}
             isActive={resolvedActiveAppId === app.id}
+            isAwake={!!awakeApps[app.id]}
             onSelect={() => onAppSelect(app.id)}
+            onWakeApp={() => handleWakeApp(app.id)}
             onUpdateApp={onUpdateApp}
             onOpenOptions={() => onOpenOptions?.(app.id)}
           />
