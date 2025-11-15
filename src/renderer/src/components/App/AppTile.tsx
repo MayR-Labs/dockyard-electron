@@ -9,7 +9,7 @@ import { App } from '../../../../shared/types/app';
 import { MenuDotsIcon } from '../Icons';
 import { NavigationControls } from '../AppControls/NavigationControls';
 import { URLBar } from '../AppControls/URLBar';
-import { BrowserViewContainer } from '../Layout/BrowserViewContainer';
+import { WebViewContainer } from '../Layout/WebViewContainer';
 import { useAppInstance } from '../../hooks/useAppInstance';
 import { useNavigationState } from '../../hooks/useNavigationState';
 
@@ -85,8 +85,8 @@ export function AppTile({ app, isActive, onSelect, onUpdateApp, onOpenOptions }:
         </div>
       </div>
 
-      {/* App content area - BrowserView Container */}
-      <BrowserViewContainer app={app} instanceId={instanceId} isCreating={isCreating} />
+      {/* App content area - WebView Container */}
+      <WebViewContainer app={app} instanceId={instanceId} isCreating={isCreating} />
     </motion.div>
   );
 }
