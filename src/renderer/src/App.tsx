@@ -4,7 +4,7 @@
  * Refactored to follow SOLID principles with proper separation of concerns
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useWorkspaceStore } from './store/workspaces';
 import { useAppStore } from './store/apps';
@@ -64,6 +64,18 @@ function App() {
   const [customizationAppId, setCustomizationAppId] = useState<string | null>(null);
   const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
   const [activeInstances, setActiveInstances] = useState<Record<string, string>>({});
+
+  const activeAppIdRef = useRef<string | null>(null);
+  const awakeAppsRef = useRef<Record<string, boolean>>({});
+
+  useEffect(() => {
+    activeAppIdRef.current = activeAppId;
+  }, [activeAppId]);
+
+  useEffect(() => {
+    awakeAppsRef.current = awakeApps;
+  }, [awakeApps]);
+
 
   // Apply theme
   useTheme({
@@ -183,6 +195,12 @@ function App() {
     [activeInstances, apps]
   );
 
+  const getInstanceIdRef = useRef(getInstanceId);
+
+  useEffect(() => {
+    getInstanceIdRef.current = getInstanceId;
+  }, [getInstanceId]);
+
   const handleWakeAppRequest = async (appId: string, instanceId?: string) => {
     const targetInstanceId = getInstanceId(appId, instanceId);
     if (!targetInstanceId) return;
@@ -225,27 +243,29 @@ function App() {
     }
 
     const performReload = (ignoreCache: boolean) => {
-      if (!activeAppId) return;
-      if (!awakeApps[activeAppId]) return;
-      const instanceId = getInstanceId(activeAppId);
+      const currentAppId = activeAppIdRef.current;
+      if (!currentAppId) return;
+      if (!awakeAppsRef.current[currentAppId]) return;
+      const instanceId = getInstanceIdRef.current(currentAppId);
       if (!instanceId) return;
 
       const action = ignoreCache
         ? window.dockyard.webview.forceReload
         : window.dockyard.webview.reload;
 
-      action(activeAppId, instanceId).catch((error: unknown) => {
+      action(currentAppId, instanceId).catch((error: unknown) => {
         console.error(ignoreCache ? 'Force reload failed' : 'Reload failed', error);
       });
     };
 
     const toggleAppDevtools = () => {
-      if (!activeAppId) return;
-      if (!awakeApps[activeAppId]) return;
-      const instanceId = getInstanceId(activeAppId);
+      const currentAppId = activeAppIdRef.current;
+      if (!currentAppId) return;
+      if (!awakeAppsRef.current[currentAppId]) return;
+      const instanceId = getInstanceIdRef.current(currentAppId);
       if (!instanceId) return;
 
-      window.dockyard.webview.toggleDevTools(activeAppId, instanceId).catch((error: unknown) => {
+      window.dockyard.webview.toggleDevTools(currentAppId, instanceId).catch((error: unknown) => {
         console.error('Failed to toggle app devtools', error);
       });
     };
@@ -263,7 +283,7 @@ function App() {
       window.dockyard.off(IPC_EVENTS.SHORTCUT_FORCE_RELOAD, forceReloadListener);
       window.dockyard.off(IPC_EVENTS.SHORTCUT_TOGGLE_DEVTOOLS, toggleDevtoolsListener);
     };
-  }, [activeAppId, awakeApps, getInstanceId]);
+  }, []);
 
   // Clean up awake map when apps list changes
   useEffect(() => {
@@ -917,17 +937,20 @@ function App() {
         <SessionManager apps={workspaceApps} onClose={() => setIsSessionManagerOpen(false)} />
       )}
 
-      <AppCustomizationModal
-        isOpen={isAppCustomizationModalOpen}
-        app={apps.find((app) => app.id === customizationAppId) || null}
-        onClose={() => {
-          setIsAppCustomizationModalOpen(false);
-          setCustomizationAppId(null);
-        }}
-        onSave={(appId, data) => {
-          handleUpdateApp(appId, data);
-        }}
-      />
+      {isAppCustomizationModalOpen && (
+        <AppCustomizationModal
+          key={customizationAppId ?? 'none'}
+          isOpen={isAppCustomizationModalOpen}
+          app={apps.find((app) => app.id === customizationAppId) || null}
+          onClose={() => {
+            setIsAppCustomizationModalOpen(false);
+            setCustomizationAppId(null);
+          }}
+          onSave={(appId, data) => {
+            handleUpdateApp(appId, data);
+          }}
+        />
+      )}
     </div>
   );
 }
