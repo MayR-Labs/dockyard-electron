@@ -227,6 +227,7 @@ The application now has:
 - [x] Custom accent colors
 - [x] Background styles (glass, solid, minimal)
 - [x] Theme presets
+- [x] Runtime theme overrides ensure mode, color, and background changes immediately restyle the UI (Nov 2025 bugfix)
 
 #### 5.2 Custom Styling
 

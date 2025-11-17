@@ -36,6 +36,15 @@
   --chart-3: 47 96% 53%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 82% 52%;
+
+  /* Derived helpers for runtime overrides */
+  --theme-bg-base: hsl(var(--background));
+  --theme-bg-surface: hsl(var(--card));
+  --theme-bg-muted: hsl(var(--muted));
+  --theme-border-color: hsl(var(--border));
+  --theme-foreground-color: hsl(var(--foreground));
+  --theme-foreground-muted: hsl(var(--muted-foreground));
+  --theme-accent-color: hsl(var(--primary));
 }
 
 /* Light Theme */
@@ -75,17 +84,20 @@
 }
 
 /* Glass Background Style */
-.bg-glass {
+.bg-glass,
+body.bg-glass {
   backdrop-filter: blur(10px);
   background: rgba(0, 0, 0, 0.6) !important;
 }
 
-.theme-light.bg-glass {
+.theme-light .bg-glass,
+.theme-light body.bg-glass {
   background: rgba(255, 255, 255, 0.8) !important;
 }
 
 /* Minimal Background Style */
-.bg-minimal {
+.bg-minimal,
+body.bg-minimal {
   background: transparent !important;
 }
 
@@ -94,4 +106,198 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+}
+
+body {
+  background-color: var(--theme-bg-base);
+  color: var(--theme-foreground-color);
+  transition: background-color 200ms ease, color 200ms ease;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.theme-dark {
+  color-scheme: dark;
+}
+
+.theme-light {
+  color-scheme: light;
+}
+
+#root {
+  color: inherit;
+}
+
+/*
+  Theme-aware fallbacks for legacy utility classes.
+  These ensure existing Tailwind classes respond to runtime theme changes
+  without rewriting every component.
+*/
+
+.bg-gray-950 {
+  background-color: var(--theme-bg-base) !important;
+}
+
+.bg-gray-900 {
+  background-color: var(--theme-bg-surface) !important;
+}
+
+.bg-gray-900\/70 {
+  background-color: hsl(var(--card) / 0.7) !important;
+}
+
+.bg-gray-900\/50 {
+  background-color: hsl(var(--card) / 0.5) !important;
+}
+
+.bg-gray-800 {
+  background-color: var(--theme-bg-muted) !important;
+}
+
+.bg-gray-800\/50 {
+  background-color: hsl(var(--muted) / 0.5) !important;
+}
+
+.bg-gray-800\/30 {
+  background-color: hsl(var(--muted) / 0.3) !important;
+}
+
+.bg-gray-750 {
+  background-color: hsl(var(--muted) / 0.75) !important;
+}
+
+.bg-gray-700 {
+  background-color: hsl(var(--muted) / 0.85) !important;
+}
+
+.bg-gray-700\/50 {
+  background-color: hsl(var(--muted) / 0.5) !important;
+}
+
+.bg-gray-600 {
+  background-color: hsl(var(--muted) / 0.65) !important;
+}
+
+.bg-gray-500\/30 {
+  background-color: hsl(var(--muted) / 0.3) !important;
+}
+
+.hover\:bg-gray-800:hover {
+  background-color: var(--theme-bg-muted) !important;
+}
+
+.hover\:bg-gray-700:hover {
+  background-color: hsl(var(--muted) / 0.85) !important;
+}
+
+.hover\:bg-gray-700\/50:hover {
+  background-color: hsl(var(--muted) / 0.45) !important;
+}
+
+.hover\:bg-gray-600:hover {
+  background-color: hsl(var(--muted) / 0.7) !important;
+}
+
+.hover\:bg-gray-800\/30:hover {
+  background-color: hsl(var(--muted) / 0.3) !important;
+}
+
+.hover\:bg-gray-750:hover {
+  background-color: hsl(var(--muted) / 0.75) !important;
+}
+
+.text-white,
+.text-gray-100,
+.text-gray-200,
+.text-gray-300 {
+  color: var(--theme-foreground-color) !important;
+}
+
+.text-white\/70 {
+  color: hsl(var(--foreground) / 0.7) !important;
+}
+
+.text-gray-400 {
+  color: var(--theme-foreground-muted) !important;
+}
+
+.text-gray-500 {
+  color: hsl(var(--muted-foreground) / 0.85) !important;
+}
+
+.text-gray-600 {
+  color: hsl(var(--muted-foreground) / 0.7) !important;
+}
+
+.border-gray-900,
+.border-gray-800,
+.border-gray-700,
+.border-gray-600 {
+  border-color: var(--theme-border-color) !important;
+}
+
+.bg-indigo-500,
+.bg-indigo-600,
+.bg-indigo-700 {
+  background-color: var(--theme-accent-color) !important;
+}
+
+.bg-indigo-600\/50 {
+  background-color: hsl(var(--primary) / 0.5) !important;
+}
+
+.bg-indigo-600\/20,
+.bg-indigo-500\/20 {
+  background-color: hsl(var(--primary) / 0.2) !important;
+}
+
+.bg-indigo-500\/10 {
+  background-color: hsl(var(--primary) / 0.1) !important;
+}
+
+.hover\:bg-indigo-700:hover,
+.hover\:bg-indigo-500:hover {
+  background-color: var(--theme-accent-color) !important;
+}
+
+.hover\:bg-indigo-500\/10:hover {
+  background-color: hsl(var(--primary) / 0.15) !important;
+}
+
+.text-indigo-300,
+.text-indigo-400,
+.text-indigo-500 {
+  color: var(--theme-accent-color) !important;
+}
+
+.border-indigo-500 {
+  border-color: var(--theme-accent-color) !important;
+}
+
+.border-indigo-500\/50 {
+  border-color: hsl(var(--primary) / 0.5) !important;
+}
+
+.border-indigo-400\/70 {
+  border-color: hsl(var(--primary) / 0.7) !important;
+}
+
+.ring-indigo-400,
+.ring-indigo-500,
+.focus\:ring-indigo-500:focus {
+  --tw-ring-color: var(--theme-accent-color) !important;
+}
+
+.focus\:border-indigo-500:focus {
+  border-color: var(--theme-accent-color) !important;
+}
+
+.accent-indigo-500 {
+  accent-color: var(--theme-accent-color) !important;
+}
+
+.shadow-indigo-500\/20,
+.shadow-indigo-500\/50,
+.shadow-indigo-900\/40 {
+  --tw-shadow-color: var(--theme-accent-color) !important;
+  --tw-shadow: var(--tw-shadow-colored) !important;
 }
