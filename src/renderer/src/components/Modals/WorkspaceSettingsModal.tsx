@@ -10,6 +10,7 @@ interface WorkspaceSettingsModalProps {
   workspace: Workspace;
   onClose: () => void;
   onSave: (settings: {
+    name: string;
     dockPosition: 'top' | 'bottom' | 'left' | 'right';
     dockSize: number;
     sessionMode: 'isolated' | 'shared';
@@ -29,6 +30,7 @@ export function WorkspaceSettingsModal({
   onClose,
   onSave,
 }: WorkspaceSettingsModalProps) {
+  const [name, setName] = useState(workspace.name);
   const [dockPosition, setDockPosition] = useState<'top' | 'bottom' | 'left' | 'right'>(
     workspace.layout?.dockPosition ?? 'left'
   );
@@ -47,6 +49,7 @@ export function WorkspaceSettingsModal({
 
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
+    setName(workspace.name);
     setDockPosition(workspace.layout?.dockPosition ?? 'left');
     setDockSize(workspace.layout?.dockSize ?? 64);
     setSessionMode(workspace.sessionMode ?? 'isolated');
@@ -70,10 +73,17 @@ export function WorkspaceSettingsModal({
       return;
     }
 
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setError('Workspace name cannot be empty');
+      return;
+    }
+
     setIsSaving(true);
     setError(null);
     try {
       await onSave({
+        name: trimmedName,
         dockPosition,
         dockSize,
         sessionMode,
@@ -95,7 +105,7 @@ export function WorkspaceSettingsModal({
         <div className="flex items-start justify-between mb-6">
           <div>
             <p className="text-xs uppercase tracking-wide text-gray-500">Workspace</p>
-            <h2 className="text-2xl font-semibold text-white">{workspace.name}</h2>
+            <h2 className="text-2xl font-semibold text-white">{name.trim() || workspace.name}</h2>
             <p className="text-xs text-gray-500 mt-1">Customize how this workspace behaves</p>
           </div>
           <button
@@ -111,6 +121,22 @@ export function WorkspaceSettingsModal({
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
+          <section>
+            <h3 className="text-sm font-semibold text-gray-300 mb-2">Workspace Name</h3>
+            <p className="text-xs text-gray-500 mb-3">
+              Choose a memorable name for quick workspace switching.
+            </p>
+            <input
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              className="w-full px-3 py-2 rounded-lg bg-gray-800 border border-gray-800 text-white focus:outline-none focus:border-indigo-500"
+              maxLength={80}
+              placeholder="e.g. Research Lab"
+              disabled={isSaving}
+            />
+          </section>
+
           <section>
             <h3 className="text-sm font-semibold text-gray-300 mb-2">Dock Placement</h3>
             <p className="text-xs text-gray-500 mb-3">

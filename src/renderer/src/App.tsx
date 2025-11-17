@@ -436,6 +436,7 @@ function App() {
   };
 
   const handleSaveWorkspaceSettings = async (settings: {
+    name: string;
     dockPosition: 'top' | 'bottom' | 'left' | 'right';
     dockSize: number;
     sessionMode: 'isolated' | 'shared';
@@ -445,6 +446,7 @@ function App() {
     if (!activeWorkspace) return;
 
     await updateWorkspace(activeWorkspace.id, {
+      name: settings.name,
       sessionMode: settings.sessionMode,
       hibernation: {
         ...activeWorkspace.hibernation,
