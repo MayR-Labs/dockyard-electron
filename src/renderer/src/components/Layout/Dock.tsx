@@ -153,12 +153,12 @@ function DockIcon({ app, isActive, isAwake, onClick, onContextMenu }: DockIconPr
         animate={{ scale: 1, opacity: isDragging ? 0.5 : 1 }}
         transition={{ type: 'spring', stiffness: 260, damping: 20 }}
       >
-      <motion.button
-        whileHover={{ scale: 1.1, y: -2 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={onClick}
-        onContextMenu={onContextMenu}
-        className={`
+        <motion.button
+          whileHover={{ scale: 1.1, y: -2 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onClick}
+          onContextMenu={onContextMenu}
+          className={`
           w-12 h-12 rounded-xl transition-all duration-200
           flex items-center justify-center
           ${
@@ -169,30 +169,26 @@ function DockIcon({ app, isActive, isAwake, onClick, onContextMenu }: DockIconPr
           ${isAwake ? '' : 'opacity-60'}
           ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}
         `}
-        title={app.name}
-      >
-        {app.icon ? (
-          <img
-            src={app.icon}
-            alt={app.name}
-            className={`w-8 h-8 rounded ${isAwake ? '' : 'grayscale saturate-0 opacity-60'}`}
-          />
-        ) : (
-          <span className={`text-xl ${isAwake ? '' : 'text-gray-400'}`}>
-            {app.name.charAt(0).toUpperCase()}
-          </span>
-        )}
-      </motion.button>
+          title={app.name}
+        >
+          {app.icon ? (
+            <img
+              src={app.icon}
+              alt={app.name}
+              className={`w-8 h-8 rounded ${isAwake ? '' : 'grayscale saturate-0 opacity-60'}`}
+            />
+          ) : (
+            <span className={`text-xl ${isAwake ? '' : 'text-gray-400'}`}>
+              {app.name.charAt(0).toUpperCase()}
+            </span>
+          )}
+        </motion.button>
 
         {/* Running indicator */}
         <div className="absolute inset-x-0 -bottom-1 flex justify-center">
           <span
             className={`h-1.5 w-4 rounded-full transition-all duration-200 ${
-              isActive
-                ? 'bg-white'
-                : isAwake
-                  ? 'bg-emerald-400/80'
-                  : 'bg-gray-500/30'
+              isActive ? 'bg-white' : isAwake ? 'bg-emerald-400/80' : 'bg-gray-500/30'
             }`}
           />
         </div>

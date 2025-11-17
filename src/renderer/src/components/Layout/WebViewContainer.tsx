@@ -280,18 +280,18 @@ export function WebViewContainer({
       });
   }, [app.id, app.userAgent, instanceId, isReady]);
 
-    useEffect(() => {
-      if (!isElectron() || !instanceId || !isReady || !window.dockyard?.webview) return;
-      const nextMuted = app.audio?.muted ?? false;
-      if (lastAudioMuted.current === nextMuted) return;
+  useEffect(() => {
+    if (!isElectron() || !instanceId || !isReady || !window.dockyard?.webview) return;
+    const nextMuted = app.audio?.muted ?? false;
+    if (lastAudioMuted.current === nextMuted) return;
 
-      window.dockyard.webview
-        .setAudioMuted(app.id, instanceId, nextMuted)
-        .catch((error: Error) => console.error('Failed to set audio mute state', error))
-        .finally(() => {
-          lastAudioMuted.current = nextMuted;
-        });
-    }, [app.audio?.muted, app.id, instanceId, isReady]);
+    window.dockyard.webview
+      .setAudioMuted(app.id, instanceId, nextMuted)
+      .catch((error: Error) => console.error('Failed to set audio mute state', error))
+      .finally(() => {
+        lastAudioMuted.current = nextMuted;
+      });
+  }, [app.audio?.muted, app.id, instanceId, isReady]);
 
   const showLoadingIndicator = typeof isLoading === 'boolean' ? isLoading : internalLoading;
 

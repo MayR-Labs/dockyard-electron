@@ -72,9 +72,8 @@ export function UserAgentSettings({ userAgent, onChange }: UserAgentSettingsProp
     () => USER_AGENT_PRESETS.find((entry) => entry.id === activePresetId),
     [activePresetId]
   );
-  const activeLabel = activePresetId === 'custom'
-    ? 'Custom user agent'
-    : activePreset?.label || 'Dockyard Default';
+  const activeLabel =
+    activePresetId === 'custom' ? 'Custom user agent' : activePreset?.label || 'Dockyard Default';
   const isCustomActive = activePresetId === 'custom';
 
   useEffect(() => {
@@ -106,25 +105,25 @@ export function UserAgentSettings({ userAgent, onChange }: UserAgentSettingsProp
         {USER_AGENT_PRESETS.map((preset) => {
           const isActive = activePresetId === preset.id;
           return (
-          <button
-            key={preset.id}
-            onClick={() => onChange(preset.value)}
-            className={`text-left rounded-lg border px-3 py-2 transition hover:border-indigo-400 hover:text-white ${
-              isActive
-                ? 'border-indigo-500 bg-indigo-500/10 text-white shadow-inner shadow-indigo-900/20'
-                : 'border-gray-700 text-gray-300'
-            }`}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <div className="text-sm font-medium">{preset.label}</div>
-              {isActive && (
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-indigo-200 bg-indigo-500/20 px-2 py-0.5 rounded-full">
-                  Active
-                </span>
-              )}
-            </div>
-            <div className="text-xs text-gray-400">{preset.description}</div>
-          </button>
+            <button
+              key={preset.id}
+              onClick={() => onChange(preset.value)}
+              className={`text-left rounded-lg border px-3 py-2 transition hover:border-indigo-400 hover:text-white ${
+                isActive
+                  ? 'border-indigo-500 bg-indigo-500/10 text-white shadow-inner shadow-indigo-900/20'
+                  : 'border-gray-700 text-gray-300'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-sm font-medium">{preset.label}</div>
+                {isActive && (
+                  <span className="text-[10px] font-semibold uppercase tracking-wide text-indigo-200 bg-indigo-500/20 px-2 py-0.5 rounded-full">
+                    Active
+                  </span>
+                )}
+              </div>
+              <div className="text-xs text-gray-400">{preset.description}</div>
+            </button>
           );
         })}
       </div>

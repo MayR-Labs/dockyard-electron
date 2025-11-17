@@ -60,7 +60,7 @@ export function useTheme({ mode, accentColor, backgroundStyle }: UseThemeOptions
     const handleChange = () => {
       const theme = mediaQuery.matches ? 'dark' : 'light';
       setEffectiveTheme(theme);
-      
+
       document.documentElement.classList.remove('theme-light', 'theme-dark');
       if (theme === 'light') {
         document.documentElement.classList.add('theme-light');

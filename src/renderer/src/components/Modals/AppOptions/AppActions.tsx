@@ -14,7 +14,13 @@ interface AppActionsProps {
   isMuted: boolean;
 }
 
-export function AppActions({ onSettings, onCustomize, onHibernate, onToggleMute, isMuted }: AppActionsProps) {
+export function AppActions({
+  onSettings,
+  onCustomize,
+  onHibernate,
+  onToggleMute,
+  isMuted,
+}: AppActionsProps) {
   return (
     <div>
       <h3 className="text-sm font-semibold text-gray-300 mb-3">Actions</h3>

@@ -90,7 +90,6 @@ function App() {
     setShortcutSignal({ appId: targetAppId, type, timestamp: Date.now() });
   }, []);
 
-
   // Apply theme
   useTheme({
     mode: settings?.theme?.mode || 'dark',

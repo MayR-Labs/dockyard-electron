@@ -362,7 +362,11 @@ export function AppTile({
               onChange={(e) => {
                 setMatchCase(e.target.checked);
                 if (findQuery) {
-                  runFind(findQuery, { forward: true, findNext: false, matchCase: e.target.checked });
+                  runFind(findQuery, {
+                    forward: true,
+                    findNext: false,
+                    matchCase: e.target.checked,
+                  });
                 }
               }}
               className="rounded border-gray-600 text-indigo-500 focus:ring-indigo-500"

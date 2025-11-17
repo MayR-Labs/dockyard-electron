@@ -211,9 +211,32 @@ export class WebViewManager {
 
   print(appId: string, instanceId: string, options?: Electron.WebContentsPrintOptions): void {
     const webContents = this.getWebContents(appId, instanceId);
-    if (webContents && !webContents.isDestroyed()) {
-      webContents.print(options ?? { silent: false, printBackground: true });
+    if (!webContents || webContents.isDestroyed()) {
+      return;
     }
+
+    const mergedOptions: Electron.WebContentsPrintOptions = {
+      silent: false,
+      printBackground: true,
+      ...options,
+    };
+
+    try {
+      webContents.focus();
+    } catch (error) {
+      console.warn('Failed to focus webContents before printing', error);
+    }
+
+    webContents.print(mergedOptions, (success, failureReason) => {
+      if (success) {
+        return;
+      }
+
+      console.warn('webContents.print failed, falling back to window.print()', failureReason);
+      webContents.executeJavaScript('window.print()', true).catch((error: unknown) => {
+        console.error('Fallback window.print() failed', error);
+      });
+    });
   }
 
   async setUserAgent(appId: string, instanceId: string, userAgent?: string | null): Promise<void> {

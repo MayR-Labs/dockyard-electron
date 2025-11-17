@@ -8,7 +8,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 import { CloseIcon } from '../Icons';
-import { ZoomControls, AppActions, DeleteAppSection, ResponsiveMode, UserAgentSettings } from './AppOptions';
+import {
+  ZoomControls,
+  AppActions,
+  DeleteAppSection,
+  ResponsiveMode,
+  UserAgentSettings,
+} from './AppOptions';
 
 interface AppOptionsModalProps {
   isOpen: boolean;
@@ -62,10 +68,7 @@ export function AppOptionsModal({
 
   if (!isOpen || !app) return null;
 
-  const handleActionWithClose = (
-    action: () => void,
-    options: { closeAfter?: boolean } = {}
-  ) => {
+  const handleActionWithClose = (action: () => void, options: { closeAfter?: boolean } = {}) => {
     const { closeAfter = true } = options;
     action();
     if (closeAfter) {
@@ -152,7 +155,9 @@ export function AppOptionsModal({
 
                 <UserAgentSettings
                   userAgent={app.userAgent}
-                  onChange={(value) => handleActionWithClose(() => onUserAgentChange(value), { closeAfter: false })}
+                  onChange={(value) =>
+                    handleActionWithClose(() => onUserAgentChange(value), { closeAfter: false })
+                  }
                 />
 
                 <DeleteAppSection
