@@ -158,7 +158,7 @@ export class WebViewManager {
   openDevTools(appId: string, instanceId: string): void {
     const webContents = this.getWebContents(appId, instanceId);
     if (webContents && !webContents.isDestroyed()) {
-      webContents.openDevTools({ mode: 'bottom' });
+      webContents.openDevTools({ mode: 'detach' });
     }
   }
 
@@ -178,7 +178,7 @@ export class WebViewManager {
       if (webContents.isDevToolsOpened()) {
         webContents.closeDevTools();
       } else {
-        webContents.openDevTools({ mode: 'right' });
+        webContents.openDevTools({ mode: 'detach' });
       }
     }
   }
