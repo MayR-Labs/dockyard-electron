@@ -11,7 +11,11 @@ import './styles/index.css';
 import type { App as AppType, AppInstance } from '../../shared/types/app';
 import type { Workspace } from '../../shared/types/workspace';
 import type { Settings } from '../../shared/types/settings';
-import type { DockyardAPI, DockyardEventChannel, DockyardEventListener } from '../../shared/types/preload';
+import type {
+  DockyardAPI,
+  DockyardEventChannel,
+  DockyardEventListener,
+} from '../../shared/types/preload';
 
 // Check if we're running in Electron
 type ElectronProcess = NodeJS.Process & { type?: string };
@@ -35,7 +39,7 @@ interface MockViewInfo {
 const isElectron =
   typeof window !== 'undefined' &&
   typeof window.process !== 'undefined' &&
-  ((window.process as ElectronProcess)?.type === 'renderer');
+  (window.process as ElectronProcess)?.type === 'renderer';
 
 console.log('Environment check:', {
   isElectron,
@@ -154,12 +158,10 @@ if (typeof window !== 'undefined' && !window.dockyard) {
           },
           theme: data.theme,
           sessionMode: data.sessionMode ?? 'isolated',
-          hibernation:
-            data.hibernation ??
-            {
-              enabled: true,
-              idleTimeMinutes: 15,
-            },
+          hibernation: data.hibernation ?? {
+            enabled: true,
+            idleTimeMinutes: 15,
+          },
           createdAt: now,
           updatedAt: now,
         };
@@ -192,17 +194,19 @@ if (typeof window !== 'undefined' && !window.dockyard) {
         mockStorage.activeWorkspaceId = id;
       },
       getActive: async () =>
-        mockStorage.workspaces.find((workspace) => workspace.id === mockStorage.activeWorkspaceId) ??
-        null,
+        mockStorage.workspaces.find(
+          (workspace) => workspace.id === mockStorage.activeWorkspaceId
+        ) ?? null,
     },
     apps: {
       list: async () => mockStorage.apps,
       create: async (data: Partial<AppType>) => {
         const now = new Date().toISOString();
         const appId = data.id ?? `app-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-        const instances: AppInstance[] = (data.instances && data.instances.length > 0
-          ? data.instances
-          : [createMockInstance(appId, data.name)]
+        const instances: AppInstance[] = (
+          data.instances && data.instances.length > 0
+            ? data.instances
+            : [createMockInstance(appId, data.name)]
         ).map((instance) => ({
           ...instance,
           appId,

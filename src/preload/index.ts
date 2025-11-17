@@ -12,7 +12,10 @@ type DockyardEventChannel = (typeof validEventChannels)[number];
 type DockyardEventListener = (...args: unknown[]) => void;
 type IpcRendererListener = Parameters<typeof ipcRenderer.on>[1];
 
-const listenerMap = new Map<DockyardEventChannel, Map<DockyardEventListener, IpcRendererListener>>();
+const listenerMap = new Map<
+  DockyardEventChannel,
+  Map<DockyardEventListener, IpcRendererListener>
+>();
 
 const isValidChannel = (channel: string): channel is DockyardEventChannel =>
   validEventChannels.includes(channel as DockyardEventChannel);
@@ -28,7 +31,10 @@ const registerListener = (channel: DockyardEventChannel, callback: DockyardEvent
   ipcRenderer.on(channel, wrappedListener);
 };
 
-const unregisterListener = (channel: DockyardEventChannel, callback: DockyardEventListener): void => {
+const unregisterListener = (
+  channel: DockyardEventChannel,
+  callback: DockyardEventListener
+): void => {
   const channelListeners = listenerMap.get(channel);
   if (!channelListeners) {
     return;

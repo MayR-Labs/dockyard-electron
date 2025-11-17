@@ -56,7 +56,12 @@ export function WorkspaceContextMenu({
     };
   }, [onClose]);
 
-  const dockPositions: Array<'top' | 'bottom' | 'left' | 'right'> = ['top', 'left', 'right', 'bottom'];
+  const dockPositions: Array<'top' | 'bottom' | 'left' | 'right'> = [
+    'top',
+    'left',
+    'right',
+    'bottom',
+  ];
 
   return (
     <div

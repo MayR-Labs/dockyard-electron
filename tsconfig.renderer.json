@@ -14,9 +14,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": [
-    "src/renderer/**/*",
-    "src/shared/**/*",
-    "src/renderer/src/global.d.ts"
-  ]
+  "include": ["src/renderer/**/*", "src/shared/**/*", "src/renderer/src/global.d.ts"]
 }

@@ -67,12 +67,11 @@ export class NotificationHandlers {
           throw new Error(`App with id "${appId}" not found`);
         }
 
-        const currentNotificationSettings: App['notifications'] =
-          apps[index].notifications ?? {
-            enabled: true,
-            soundEnabled: true,
-            badgeCount: 0,
-          };
+        const currentNotificationSettings: App['notifications'] = apps[index].notifications ?? {
+          enabled: true,
+          soundEnabled: true,
+          badgeCount: 0,
+        };
 
         apps[index] = {
           ...apps[index],

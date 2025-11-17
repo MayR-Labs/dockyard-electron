@@ -37,7 +37,8 @@ function App() {
     createWorkspace,
     updateWorkspace,
   } = useWorkspaceStore();
-  const { loadApps, apps, createApp, updateApp, deleteApp, hibernateApp, resumeApp } = useAppStore();
+  const { loadApps, apps, createApp, updateApp, deleteApp, hibernateApp, resumeApp } =
+    useAppStore();
   const { loadSettings, settings, updateSettings } = useSettingsStore();
 
   // UI state

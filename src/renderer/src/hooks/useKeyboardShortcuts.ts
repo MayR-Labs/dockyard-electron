@@ -71,7 +71,10 @@ function checkModifier(
 /**
  * Hook for workspace switching shortcuts (Cmd/Ctrl+1-9)
  */
-export function useWorkspaceSwitchShortcuts(workspaces: Workspace[], onSwitch: (id: string) => void) {
+export function useWorkspaceSwitchShortcuts(
+  workspaces: Workspace[],
+  onSwitch: (id: string) => void
+) {
   const shortcuts: KeyboardShortcut[] = workspaces.slice(0, 9).map((workspace, index) => ({
     key: `Digit${index + 1}`,
     modifier: 'ctrlOrMeta',

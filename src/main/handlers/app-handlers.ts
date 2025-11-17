@@ -207,7 +207,9 @@ export class AppHandlers {
         const app = apps.find((a: App) => a.id === appId);
 
         if (app) {
-          const instance = app.instances.find((instanceEntry: AppInstance) => instanceEntry.id === instanceId);
+          const instance = app.instances.find(
+            (instanceEntry: AppInstance) => instanceEntry.id === instanceId
+          );
           if (instance) {
             instance.hibernated = true;
             instance.lastActive = new Date().toISOString();
@@ -228,7 +230,9 @@ export class AppHandlers {
       const app = apps.find((a: App) => a.id === appId);
 
       if (app) {
-        const instance = app.instances.find((instanceEntry: AppInstance) => instanceEntry.id === instanceId);
+        const instance = app.instances.find(
+          (instanceEntry: AppInstance) => instanceEntry.id === instanceId
+        );
         if (instance) {
           instance.hibernated = false;
           instance.lastActive = new Date().toISOString();

@@ -31,7 +31,8 @@ When overlay closes → Show BrowserView
 
 **Problem**: Context menus were not triggering BrowserView hiding, so they appeared behind the BrowserView.
 
-**Solution**: 
+**Solution**:
+
 ```typescript
 // In App.tsx
 const isAnyModalOpen = useMemo(
@@ -44,7 +45,9 @@ const isAnyModalOpen = useMemo(
     isPerformanceDashboardOpen ||
     isSessionManagerOpen ||
     contextMenu !== null, // ← Added this line
-  [/* dependencies including contextMenu */]
+  [
+    /* dependencies including contextMenu */
+  ]
 );
 ```
 
@@ -53,6 +56,7 @@ const isAnyModalOpen = useMemo(
 **File**: `src/renderer/src/constants/layout.ts`
 
 Defined standardized dimensions for all UI chrome elements:
+
 - Window chrome: 48px
 - App toolbar: 40px
 - Status bar: 32px
@@ -65,6 +69,7 @@ This provides a single source of truth for layout calculations.
 **File**: `BROWSERVIEW_ARCHITECTURE.md`
 
 Created detailed documentation explaining:
+
 - Why the problem exists (Electron's rendering model)
 - How the solution works (visibility management)
 - Developer guidelines for adding new overlays
@@ -76,6 +81,7 @@ Created detailed documentation explaining:
 **File**: `src/renderer/src/components/Layout/BrowserViewContainer.tsx`
 
 Added detailed architecture notes explaining:
+
 - BrowserView renders outside DOM
 - Bounds control position, not z-index
 - How the modal manager handles hiding
@@ -83,6 +89,7 @@ Added detailed architecture notes explaining:
 ## Testing Performed
 
 ### Test Environment
+
 - Browser development mode (http://localhost:5173)
 - React mock API for BrowserView operations
 - Console logging to verify hide/show calls
@@ -90,58 +97,71 @@ Added detailed architecture notes explaining:
 ### Test Cases
 
 #### ✅ Test 1: Modal Display
+
 **Steps**:
+
 1. Launch app in browser dev mode
 2. Click "Create Your First Workspace"
 3. Verify modal displays correctly
 
 **Results**:
+
 - ✅ Modal displays in front
 - ✅ Console shows: `Mock: browserView.hide`
 - ✅ Modal fully interactive
 - ✅ Background properly blurred
 
 #### ✅ Test 2: Context Menu Display
+
 **Steps**:
+
 1. Create workspace with sample apps
 2. Right-click on app icon in dock
 3. Verify context menu displays
 
 **Results**:
+
 - ✅ Context menu displays in front
 - ✅ Console shows: `Mock: browserView.hide`
 - ✅ All menu options visible
 - ✅ Menu positioned at cursor location
 
 #### ✅ Test 3: Keyboard Interaction
+
 **Steps**:
+
 1. Open context menu
 2. Press Escape key
 
 **Results**:
+
 - ✅ Menu closes properly
 - ✅ BrowserView would reappear (in Electron mode)
 
 #### ✅ Test 4: Security Scan
+
 **Tool**: CodeQL
 **Results**:
+
 - ✅ 0 security alerts
 - ✅ No vulnerabilities introduced
 
 #### ✅ Test 5: Build Verification
+
 **Results**:
+
 - ✅ Main process builds successfully
 - ✅ Renderer builds successfully
 - ✅ No TypeScript errors in changed files
 
 ## Files Changed
 
-| File | Change Type | Purpose |
-|------|-------------|---------|
-| `src/renderer/src/App.tsx` | Modified | Added context menu to overlay detection |
-| `src/renderer/src/constants/layout.ts` | Created | UI dimension constants |
-| `src/renderer/src/components/Layout/BrowserViewContainer.tsx` | Modified | Added architecture documentation |
-| `BROWSERVIEW_ARCHITECTURE.md` | Created | Comprehensive architecture guide |
+| File                                                          | Change Type | Purpose                                 |
+| ------------------------------------------------------------- | ----------- | --------------------------------------- |
+| `src/renderer/src/App.tsx`                                    | Modified    | Added context menu to overlay detection |
+| `src/renderer/src/constants/layout.ts`                        | Created     | UI dimension constants                  |
+| `src/renderer/src/components/Layout/BrowserViewContainer.tsx` | Modified    | Added architecture documentation        |
+| `BROWSERVIEW_ARCHITECTURE.md`                                 | Created     | Comprehensive architecture guide        |
 
 ## Performance Impact
 
@@ -175,17 +195,21 @@ Menu closes         → Show BrowserView (16ms)
 When adding any new modal, menu, or overlay:
 
 1. **Add state tracking in App.tsx**:
+
    ```typescript
    const [isMyNewOverlay, setIsMyNewOverlay] = useState(false);
    ```
 
 2. **Include in detection**:
+
    ```typescript
    const isAnyModalOpen = useMemo(
-     () => 
+     () =>
        // ... existing modals ...
        isMyNewOverlay, // Add here
-     [/* dependencies */]
+     [
+       /* dependencies */
+     ]
    );
    ```
 
@@ -196,15 +220,19 @@ When adding any new modal, menu, or overlay:
 ## Alternative Approaches Considered
 
 ### ❌ Multiple BrowserWindows
+
 - **Rejected**: High memory overhead, complex management
 
 ### ❌ Capture to Canvas
+
 - **Rejected**: Performance issues, no native interactions
 
 ### ❌ Use `<webview>` Tags
+
 - **Rejected**: Deprecated API, worse performance
 
 ### ✅ Visibility Management (Chosen)
+
 - **Pros**: Simple, performant, works with Electron architecture
 - **Cons**: Requires tracking overlay state (acceptable)
 

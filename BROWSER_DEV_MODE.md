@@ -14,6 +14,7 @@ Dockyard now supports development in a regular browser (without Electron), makin
 ## Running in Browser Dev Mode
 
 ### Option 1: Browser Only (Recommended for UI work)
+
 ```bash
 npm run dev:renderer
 ```
@@ -21,18 +22,21 @@ npm run dev:renderer
 Then open `http://localhost:5173` in your browser.
 
 **What you'll see**:
+
 - Full UI renders correctly
 - BrowserView components show an informative placeholder
 - All other components work normally
 - State management works as expected
 
 **Best for**:
+
 - UI/UX development
 - Component styling
 - Layout adjustments
 - State management testing
 
 ### Option 2: Full Electron Mode (For BrowserView testing)
+
 ```bash
 npm run dev
 ```
@@ -40,11 +44,13 @@ npm run dev
 This starts both the Vite dev server AND Electron app.
 
 **What you'll see**:
+
 - Full Electron app with native BrowserView support
 - All features work including embedded web apps
 - Slightly slower iteration due to Electron restart
 
 **Best for**:
+
 - Testing BrowserView functionality
 - Testing Electron-specific features
 - Final integration testing
@@ -76,6 +82,7 @@ When running in browser mode, instead of seeing blank screens for apps, you'll s
 ```
 
 This placeholder:
+
 - Shows you're in browser mode (not an error!)
 - Displays the app name and URL
 - Provides clear instructions to run in Electron
@@ -107,6 +114,7 @@ return <div ref={containerRef}>...</div>;
 ## Development Workflow
 
 ### For UI Development (Recommended)
+
 1. Start browser dev mode: `npm run dev:renderer`
 2. Open `http://localhost:5173`
 3. Make changes to components
@@ -114,6 +122,7 @@ return <div ref={containerRef}>...</div>;
 5. Use browser DevTools for debugging
 
 ### For Feature Development
+
 1. Start full dev mode: `npm run dev`
 2. Electron app launches automatically
 3. Make changes to code
@@ -123,6 +132,7 @@ return <div ref={containerRef}>...</div>;
 ### Best Practices
 
 **Use Browser Mode When**:
+
 - Designing layouts
 - Styling components
 - Testing React state
@@ -130,6 +140,7 @@ return <div ref={containerRef}>...</div>;
 - Working on modals/overlays
 
 **Use Electron Mode When**:
+
 - Testing BrowserView functionality
 - Testing IPC communication
 - Testing native features
@@ -138,23 +149,30 @@ return <div ref={containerRef}>...</div>;
 ## Troubleshooting
 
 ### "window.dockyard is undefined"
+
 This is expected in browser mode! The placeholder handles this gracefully.
 
 ### Seeing blank screens instead of placeholder
+
 Check that you've imported the environment utilities:
+
 ```typescript
 import { isElectron } from '../utils/environment';
 ```
 
 ### HMR not working
+
 Restart the dev server:
+
 ```bash
 # Stop current server (Ctrl+C)
 npm run dev:renderer
 ```
 
 ### Changes not reflecting in Electron
+
 Main process changes require manual restart:
+
 ```bash
 # Stop current process (Ctrl+C)
 npm run dev
@@ -173,6 +191,7 @@ declare global {
 ```
 
 TypeScript will:
+
 - Autocomplete all API methods
 - Show type errors if misused
 - Provide inline documentation
@@ -182,6 +201,7 @@ TypeScript will:
 When adding new Electron-specific features:
 
 1. Check environment first:
+
 ```typescript
 if (!isElectron()) {
   // Provide fallback or placeholder
@@ -199,6 +219,7 @@ window.dockyard.someAPI();
 ## Examples
 
 ### Conditional Feature Rendering
+
 ```typescript
 function MyComponent() {
   if (!isElectron()) {
@@ -214,6 +235,7 @@ function MyComponent() {
 ```
 
 ### Graceful Degradation
+
 ```typescript
 function AppControls() {
   const handleAction = async () => {

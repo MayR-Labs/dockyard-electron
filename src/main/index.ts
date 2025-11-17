@@ -61,7 +61,9 @@ async function initialize(): Promise<void> {
   rootStore.set('lastActiveProfile', profileName);
 
   const profiles = rootStore.get('profiles');
-  const currentProfile = profiles.find((profileEntry: ProfileMetadata) => profileEntry.id === profileName);
+  const currentProfile = profiles.find(
+    (profileEntry: ProfileMetadata) => profileEntry.id === profileName
+  );
   if (currentProfile) {
     currentProfile.lastAccessed = new Date().toISOString();
     rootStore.set('profiles', profiles);

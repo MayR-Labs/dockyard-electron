@@ -142,13 +142,18 @@ export function BrowserViewContainer({
 
   // Electron environment: render container for BrowserView
   const responsiveMode = app.display?.responsiveMode;
-  const isResponsive = responsiveMode?.enabled && responsiveMode.width > 0 && responsiveMode.height > 0;
+  const isResponsive =
+    responsiveMode?.enabled && responsiveMode.width > 0 && responsiveMode.height > 0;
 
   return (
-    <div ref={containerRef} className="flex-1 bg-gray-900 relative flex items-center justify-center" style={{ minHeight: 0 }}>
+    <div
+      ref={containerRef}
+      className="flex-1 bg-gray-900 relative flex items-center justify-center"
+      style={{ minHeight: 0 }}
+    >
       {/* The BrowserView will be rendered here by Electron */}
       {isResponsive && (
-        <div 
+        <div
           className="absolute border-2 border-indigo-500/50 rounded-lg pointer-events-none"
           style={{
             width: responsiveMode.width,

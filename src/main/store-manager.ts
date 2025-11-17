@@ -1,5 +1,5 @@
-import type Store from 'electron-store' with { "resolution-mode": "import" };
-import type { Options as StoreOptions } from 'electron-store' with { "resolution-mode": "import" };
+import type Store from 'electron-store' with { 'resolution-mode': 'import' };
+import type { Options as StoreOptions } from 'electron-store' with { 'resolution-mode': 'import' };
 import { app } from 'electron';
 import path from 'path';
 import {
@@ -10,7 +10,9 @@ import {
   DEFAULT_SETTINGS,
 } from '../shared/types';
 
-type ElectronStoreClass = new <T extends Record<string, any> = Record<string, unknown>>(options?: StoreOptions<T>) => Store<T>;
+type ElectronStoreClass = new <T extends Record<string, any> = Record<string, unknown>>(
+  options?: StoreOptions<T>
+) => Store<T>;
 
 export class StoreManager {
   private static storeClassPromise: Promise<ElectronStoreClass> | null = null;
@@ -84,15 +86,17 @@ export class StoreManager {
    */
   getWorkspacesStore(): Store<WorkspacesConfig> {
     const key = `${this.currentProfile}-workspaces`;
-    return this.getOrCreateStore<WorkspacesConfig>(key, () =>
-      new this.StoreClass<WorkspacesConfig>({
-        name: 'workspaces',
-        cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
-        defaults: {
-          workspaces: [],
-          activeWorkspaceId: null,
-        },
-      })
+    return this.getOrCreateStore<WorkspacesConfig>(
+      key,
+      () =>
+        new this.StoreClass<WorkspacesConfig>({
+          name: 'workspaces',
+          cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
+          defaults: {
+            workspaces: [],
+            activeWorkspaceId: null,
+          },
+        })
     );
   }
 
@@ -101,14 +105,16 @@ export class StoreManager {
    */
   getAppsStore(): Store<AppsConfig> {
     const key = `${this.currentProfile}-apps`;
-    return this.getOrCreateStore<AppsConfig>(key, () =>
-      new this.StoreClass<AppsConfig>({
-        name: 'apps',
-        cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
-        defaults: {
-          apps: [],
-        },
-      })
+    return this.getOrCreateStore<AppsConfig>(
+      key,
+      () =>
+        new this.StoreClass<AppsConfig>({
+          name: 'apps',
+          cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
+          defaults: {
+            apps: [],
+          },
+        })
     );
   }
 
@@ -117,12 +123,14 @@ export class StoreManager {
    */
   getSettingsStore(): Store<Settings> {
     const key = `${this.currentProfile}-settings`;
-    return this.getOrCreateStore<Settings>(key, () =>
-      new this.StoreClass<Settings>({
-        name: 'settings',
-        cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
-        defaults: DEFAULT_SETTINGS,
-      })
+    return this.getOrCreateStore<Settings>(
+      key,
+      () =>
+        new this.StoreClass<Settings>({
+          name: 'settings',
+          cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
+          defaults: DEFAULT_SETTINGS,
+        })
     );
   }
 
@@ -133,7 +141,10 @@ export class StoreManager {
     this.stores.clear();
   }
 
-  private getOrCreateStore<T extends Record<string, any>>(key: string, factory: () => Store<T>): Store<T> {
+  private getOrCreateStore<T extends Record<string, any>>(
+    key: string,
+    factory: () => Store<T>
+  ): Store<T> {
     if (!this.stores.has(key)) {
       this.stores.set(key, factory() as Store<any>);
     }

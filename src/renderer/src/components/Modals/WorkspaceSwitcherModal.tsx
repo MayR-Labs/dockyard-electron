@@ -131,7 +131,12 @@ export function WorkspaceSwitcherModal({
                 className="p-4 rounded-lg border-2 border-dashed border-gray-600 hover:border-indigo-500 hover:bg-gray-700/50 transition-all flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-indigo-400 min-h-[100px]"
               >
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
                 </svg>
                 <span className="text-sm font-medium">Create New Workspace</span>
               </motion.button>
@@ -141,7 +146,8 @@ export function WorkspaceSwitcherModal({
           {/* Footer */}
           <div className="px-6 py-4 border-t border-gray-700 flex justify-between items-center">
             <p className="text-sm text-gray-400">
-              Use <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">Ctrl/Cmd + 1-9</kbd> to quickly switch
+              Use <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">Ctrl/Cmd + 1-9</kbd> to
+              quickly switch
             </p>
             <button
               onClick={onClose}

@@ -45,7 +45,9 @@ const isAnyModalOpen = useMemo(
     isPerformanceDashboardOpen ||
     isSessionManagerOpen ||
     contextMenu !== null, // Context menus also trigger hiding
-  [/* dependencies */]
+  [
+    /* dependencies */
+  ]
 );
 
 // Automatically hide BrowserView when any modal/overlay is open
@@ -73,6 +75,7 @@ const updateBounds = () => {
 ```
 
 These bounds are updated on:
+
 - Initial mount
 - Window resize
 - Container size changes (via `ResizeObserver`)
@@ -100,13 +103,13 @@ The UI layout is designed to ensure BrowserView occupies only the dedicated cont
 
 ### Files Involved
 
-| File | Purpose |
-|------|---------|
-| `src/renderer/src/hooks/useModalBrowserViewManager.ts` | Manages BrowserView visibility based on modal state |
-| `src/renderer/src/components/Layout/BrowserViewContainer.tsx` | Calculates and applies BrowserView bounds |
-| `src/main/browser-view-manager.ts` | Main process manager for BrowserView instances |
-| `src/renderer/src/constants/layout.ts` | UI chrome dimension constants |
-| `src/renderer/src/App.tsx` | Tracks overlay state and triggers hiding |
+| File                                                          | Purpose                                             |
+| ------------------------------------------------------------- | --------------------------------------------------- |
+| `src/renderer/src/hooks/useModalBrowserViewManager.ts`        | Manages BrowserView visibility based on modal state |
+| `src/renderer/src/components/Layout/BrowserViewContainer.tsx` | Calculates and applies BrowserView bounds           |
+| `src/main/browser-view-manager.ts`                            | Main process manager for BrowserView instances      |
+| `src/renderer/src/constants/layout.ts`                        | UI chrome dimension constants                       |
+| `src/renderer/src/App.tsx`                                    | Tracks overlay state and triggers hiding            |
 
 ### Layout Constants
 
@@ -114,9 +117,9 @@ Defined in `src/renderer/src/constants/layout.ts`:
 
 ```typescript
 export const LAYOUT_CONSTANTS = {
-  WINDOW_CHROME_HEIGHT: 48,    // Top bar with profile/workspace
-  STATUS_BAR_HEIGHT: 32,        // Bottom status bar
-  APP_TOOLBAR_HEIGHT: 40,       // App navigation controls
+  WINDOW_CHROME_HEIGHT: 48, // Top bar with profile/workspace
+  STATUS_BAR_HEIGHT: 32, // Bottom status bar
+  APP_TOOLBAR_HEIGHT: 40, // App navigation controls
   // ... other constants
 };
 ```
@@ -202,18 +205,22 @@ Z_INDEX: {
 When adding a new modal or overlay component:
 
 1. **Add state tracking** in `App.tsx`:
+
    ```typescript
    const [isMyNewModalOpen, setIsMyNewModalOpen] = useState(false);
    ```
 
 2. **Include in overlay detection**:
+
    ```typescript
    const isAnyModalOpen = useMemo(
      () =>
        isAddAppModalOpen ||
        // ... other modals ...
        isMyNewModalOpen, // Add here
-     [/* dependencies */]
+     [
+       /* dependencies */
+     ]
    );
    ```
 
@@ -224,6 +231,7 @@ When adding a new modal or overlay component:
 ### Testing Overlays
 
 Always test that:
+
 - [ ] BrowserView is hidden when overlay opens
 - [ ] Overlay is fully visible and interactive
 - [ ] BrowserView reappears when overlay closes
@@ -247,15 +255,19 @@ window.dockyard.browserView.show(appId, instanceId, bounds);
 ## Alternative Approaches Considered
 
 ### ❌ Approach 1: Use `<webview>` Tags
+
 **Rejected**: Deprecated API, performance issues, less reliable session isolation
 
 ### ❌ Approach 2: Multiple BrowserWindows
+
 **Rejected**: Heavy resource usage, complex window management, poor UX
 
 ### ❌ Approach 3: Capture to Canvas
+
 **Rejected**: Performance issues, input handling complexity, no native interactions
 
 ### ✅ Approach 4: Visibility Management (Current)
+
 **Chosen**: Simple, performant, reliable, works with Electron's architecture
 
 ## Future Considerations
@@ -270,6 +282,7 @@ window.dockyard.browserView.show(appId, instanceId, bounds);
 ### Electron API Changes
 
 If Electron ever adds:
+
 - **Z-index control for BrowserView**: Could simplify architecture
 - **DOM-composited BrowserView**: Would allow true z-index stacking
 - **Improved webview API**: Might reconsider using webview
@@ -277,6 +290,7 @@ If Electron ever adds:
 ## Conclusion
 
 The current architecture elegantly solves the BrowserView z-layer problem by:
+
 1. **Accepting the limitation** rather than fighting it
 2. **Leveraging visibility management** instead of z-index
 3. **Providing smooth UX** with automatic show/hide

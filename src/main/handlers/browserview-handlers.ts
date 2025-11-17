@@ -47,7 +47,9 @@ export class BrowserViewHandlers {
           throw new Error(`App with id "${appId}" not found`);
         }
 
-        const instance = app.instances.find((instanceEntry: AppInstance) => instanceEntry.id === instanceId);
+        const instance = app.instances.find(
+          (instanceEntry: AppInstance) => instanceEntry.id === instanceId
+        );
         if (!instance) {
           throw new Error(`Instance with id "${instanceId}" not found`);
         }

@@ -152,7 +152,12 @@ interface HibernatedPlaceholderProps {
   onWakeApp?: (e?: MouseEvent) => void;
 }
 
-function HibernatedPlaceholder({ appName, appIcon, isActive, onWakeApp }: HibernatedPlaceholderProps) {
+function HibernatedPlaceholder({
+  appName,
+  appIcon,
+  isActive,
+  onWakeApp,
+}: HibernatedPlaceholderProps) {
   return (
     <div className="flex-1 flex items-center justify-center bg-gray-950 relative overflow-hidden">
       <div className="text-center px-8 py-10">
@@ -165,7 +170,9 @@ function HibernatedPlaceholder({ appName, appIcon, isActive, onWakeApp }: Hibern
             </div>
           )}
           <div>
-            <p className="text-sm uppercase tracking-wide text-indigo-400 font-semibold">Hibernated</p>
+            <p className="text-sm uppercase tracking-wide text-indigo-400 font-semibold">
+              Hibernated
+            </p>
             <h3 className="text-2xl font-semibold text-white mt-1">{appName}</h3>
           </div>
         </div>
@@ -179,9 +186,7 @@ function HibernatedPlaceholder({ appName, appIcon, isActive, onWakeApp }: Hibern
         >
           Wake App
         </button>
-        {!isActive && (
-          <p className="text-xs text-gray-600 mt-3">Select this app to wake it.</p>
-        )}
+        {!isActive && <p className="text-xs text-gray-600 mt-3">Select this app to wake it.</p>}
       </div>
     </div>
   );
