@@ -61,6 +61,8 @@ export const IPC_CHANNELS = {
     GET_CPU: 'webview:get-cpu',
     GET_ALL: 'webview:get-all',
     UPDATE_ACTIVE: 'webview:update-active',
+    INJECT_CSS: 'webview:inject-css',
+    INJECT_JS: 'webview:inject-js',
   },
   WINDOW: {
     TOGGLE_DEVTOOLS: 'window:toggle-devtools',

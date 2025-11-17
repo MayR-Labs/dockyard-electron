@@ -1,3 +1,13 @@
+export type ThemeMode = 'light' | 'dark' | 'system';
+export type BackgroundStyle = 'solid' | 'glass' | 'minimal';
+
+export interface ThemePreset {
+  name: string;
+  mode: ThemeMode;
+  accentColor: string;
+  backgroundStyle: BackgroundStyle;
+}
+
 export interface Settings extends Record<string, unknown> {
   general: {
     launchAtStartup: boolean;
@@ -17,6 +27,12 @@ export interface Settings extends Record<string, unknown> {
   privacy: {
     clearDataOnExit: boolean;
     blockThirdPartyCookies: boolean;
+  };
+  theme: {
+    mode: ThemeMode;
+    accentColor: string;
+    backgroundStyle: BackgroundStyle;
+    customPresets: ThemePreset[];
   };
   shortcuts: {
     [action: string]: string; // e.g., "switchWorkspace": "Cmd+Tab"
@@ -46,6 +62,12 @@ export const DEFAULT_SETTINGS: Settings = {
   privacy: {
     clearDataOnExit: false,
     blockThirdPartyCookies: false,
+  },
+  theme: {
+    mode: 'dark',
+    accentColor: '#6366f1', // indigo-500
+    backgroundStyle: 'solid',
+    customPresets: [],
   },
   shortcuts: {
     switchWorkspace: 'CommandOrControl+Tab',

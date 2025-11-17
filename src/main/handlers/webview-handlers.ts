@@ -34,6 +34,8 @@ export class WebViewHandlers {
     this.registerGetCPUHandler();
     this.registerGetAllHandler();
     this.registerUpdateActiveHandler();
+    this.registerInjectCSSHandler();
+    this.registerInjectJSHandler();
   }
 
   private registerRegisterHandler(): void {
@@ -185,6 +187,24 @@ export class WebViewHandlers {
       IPC_CHANNELS.WEBVIEW.UPDATE_ACTIVE,
       async (_event, appId: string, instanceId: string) => {
         this.webViewManager.updateLastActive(appId, instanceId);
+      }
+    );
+  }
+
+  private registerInjectCSSHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.WEBVIEW.INJECT_CSS,
+      async (_event, appId: string, instanceId: string, css: string) => {
+        return this.webViewManager.injectCSS(appId, instanceId, css);
+      }
+    );
+  }
+
+  private registerInjectJSHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.WEBVIEW.INJECT_JS,
+      async (_event, appId: string, instanceId: string, js: string) => {
+        return this.webViewManager.injectJS(appId, instanceId, js);
       }
     );
   }
