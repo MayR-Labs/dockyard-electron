@@ -121,6 +121,8 @@ export interface DockyardAPI {
       }>
     >;
     updateActive: (appId: string, instanceId: string) => Promise<void>;
+    injectCSS: (appId: string, instanceId: string, css: string) => Promise<void>;
+    injectJS: (appId: string, instanceId: string, js: string) => Promise<void>;
   };
   settings: {
     get: () => Promise<Settings>;

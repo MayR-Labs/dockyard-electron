@@ -4,6 +4,7 @@ interface WindowChromeProps {
   onSearchClick: () => void;
   onWorkspaceSwitchClick: () => void;
   onWorkspaceContextMenu?: (e: React.MouseEvent) => void;
+  onThemeClick?: () => void;
 }
 
 export function WindowChrome({
@@ -12,6 +13,7 @@ export function WindowChrome({
   onSearchClick,
   onWorkspaceSwitchClick,
   onWorkspaceContextMenu,
+  onThemeClick,
 }: WindowChromeProps) {
   return (
     <div className="h-12 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 select-none">
@@ -62,7 +64,7 @@ export function WindowChrome({
         </button>
       </div>
 
-      {/* Right: Search and window controls */}
+      {/* Right: Search, Theme, and window controls */}
       <div className="flex items-center gap-2">
         <button
           onClick={onSearchClick}
@@ -83,6 +85,27 @@ export function WindowChrome({
             />
           </svg>
         </button>
+        {onThemeClick && (
+          <button
+            onClick={onThemeClick}
+            className="p-2 rounded-lg hover:bg-gray-800 transition"
+            title="Theme Settings"
+          >
+            <svg
+              className="w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+              />
+            </svg>
+          </button>
+        )}
       </div>
     </div>
   );

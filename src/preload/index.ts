@@ -170,6 +170,10 @@ const dockyardAPI: DockyardAPI = {
     getAll: () => ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.GET_ALL),
     updateActive: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.UPDATE_ACTIVE, appId, instanceId),
+    injectCSS: (appId: string, instanceId: string, css: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.INJECT_CSS, appId, instanceId, css),
+    injectJS: (appId: string, instanceId: string, js: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.INJECT_JS, appId, instanceId, js),
   },
 
   // Settings APIs

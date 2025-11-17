@@ -347,6 +347,50 @@ export class WebViewManager {
   }
 
   /**
+   * Inject CSS into a webview
+   */
+  async injectCSS(appId: string, instanceId: string, css: string): Promise<void> {
+    const viewId = this.getViewId(appId, instanceId);
+    const view = this.views.get(viewId);
+    if (!view) {
+      throw new Error(`WebView not found: ${viewId}`);
+    }
+
+    try {
+      const webContents = electronWebContents.fromId(view.webContentsId);
+      if (!webContents) {
+        throw new Error(`WebContents not found for ${viewId}`);
+      }
+      await webContents.insertCSS(css);
+    } catch (error) {
+      console.error(`Failed to inject CSS into ${viewId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Inject JavaScript into a webview
+   */
+  async injectJS(appId: string, instanceId: string, js: string): Promise<void> {
+    const viewId = this.getViewId(appId, instanceId);
+    const view = this.views.get(viewId);
+    if (!view) {
+      throw new Error(`WebView not found: ${viewId}`);
+    }
+
+    try {
+      const webContents = electronWebContents.fromId(view.webContentsId);
+      if (!webContents) {
+        throw new Error(`WebContents not found for ${viewId}`);
+      }
+      await webContents.executeJavaScript(js);
+    } catch (error) {
+      console.error(`Failed to inject JS into ${viewId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Helper to generate view ID
    */
   private getViewId(appId: string, instanceId: string): string {
