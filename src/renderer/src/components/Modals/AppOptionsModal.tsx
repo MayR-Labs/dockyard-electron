@@ -17,6 +17,7 @@ interface AppOptionsModalProps {
   onClose: () => void;
   onZoomChange: (level: number) => void;
   onSettings: () => void;
+  onCustomize: () => void;
   onHibernate: () => void;
   onDelete: () => void;
   onResponsiveModeChange?: (width: number, height: number) => void;
@@ -29,6 +30,7 @@ export function AppOptionsModal({
   onClose,
   onZoomChange,
   onSettings,
+  onCustomize,
   onHibernate,
   onDelete,
   onResponsiveModeChange,
@@ -54,7 +56,11 @@ export function AppOptionsModal({
 
   if (!isOpen || !app) return null;
 
-  const handleActionWithClose = (action: () => void, { closeAfter = true } = {}) => {
+  const handleActionWithClose = (
+    action: () => void,
+    options: { closeAfter?: boolean } = {}
+  ) => {
+    const { closeAfter = true } = options;
     action();
     if (closeAfter) {
       onClose();
@@ -128,6 +134,7 @@ export function AppOptionsModal({
 
                 <AppActions
                   onSettings={() => handleActionWithClose(onSettings, { closeAfter: false })}
+                  onCustomize={() => handleActionWithClose(onCustomize)}
                   onHibernate={() => handleActionWithClose(onHibernate)}
                 />
 

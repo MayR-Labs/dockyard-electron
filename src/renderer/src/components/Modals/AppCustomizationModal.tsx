@@ -3,7 +3,7 @@
  * Allows editing custom CSS and JavaScript for apps
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 
@@ -24,6 +24,18 @@ export function AppCustomizationModal({
   const [customJS, setCustomJS] = useState(app?.customJS || '');
   const [activeTab, setActiveTab] = useState<'css' | 'js'>('css');
 
+  useEffect(() => {
+    if (!app) {
+      setCustomCSS('');
+      setCustomJS('');
+      setActiveTab('css');
+      return;
+    }
+
+    setCustomCSS(app.customCSS || '');
+    setCustomJS(app.customJS || '');
+  }, [app]);
+
   const handleSave = () => {
     if (!app) return;
     onSave(app.id, { customCSS, customJS });
@@ -35,7 +47,7 @@ export function AppCustomizationModal({
 
     try {
       const instanceId = app.instances[0].id;
-      
+
       if (activeTab === 'css' && customCSS) {
         await window.dockyard.webview.injectCSS(app.id, instanceId, customCSS);
       } else if (activeTab === 'js' && customJS) {

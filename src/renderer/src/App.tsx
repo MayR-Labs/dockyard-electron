@@ -21,6 +21,7 @@ import { EditAppModal } from './components/Modals/EditAppModal';
 import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal';
 import { AppOptionsModal } from './components/Modals/AppOptionsModal';
 import { ThemeSettingsModal } from './components/Modals/ThemeSettingsModal';
+import { AppCustomizationModal } from './components/Modals/AppCustomizationModal';
 import { AppContextMenu } from './components/ContextMenu/AppContextMenu';
 import { WorkspaceContextMenu } from './components/ContextMenu/WorkspaceContextMenu';
 import { WorkspaceSwitcherModal } from './components/Modals/WorkspaceSwitcherModal';
@@ -53,12 +54,14 @@ function App() {
   const [isEditAppModalOpen, setIsEditAppModalOpen] = useState(false);
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
   const [isAppOptionsModalOpen, setIsAppOptionsModalOpen] = useState(false);
+  const [isAppCustomizationModalOpen, setIsAppCustomizationModalOpen] = useState(false);
   const [isWorkspaceSettingsModalOpen, setIsWorkspaceSettingsModalOpen] = useState(false);
   const [isThemeSettingsModalOpen, setIsThemeSettingsModalOpen] = useState(false);
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [isWorkspaceSwitcherOpen, setIsWorkspaceSwitcherOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppType | null>(null);
+  const [customizationAppId, setCustomizationAppId] = useState<string | null>(null);
   const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
   const [activeInstances, setActiveInstances] = useState<Record<string, string>>({});
 
@@ -92,6 +95,7 @@ function App() {
       isEditAppModalOpen ||
       isCreateWorkspaceModalOpen ||
       isAppOptionsModalOpen ||
+      isAppCustomizationModalOpen ||
       isThemeSettingsModalOpen ||
       isPerformanceDashboardOpen ||
       isSessionManagerOpen ||
@@ -103,6 +107,7 @@ function App() {
       isEditAppModalOpen,
       isCreateWorkspaceModalOpen,
       isAppOptionsModalOpen,
+      isAppCustomizationModalOpen,
       isThemeSettingsModalOpen,
       isPerformanceDashboardOpen,
       isSessionManagerOpen,
@@ -477,6 +482,11 @@ function App() {
 
   const handleUpdateApp = async (id: string, data: Partial<AppType>) => {
     await updateApp(id, data);
+  };
+
+  const openAppCustomizationModal = (appId: string) => {
+    setCustomizationAppId(appId);
+    setIsAppCustomizationModalOpen(true);
   };
 
   const handleReorderApps = async (draggedAppId: string, targetIndex: number) => {
@@ -855,6 +865,13 @@ function App() {
             setIsEditAppModalOpen(true);
           }
         }}
+        onCustomize={() => {
+          if (selectedApp) {
+            openAppCustomizationModal(selectedApp.id);
+            setIsAppOptionsModalOpen(false);
+            setSelectedApp(null);
+          }
+        }}
         onHibernate={() => {
           if (selectedApp && selectedApp.instances.length > 0) {
             handleHibernateAppRequest(selectedApp.id, selectedApp.instances[0].id);
@@ -899,6 +916,18 @@ function App() {
       {isSessionManagerOpen && (
         <SessionManager apps={workspaceApps} onClose={() => setIsSessionManagerOpen(false)} />
       )}
+
+      <AppCustomizationModal
+        isOpen={isAppCustomizationModalOpen}
+        app={apps.find((app) => app.id === customizationAppId) || null}
+        onClose={() => {
+          setIsAppCustomizationModalOpen(false);
+          setCustomizationAppId(null);
+        }}
+        onSave={(appId, data) => {
+          handleUpdateApp(appId, data);
+        }}
+      />
     </div>
   );
 }
