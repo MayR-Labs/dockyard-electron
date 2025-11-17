@@ -15,7 +15,7 @@ import { createElement, forwardRef, useEffect, useRef, useState } from 'react';
 import type { DetailedHTMLProps, HTMLAttributes } from 'react';
 import type { DidFailLoadEvent, WebviewTag } from 'electron';
 import { App } from '../../../../shared/types/app';
-import { LoadingIcon } from '../Icons';
+import { LoadingIcon, SpinnerIcon } from '../Icons';
 import { isElectron } from '../../utils/environment';
 import { BrowserDevPlaceholder } from '../DevMode/BrowserDevPlaceholder';
 
@@ -23,6 +23,7 @@ interface WebViewContainerProps {
   app: App;
   instanceId?: string;
   isCreating?: boolean;
+  isLoading?: boolean;
 }
 
 type WebviewNewWindowEvent = Event & {
@@ -34,6 +35,7 @@ type ElectronWebViewProps = DetailedHTMLProps<
   HTMLAttributes<WebviewTag> & {
     src?: string;
     partition?: string;
+    useragent?: string;
     allowpopups?: string;
     webpreferences?: string;
     nodeintegration?: string;
@@ -52,12 +54,18 @@ const ElectronWebView = forwardRef<WebviewTag, ElectronWebViewProps>((props, ref
 
 ElectronWebView.displayName = 'ElectronWebView';
 
-export function WebViewContainer({ app, instanceId, isCreating = false }: WebViewContainerProps) {
+export function WebViewContainer({
+  app,
+  instanceId,
+  isCreating = false,
+  isLoading,
+}: WebViewContainerProps) {
   const webviewRef = useRef<WebviewTag | null>(null);
   const [isReady, setIsReady] = useState(false);
-  const [_, setIsLoading] = useState(true);
+  const [internalLoading, setInternalLoading] = useState(true);
   const responsiveContainerRef = useRef<HTMLDivElement | null>(null);
   const [responsiveScale, setResponsiveScale] = useState(1);
+  const lastUserAgent = useRef<string | undefined>(app.userAgent);
 
   // Get the instance details
   const instance = app.instances.find((i) => i.id === instanceId);
@@ -77,7 +85,7 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
     // Event handlers
     const handleDidFinishLoad = () => {
       console.log('WebView finished loading:', app.name);
-      setIsLoading(false);
+      setInternalLoading(false);
       setIsReady(true);
 
       // Apply custom CSS if provided
@@ -96,12 +104,12 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
     };
 
     const handleDidStartLoading = () => {
-      setIsLoading(true);
+      setInternalLoading(true);
     };
 
     const handleDidFailLoad = (event: DidFailLoadEvent) => {
       console.error('WebView failed to load:', event);
-      setIsLoading(false);
+      setInternalLoading(false);
     };
 
     const handleDomReady = () => {
@@ -253,6 +261,33 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
     };
   }, [app.id, instanceId]);
 
+  // Sync explicit user agent overrides once the webview is ready
+  useEffect(() => {
+    if (!isElectron() || !instanceId || !isReady || !window.dockyard?.webview) return;
+    if (lastUserAgent.current === app.userAgent) return;
+
+    window.dockyard.webview
+      .setUserAgent(app.id, instanceId, app.userAgent ?? null)
+      .then(() =>
+        window.dockyard?.webview
+          .reload(app.id, instanceId)
+          .catch((error: Error) => console.error('Failed to reload after user agent change', error))
+      )
+      .catch((error: Error) => console.error('Failed to set user agent', error))
+      .finally(() => {
+        lastUserAgent.current = app.userAgent;
+      });
+  }, [app.id, app.userAgent, instanceId, isReady]);
+
+  const showLoadingIndicator = typeof isLoading === 'boolean' ? isLoading : internalLoading;
+
+  const loadingChip = showLoadingIndicator ? (
+    <div className="pointer-events-none absolute top-3 right-3 z-10 flex items-center gap-2 rounded-full bg-gray-900/80 px-3 py-1 text-[11px] font-medium text-gray-200">
+      <SpinnerIcon className="h-3.5 w-3.5 animate-spin text-indigo-300" />
+      Loading…
+    </div>
+  ) : null;
+
   // Show loading state while creating instance
   if (isCreating || !instanceId) {
     return (
@@ -295,6 +330,7 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
       ref={webviewRef}
       src={app.url}
       partition={partitionId}
+      useragent={app.userAgent || undefined}
       webpreferences="contextIsolation=yes, nodeIntegration=no, sandbox=yes"
       style={webviewStyles}
     />
@@ -319,6 +355,7 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
           <div className="absolute top-3 right-4 text-xs font-semibold text-gray-100 bg-gray-900/70 px-3 py-1 rounded-full z-10">
             {responsiveWidth} × {responsiveHeight}
           </div>
+          {loadingChip}
           {webviewElement}
         </div>
       </div>
@@ -328,6 +365,7 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
   // Electron environment: render webview
   return (
     <div className="flex-1 bg-gray-900 relative" style={{ minHeight: 0 }}>
+      {loadingChip}
       {webviewElement}
     </div>
   );

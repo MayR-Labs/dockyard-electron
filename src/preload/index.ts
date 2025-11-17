@@ -9,6 +9,8 @@ const validEventChannels = [
   IPC_EVENTS.SHORTCUT_RELOAD,
   IPC_EVENTS.SHORTCUT_FORCE_RELOAD,
   IPC_EVENTS.SHORTCUT_TOGGLE_DEVTOOLS,
+  IPC_EVENTS.SHORTCUT_FIND,
+  IPC_EVENTS.SHORTCUT_PRINT,
 ] as const;
 
 type DockyardEventChannel = (typeof validEventChannels)[number];
@@ -174,6 +176,24 @@ const dockyardAPI: DockyardAPI = {
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.INJECT_CSS, appId, instanceId, css),
     injectJS: (appId: string, instanceId: string, js: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.INJECT_JS, appId, instanceId, js),
+    findInPage: (
+      appId: string,
+      instanceId: string,
+      text: string,
+      options?: Electron.FindInPageOptions
+    ) => ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.FIND_IN_PAGE, appId, instanceId, text, options),
+    stopFindInPage: (
+      appId: string,
+      instanceId: string,
+      action: 'clearSelection' | 'keepSelection' | 'activateSelection' = 'clearSelection'
+    ) => ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.STOP_FIND_IN_PAGE, appId, instanceId, action),
+    print: (
+      appId: string,
+      instanceId: string,
+      options?: Electron.WebContentsPrintOptions
+    ) => ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.PRINT, appId, instanceId, options),
+    setUserAgent: (appId: string, instanceId: string, userAgent?: string | null) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.SET_USER_AGENT, appId, instanceId, userAgent),
   },
 
   // Settings APIs

@@ -30,6 +30,7 @@ import { SessionManager } from './components/DevTools/SessionManager';
 import { WorkspaceSettingsModal } from './components/Modals/WorkspaceSettingsModal';
 import { App as AppType } from '../../shared/types/app';
 import { IPC_EVENTS } from '../../shared/constants';
+import type { AppShortcutSignal, AppShortcutSignalType } from './types/shortcuts';
 
 function App() {
   // Store hooks
@@ -64,6 +65,7 @@ function App() {
   const [customizationAppId, setCustomizationAppId] = useState<string | null>(null);
   const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
   const [activeInstances, setActiveInstances] = useState<Record<string, string>>({});
+  const [shortcutSignal, setShortcutSignal] = useState<AppShortcutSignal | null>(null);
 
   const activeAppIdRef = useRef<string | null>(null);
   const awakeAppsRef = useRef<Record<string, boolean>>({});
@@ -75,6 +77,12 @@ function App() {
   useEffect(() => {
     awakeAppsRef.current = awakeApps;
   }, [awakeApps]);
+
+  const emitShortcutToActiveApp = useCallback((type: AppShortcutSignalType) => {
+    const targetAppId = activeAppIdRef.current;
+    if (!targetAppId) return;
+    setShortcutSignal({ appId: targetAppId, type, timestamp: Date.now() });
+  }, []);
 
 
   // Apply theme
@@ -273,17 +281,23 @@ function App() {
     const reloadListener = () => performReload(false);
     const forceReloadListener = () => performReload(true);
     const toggleDevtoolsListener = () => toggleAppDevtools();
+    const shortcutFindListener = () => emitShortcutToActiveApp('find');
+    const shortcutPrintListener = () => emitShortcutToActiveApp('print');
 
     window.dockyard.on(IPC_EVENTS.SHORTCUT_RELOAD, reloadListener);
     window.dockyard.on(IPC_EVENTS.SHORTCUT_FORCE_RELOAD, forceReloadListener);
     window.dockyard.on(IPC_EVENTS.SHORTCUT_TOGGLE_DEVTOOLS, toggleDevtoolsListener);
+    window.dockyard.on(IPC_EVENTS.SHORTCUT_FIND, shortcutFindListener);
+    window.dockyard.on(IPC_EVENTS.SHORTCUT_PRINT, shortcutPrintListener);
 
     return () => {
       window.dockyard.off(IPC_EVENTS.SHORTCUT_RELOAD, reloadListener);
       window.dockyard.off(IPC_EVENTS.SHORTCUT_FORCE_RELOAD, forceReloadListener);
       window.dockyard.off(IPC_EVENTS.SHORTCUT_TOGGLE_DEVTOOLS, toggleDevtoolsListener);
+      window.dockyard.off(IPC_EVENTS.SHORTCUT_FIND, shortcutFindListener);
+      window.dockyard.off(IPC_EVENTS.SHORTCUT_PRINT, shortcutPrintListener);
     };
-  }, []);
+  }, [emitShortcutToActiveApp]);
 
   // Clean up awake map when apps list changes
   useEffect(() => {
@@ -383,10 +397,6 @@ function App() {
       if (orderB === -1) return -1;
       return orderA - orderB;
     });
-
-  const contextMenuApp = contextMenu
-    ? workspaceApps.find((app) => app.id === contextMenu.appId) || null
-    : null;
 
   const handleCreateWorkspace = async (data: {
     name: string;
@@ -692,6 +702,7 @@ function App() {
               }
             }}
             activeInstances={activeInstances}
+            shortcutSignal={shortcutSignal}
           />
 
           {/* Dock - right or bottom position */}
@@ -924,6 +935,13 @@ function App() {
                       }
                     : undefined,
               },
+            });
+          }
+        }}
+        onUserAgentChange={(value) => {
+          if (selectedApp) {
+            handleUpdateApp(selectedApp.id, {
+              userAgent: value || undefined,
             });
           }
         }}

@@ -123,6 +123,23 @@ export interface DockyardAPI {
     updateActive: (appId: string, instanceId: string) => Promise<void>;
     injectCSS: (appId: string, instanceId: string, css: string) => Promise<void>;
     injectJS: (appId: string, instanceId: string, js: string) => Promise<void>;
+    findInPage: (
+      appId: string,
+      instanceId: string,
+      text: string,
+      options?: Electron.FindInPageOptions
+    ) => Promise<void>;
+    stopFindInPage: (
+      appId: string,
+      instanceId: string,
+      action?: 'clearSelection' | 'keepSelection' | 'activateSelection'
+    ) => Promise<void>;
+    print: (
+      appId: string,
+      instanceId: string,
+      options?: Electron.WebContentsPrintOptions
+    ) => Promise<void>;
+    setUserAgent: (appId: string, instanceId: string, userAgent?: string | null) => Promise<void>;
   };
   settings: {
     get: () => Promise<Settings>;

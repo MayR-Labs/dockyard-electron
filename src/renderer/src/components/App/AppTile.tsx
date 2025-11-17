@@ -4,15 +4,18 @@
  * Single Responsibility: Render individual app view
  */
 
-import { MouseEvent } from 'react';
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import type { FindInPageOptions } from 'electron';
 import { App } from '../../../../shared/types/app';
-import { MenuDotsIcon } from '../Icons';
+import { AppShortcutSignal } from '../../types/shortcuts';
+import { MenuDotsIcon, SearchIcon, CloseIcon, PrintIcon, ChevronLeftIcon, ChevronRightIcon } from '../Icons';
 import { NavigationControls } from '../AppControls/NavigationControls';
 import { URLBar } from '../AppControls/URLBar';
 import { WebViewContainer } from '../Layout/WebViewContainer';
 import { useAppInstance } from '../../hooks/useAppInstance';
 import { useNavigationState } from '../../hooks/useNavigationState';
+import { isElectron } from '../../utils/environment';
 
 interface AppTileProps {
   app: App;
@@ -23,6 +26,7 @@ interface AppTileProps {
   onUpdateApp?: (id: string, data: Partial<App>) => void;
   onOpenOptions?: () => void;
   activeInstanceId?: string;
+  shortcutSignal?: AppShortcutSignal | null;
 }
 
 export function AppTile({
@@ -34,6 +38,7 @@ export function AppTile({
   onUpdateApp,
   onOpenOptions,
   activeInstanceId,
+  shortcutSignal,
 }: AppTileProps) {
   // Use custom hooks for instance and navigation management
   const { instanceId, isCreating } = useAppInstance(app, activeInstanceId, onUpdateApp);
@@ -42,6 +47,11 @@ export function AppTile({
     app,
     effectiveInstanceId
   );
+  const [isFindOpen, setIsFindOpen] = useState(false);
+  const [findQuery, setFindQuery] = useState('');
+  const [matchCase, setMatchCase] = useState(false);
+  const findInputRef = useRef<HTMLInputElement>(null);
+  const processedShortcutRef = useRef<number>(0);
 
   const handleWakeApp = (e?: MouseEvent) => {
     e?.stopPropagation();
@@ -74,6 +84,128 @@ export function AppTile({
     if (!isAwake) return;
     navigate(url);
   };
+
+  const stopFind = useCallback(
+    (action: 'clearSelection' | 'keepSelection' | 'activateSelection' = 'clearSelection') => {
+      if (!isElectron() || !isAwake || !instanceId || !window.dockyard?.webview) return;
+      window.dockyard?.webview
+        .stopFindInPage(app.id, instanceId, action)
+        .catch((error: unknown) => console.error('Failed to stop find in page', error));
+    },
+    [app.id, instanceId, isAwake]
+  );
+
+  const runFind = useCallback(
+    (query: string, options?: FindInPageOptions) => {
+      if (!isElectron() || !isAwake || !instanceId || !query || !window.dockyard?.webview) return;
+      window.dockyard?.webview
+        .findInPage(app.id, instanceId, query, options)
+        .catch((error: unknown) => console.error('Failed to run find in page', error));
+    },
+    [app.id, instanceId, isAwake]
+  );
+
+  const handlePrint = useCallback(() => {
+    if (!isElectron() || !isAwake || !instanceId || !window.dockyard?.webview) return;
+    window.dockyard?.webview
+      .print(app.id, instanceId)
+      .catch((error: unknown) => console.error('Failed to print page', error));
+  }, [app.id, instanceId, isAwake]);
+
+  const openFind = useCallback(() => {
+    if (!isAwake) return;
+    setIsFindOpen(true);
+    requestAnimationFrame(() => {
+      findInputRef.current?.focus();
+      if (findQuery) {
+        runFind(findQuery, { forward: true, findNext: false, matchCase });
+      }
+    });
+  }, [isAwake, findQuery, matchCase, runFind]);
+
+  const closeFind = useCallback(
+    (clearQuery: boolean = false) => {
+      setIsFindOpen(false);
+      if (clearQuery) {
+        setFindQuery('');
+      }
+      stopFind('clearSelection');
+    },
+    [stopFind]
+  );
+
+  const handleFindInputChange = (value: string) => {
+    setFindQuery(value);
+    if (!value) {
+      stopFind('clearSelection');
+      return;
+    }
+    runFind(value, { forward: true, findNext: false, matchCase });
+  };
+
+  const handleFindNavigate = (direction: 'forward' | 'backward') => {
+    if (!findQuery) return;
+    runFind(findQuery, {
+      forward: direction === 'forward',
+      findNext: true,
+      matchCase,
+    });
+  };
+
+  useEffect(() => {
+    if (!shortcutSignal || shortcutSignal.appId !== app.id) return;
+    if (processedShortcutRef.current === shortcutSignal.timestamp) return;
+    processedShortcutRef.current = shortcutSignal.timestamp;
+
+    const currentShortcut = shortcutSignal;
+    queueMicrotask(() => {
+      if (currentShortcut.type === 'find') {
+        openFind();
+      } else if (currentShortcut.type === 'print') {
+        handlePrint();
+      }
+    });
+  }, [shortcutSignal, app.id, openFind, handlePrint]);
+
+  useEffect(() => {
+    if (!isFindOpen) return;
+    if (!isActive || !isAwake) {
+      stopFind('clearSelection');
+    }
+  }, [isActive, isAwake, isFindOpen, stopFind]);
+
+  useEffect(() => {
+    if (!isFindOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeFind();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFindOpen, closeFind]);
+
+  useEffect(() => {
+    if (isElectron() || !isActive) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isModifier = event.metaKey || event.ctrlKey;
+      if (!isModifier || event.altKey) return;
+      if (event.key.toLowerCase() === 'f') {
+        event.preventDefault();
+        openFind();
+      } else if (event.key.toLowerCase() === 'p') {
+        event.preventDefault();
+        handlePrint();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isActive, openFind, handlePrint]);
 
   // Keep the component mounted but hide it when not active
   // This preserves the webview state instead of destroying it
@@ -117,6 +249,30 @@ export function AppTile({
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              openFind();
+            }}
+            disabled={!isAwake}
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-400 hover:text-white disabled:opacity-40"
+            title="Find in page (Cmd/Ctrl+F)"
+          >
+            <SearchIcon className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePrint();
+            }}
+            disabled={!isAwake}
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-400 hover:text-white disabled:opacity-40"
+            title="Print (Cmd/Ctrl+P)"
+          >
+            <PrintIcon className="w-4 h-4" />
+          </button>
+
           {/* Options Button */}
           <button
             onClick={(e) => {
@@ -135,7 +291,12 @@ export function AppTile({
 
       {/* App content area - WebView Container or Hibernated Screen */}
       {isAwake ? (
-        <WebViewContainer app={app} instanceId={instanceId} isCreating={isCreating} />
+        <WebViewContainer
+          app={app}
+          instanceId={instanceId}
+          isCreating={isCreating}
+          isLoading={navigationState.isLoading}
+        />
       ) : (
         <HibernatedPlaceholder
           appName={app.name}
@@ -143,6 +304,65 @@ export function AppTile({
           isActive={isActive}
           onWakeApp={handleWakeApp}
         />
+      )}
+
+      {isFindOpen && isAwake && isActive && (
+        <div
+          className="absolute top-12 right-4 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-gray-700 bg-gray-900/95 px-3 py-2 shadow-2xl w-[380px] max-w-full backdrop-blur"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <SearchIcon className="w-4 h-4 text-gray-400" />
+          <input
+            ref={findInputRef}
+            value={findQuery}
+            onChange={(e) => handleFindInputChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleFindNavigate(e.shiftKey ? 'backward' : 'forward');
+              }
+            }}
+            placeholder="Find in page"
+            className="flex-1 bg-gray-800 rounded-lg px-2 py-1 text-sm text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <label className="flex items-center gap-1 text-xs text-gray-400">
+            <input
+              type="checkbox"
+              checked={matchCase}
+              onChange={(e) => {
+                setMatchCase(e.target.checked);
+                if (findQuery) {
+                  runFind(findQuery, { forward: true, findNext: false, matchCase: e.target.checked });
+                }
+              }}
+              className="rounded border-gray-600 text-indigo-500 focus:ring-indigo-500"
+            />
+            Match case
+          </label>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => handleFindNavigate('backward')}
+              className="p-2 rounded-lg hover:bg-gray-700 text-gray-300"
+              title="Previous match"
+            >
+              <ChevronLeftIcon className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => handleFindNavigate('forward')}
+              className="p-2 rounded-lg hover:bg-gray-700 text-gray-300"
+              title="Next match"
+            >
+              <ChevronRightIcon className="w-4 h-4" />
+            </button>
+          </div>
+          <button
+            onClick={() => closeFind(true)}
+            className="p-2 rounded-lg hover:bg-gray-700 text-gray-300"
+            title="Close find"
+          >
+            <CloseIcon className="w-4 h-4" />
+          </button>
+        </div>
       )}
     </motion.div>
   );

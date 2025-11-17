@@ -29,6 +29,7 @@ export interface App {
   icon?: string; // Path or URL to icon
   customCSS?: string;
   customJS?: string;
+  userAgent?: string;
   workspaceId: string;
   instances: AppInstance[];
   notifications?: AppNotificationSettings;

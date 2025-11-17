@@ -151,6 +151,7 @@ export class AppHandlers {
         icon: data.icon,
         customCSS: data.customCSS,
         customJS: data.customJS,
+        userAgent: data.userAgent,
         workspaceId: workspaceId,
         instances: instances,
         createdAt: getCurrentTimestamp(),

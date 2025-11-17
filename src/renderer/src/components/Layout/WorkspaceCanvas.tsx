@@ -12,6 +12,7 @@ import { SplitLayout } from './SplitLayout';
 import { QuickStartGuide } from './QuickStartGuide';
 import { AppTile } from '../App/AppTile';
 import { EmptyWorkspaceState } from './EmptyWorkspaceState';
+import type { AppShortcutSignal } from '../../types/shortcuts';
 
 interface WorkspaceCanvasProps {
   apps: App[];
@@ -24,6 +25,7 @@ interface WorkspaceCanvasProps {
   onUpdateApp?: (id: string, data: Partial<App>) => void;
   onOpenOptions?: (appId: string) => void;
   activeInstances?: Record<string, string>;
+  shortcutSignal?: AppShortcutSignal | null;
 }
 
 export function WorkspaceCanvas({
@@ -37,6 +39,7 @@ export function WorkspaceCanvas({
   onUpdateApp,
   onOpenOptions,
   activeInstances,
+  shortcutSignal,
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
@@ -155,6 +158,7 @@ export function WorkspaceCanvas({
             onUpdateApp={onUpdateApp}
             activeInstanceId={activeInstances?.[app.id]}
             onOpenOptions={() => onOpenOptions?.(app.id)}
+            shortcutSignal={shortcutSignal}
           />
         ))}
 

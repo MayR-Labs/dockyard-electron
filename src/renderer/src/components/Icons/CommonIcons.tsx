@@ -101,3 +101,16 @@ export function LoadingIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function PrintIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M6 9V5a2 2 0 012-2h8a2 2 0 012 2v4" />
+      <path d="M6 13H5a2 2 0 00-2 2v3h3" />
+      <path d="M18 13h1a2 2 0 012 2v3h-3" />
+      <path d="M6 17h12v4H6z" />
+      <path d="M6 9h12v8H6z" />
+      <path d="M16 5H8" />
+    </Icon>
+  );
+}

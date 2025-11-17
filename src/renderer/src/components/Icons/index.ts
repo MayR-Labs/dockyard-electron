@@ -19,6 +19,7 @@ export {
   DesktopIcon,
   MenuDotsIcon,
   LoadingIcon,
+  PrintIcon,
 } from './CommonIcons';
 
 export {

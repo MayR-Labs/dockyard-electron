@@ -184,6 +184,57 @@ export class WebViewManager {
   }
 
   /**
+   * Trigger find-in-page
+   */
+  findInPage(
+    appId: string,
+    instanceId: string,
+    text: string,
+    options?: Electron.FindInPageOptions
+  ): void {
+    const webContents = this.getWebContents(appId, instanceId);
+    if (webContents && !webContents.isDestroyed()) {
+      webContents.findInPage(text, options);
+    }
+  }
+
+  stopFindInPage(
+    appId: string,
+    instanceId: string,
+    action: 'clearSelection' | 'keepSelection' | 'activateSelection'
+  ): void {
+    const webContents = this.getWebContents(appId, instanceId);
+    if (webContents && !webContents.isDestroyed()) {
+      webContents.stopFindInPage(action);
+    }
+  }
+
+  print(appId: string, instanceId: string, options?: Electron.WebContentsPrintOptions): void {
+    const webContents = this.getWebContents(appId, instanceId);
+    if (webContents && !webContents.isDestroyed()) {
+      webContents.print(options ?? { silent: false, printBackground: true });
+    }
+  }
+
+  async setUserAgent(appId: string, instanceId: string, userAgent?: string | null): Promise<void> {
+    const viewId = this.getViewId(appId, instanceId);
+    const entry = this.views.get(viewId);
+    if (!entry) return;
+
+    const contents = this.getWebContents(appId, instanceId);
+    if (!contents || contents.isDestroyed()) return;
+
+    // Update the persisted entry so new navigations reuse the UA
+    if (userAgent) {
+      contents.setUserAgent(userAgent);
+    } else {
+      // Reset by clearing override (Electron lacks direct API; reload default by using session user agent)
+      const defaultAgent = contents.session.getUserAgent();
+      contents.setUserAgent(defaultAgent);
+    }
+  }
+
+  /**
    * Update last active timestamp
    */
   updateLastActive(appId: string, instanceId: string): void {

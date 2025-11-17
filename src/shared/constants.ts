@@ -63,6 +63,10 @@ export const IPC_CHANNELS = {
     UPDATE_ACTIVE: 'webview:update-active',
     INJECT_CSS: 'webview:inject-css',
     INJECT_JS: 'webview:inject-js',
+    FIND_IN_PAGE: 'webview:find-in-page',
+    STOP_FIND_IN_PAGE: 'webview:stop-find-in-page',
+    PRINT: 'webview:print',
+    SET_USER_AGENT: 'webview:set-user-agent',
   },
   WINDOW: {
     TOGGLE_DEVTOOLS: 'window:toggle-devtools',
@@ -85,6 +89,8 @@ export const IPC_EVENTS = {
   SHORTCUT_RELOAD: 'shortcut:reload',
   SHORTCUT_FORCE_RELOAD: 'shortcut:force-reload',
   SHORTCUT_TOGGLE_DEVTOOLS: 'shortcut:toggle-devtools',
+  SHORTCUT_FIND: 'shortcut:find',
+  SHORTCUT_PRINT: 'shortcut:print',
 } as const;
 
 // Default values

@@ -96,6 +96,18 @@ export class WindowManager {
         return;
       }
 
+      if (cmdOrCtrl && key === 'f' && !input.shift && !input.alt) {
+        event.preventDefault();
+        this.emitShortcutEvent(IPC_EVENTS.SHORTCUT_FIND);
+        return;
+      }
+
+      if (cmdOrCtrl && key === 'p' && !input.shift && !input.alt) {
+        event.preventDefault();
+        this.emitShortcutEvent(IPC_EVENTS.SHORTCUT_PRINT);
+        return;
+      }
+
       const toggleDevToolsShortcut =
         (isMac && input.meta && input.alt && !input.control && key === 'i' && !input.shift) ||
         (!isMac && input.control && input.shift && key === 'i');

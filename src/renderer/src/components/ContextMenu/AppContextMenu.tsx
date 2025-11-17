@@ -5,7 +5,6 @@
  */
 
 import { useEffect, useMemo, useRef } from 'react';
-import { AppInstance } from '../../../../shared/types/app';
 
 interface AppContextMenuProps {
   x: number;

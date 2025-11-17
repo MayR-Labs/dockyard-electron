@@ -36,6 +36,10 @@ export class WebViewHandlers {
     this.registerUpdateActiveHandler();
     this.registerInjectCSSHandler();
     this.registerInjectJSHandler();
+    this.registerFindInPageHandler();
+    this.registerStopFindInPageHandler();
+    this.registerPrintHandler();
+    this.registerSetUserAgentHandler();
   }
 
   private registerRegisterHandler(): void {
@@ -205,6 +209,58 @@ export class WebViewHandlers {
       IPC_CHANNELS.WEBVIEW.INJECT_JS,
       async (_event, appId: string, instanceId: string, js: string) => {
         return this.webViewManager.injectJS(appId, instanceId, js);
+      }
+    );
+  }
+
+  private registerFindInPageHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.WEBVIEW.FIND_IN_PAGE,
+      async (
+        _event,
+        appId: string,
+        instanceId: string,
+        text: string,
+        options?: Electron.FindInPageOptions
+      ) => {
+        this.webViewManager.findInPage(appId, instanceId, text, options);
+      }
+    );
+  }
+
+  private registerStopFindInPageHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.WEBVIEW.STOP_FIND_IN_PAGE,
+      async (
+        _event,
+        appId: string,
+        instanceId: string,
+        action: 'clearSelection' | 'keepSelection' | 'activateSelection'
+      ) => {
+        this.webViewManager.stopFindInPage(appId, instanceId, action);
+      }
+    );
+  }
+
+  private registerPrintHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.WEBVIEW.PRINT,
+      async (
+        _event,
+        appId: string,
+        instanceId: string,
+        options?: Electron.WebContentsPrintOptions
+      ) => {
+        this.webViewManager.print(appId, instanceId, options);
+      }
+    );
+  }
+
+  private registerSetUserAgentHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.WEBVIEW.SET_USER_AGENT,
+      async (_event, appId: string, instanceId: string, userAgent?: string | null) => {
+        await this.webViewManager.setUserAgent(appId, instanceId, userAgent ?? undefined);
       }
     );
   }

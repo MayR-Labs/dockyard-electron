@@ -8,7 +8,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
 import { CloseIcon } from '../Icons';
-import { ZoomControls, AppActions, DeleteAppSection, ResponsiveMode } from './AppOptions';
+import { ZoomControls, AppActions, DeleteAppSection, ResponsiveMode, UserAgentSettings } from './AppOptions';
 
 interface AppOptionsModalProps {
   isOpen: boolean;
@@ -21,6 +21,7 @@ interface AppOptionsModalProps {
   onHibernate: () => void;
   onDelete: () => void;
   onResponsiveModeChange?: (width: number, height: number) => void;
+  onUserAgentChange: (userAgent?: string | null) => void;
 }
 
 export function AppOptionsModal({
@@ -34,6 +35,7 @@ export function AppOptionsModal({
   onHibernate,
   onDelete,
   onResponsiveModeChange,
+  onUserAgentChange,
 }: AppOptionsModalProps) {
   const [activeTab, setActiveTab] = useState<'general' | 'responsive'>('general');
   const modalRef = useRef<HTMLDivElement>(null);
@@ -136,6 +138,11 @@ export function AppOptionsModal({
                   onSettings={() => handleActionWithClose(onSettings, { closeAfter: false })}
                   onCustomize={() => handleActionWithClose(onCustomize)}
                   onHibernate={() => handleActionWithClose(onHibernate)}
+                />
+
+                <UserAgentSettings
+                  userAgent={app.userAgent}
+                  onChange={(value) => handleActionWithClose(() => onUserAgentChange(value), { closeAfter: false })}
                 />
 
                 <DeleteAppSection
