@@ -35,7 +35,7 @@ async function initialize(): Promise<void> {
   const profileName = parseProfileFromArgs();
 
   // Initialize store manager
-  storeManager = new StoreManager();
+  storeManager = await StoreManager.create();
   storeManager.setCurrentProfile(profileName);
 
   // Initialize browser view manager (keeping for compatibility)
@@ -71,8 +71,8 @@ async function initialize(): Promise<void> {
 /**
  * App ready event
  */
-app.whenReady().then(() => {
-  initialize();
+app.whenReady().then(async () => {
+  await initialize();
 
   // On macOS, re-create window when dock icon is clicked
   app.on('activate', () => {

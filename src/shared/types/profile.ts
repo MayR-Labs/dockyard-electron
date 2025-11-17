@@ -6,7 +6,7 @@ export interface ProfileMetadata {
   dataPath: string;
 }
 
-export interface ProfilesConfig {
+export interface ProfilesConfig extends Record<string, unknown> {
   profiles: ProfileMetadata[];
   defaultProfile: string;
   lastActiveProfile: string;

@@ -1,4 +1,4 @@
-export interface Settings {
+export interface Settings extends Record<string, unknown> {
   general: {
     launchAtStartup: boolean;
     minimizeToTray: boolean;

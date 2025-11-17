@@ -63,7 +63,8 @@ export class WebViewManager {
     if (!entry) return null;
 
     try {
-      return electronWebContents.fromId(entry.webContentsId);
+      const contents = electronWebContents.fromId(entry.webContentsId);
+      return contents ?? null;
     } catch {
       return null;
     }

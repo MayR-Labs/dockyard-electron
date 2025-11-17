@@ -1,4 +1,5 @@
-import Store from 'electron-store';
+import type Store from 'electron-store' with { "resolution-mode": "import" };
+import type { Options as StoreOptions } from 'electron-store' with { "resolution-mode": "import" };
 import { app } from 'electron';
 import path from 'path';
 import {
@@ -9,14 +10,16 @@ import {
   DEFAULT_SETTINGS,
 } from '../shared/types';
 
+type ElectronStoreClass = new <T extends Record<string, any> = Record<string, unknown>>(options?: StoreOptions<T>) => Store<T>;
+
 export class StoreManager {
-  private stores: Map<string, Store<Record<string, unknown>>> = new Map();
+  private static storeClassPromise: Promise<ElectronStoreClass> | null = null;
+  private stores: Map<string, Store<any>> = new Map();
   private rootStore: Store<ProfilesConfig>;
   private currentProfile: string = 'default';
 
-  constructor() {
-    // Initialize root store for profile metadata
-    this.rootStore = new Store<ProfilesConfig>({
+  private constructor(private StoreClass: ElectronStoreClass) {
+    this.rootStore = new this.StoreClass<ProfilesConfig>({
       name: 'profiles',
       defaults: {
         profiles: [
@@ -32,6 +35,18 @@ export class StoreManager {
         lastActiveProfile: 'default',
       },
     });
+  }
+
+  static async create(): Promise<StoreManager> {
+    const StoreClass = await StoreManager.loadStoreClass();
+    return new StoreManager(StoreClass);
+  }
+
+  private static async loadStoreClass(): Promise<ElectronStoreClass> {
+    if (!StoreManager.storeClassPromise) {
+      StoreManager.storeClassPromise = import('electron-store').then((module) => module.default);
+    }
+    return StoreManager.storeClassPromise;
   }
 
   /**
@@ -69,18 +84,16 @@ export class StoreManager {
    */
   getWorkspacesStore(): Store<WorkspacesConfig> {
     const key = `${this.currentProfile}-workspaces`;
-    if (!this.stores.has(key)) {
-      const store = new Store<WorkspacesConfig>({
+    return this.getOrCreateStore<WorkspacesConfig>(key, () =>
+      new this.StoreClass<WorkspacesConfig>({
         name: 'workspaces',
         cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
         defaults: {
           workspaces: [],
           activeWorkspaceId: null,
         },
-      });
-      this.stores.set(key, store);
-    }
-    return this.stores.get(key) as Store<WorkspacesConfig>;
+      })
+    );
   }
 
   /**
@@ -88,17 +101,15 @@ export class StoreManager {
    */
   getAppsStore(): Store<AppsConfig> {
     const key = `${this.currentProfile}-apps`;
-    if (!this.stores.has(key)) {
-      const store = new Store<AppsConfig>({
+    return this.getOrCreateStore<AppsConfig>(key, () =>
+      new this.StoreClass<AppsConfig>({
         name: 'apps',
         cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
         defaults: {
           apps: [],
         },
-      });
-      this.stores.set(key, store);
-    }
-    return this.stores.get(key) as Store<AppsConfig>;
+      })
+    );
   }
 
   /**
@@ -106,15 +117,13 @@ export class StoreManager {
    */
   getSettingsStore(): Store<Settings> {
     const key = `${this.currentProfile}-settings`;
-    if (!this.stores.has(key)) {
-      const store = new Store<Settings>({
+    return this.getOrCreateStore<Settings>(key, () =>
+      new this.StoreClass<Settings>({
         name: 'settings',
         cwd: path.join(app.getPath('userData'), 'profiles', this.currentProfile),
         defaults: DEFAULT_SETTINGS,
-      });
-      this.stores.set(key, store);
-    }
-    return this.stores.get(key) as Store<Settings>;
+      })
+    );
   }
 
   /**
@@ -122,5 +131,12 @@ export class StoreManager {
    */
   clearCache(): void {
     this.stores.clear();
+  }
+
+  private getOrCreateStore<T extends Record<string, any>>(key: string, factory: () => Store<T>): Store<T> {
+    if (!this.stores.has(key)) {
+      this.stores.set(key, factory() as Store<any>);
+    }
+    return this.stores.get(key) as Store<T>;
   }
 }

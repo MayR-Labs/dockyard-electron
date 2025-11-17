@@ -31,7 +31,7 @@ export interface Workspace {
   updatedAt: string;
 }
 
-export interface WorkspacesConfig {
+export interface WorkspacesConfig extends Record<string, unknown> {
   workspaces: Workspace[];
   activeWorkspaceId: string | null;
 }

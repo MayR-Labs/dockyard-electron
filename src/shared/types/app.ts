@@ -37,6 +37,6 @@ export interface App {
   updatedAt: string;
 }
 
-export interface AppsConfig {
+export interface AppsConfig extends Record<string, unknown> {
   apps: App[];
 }

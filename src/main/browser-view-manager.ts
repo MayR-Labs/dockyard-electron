@@ -362,7 +362,7 @@ export class BrowserViewManager {
 
       // Destroy the view
       if (!entry.view.webContents.isDestroyed()) {
-        entry.view.webContents.destroy();
+        entry.view.webContents.close({ waitForBeforeUnload: false });
       }
 
       this.views.delete(viewId);
@@ -524,7 +524,7 @@ export class BrowserViewManager {
 
     this.views.forEach((entry) => {
       if (!entry.view.webContents.isDestroyed()) {
-        entry.view.webContents.destroy();
+        entry.view.webContents.close({ waitForBeforeUnload: false });
       }
     });
 
