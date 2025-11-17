@@ -165,27 +165,6 @@ function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
         )}
       </motion.button>
 
-      {/* Badge for multiple instances or notifications */}
-      {(app.instances.length > 1 ||
-        (app.notifications?.badgeCount && app.notifications.badgeCount > 0)) && (
-        <motion.span
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2 }}
-          className={`absolute -top-1 -right-1 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg ${
-            app.notifications?.badgeCount && app.notifications.badgeCount > 0
-              ? 'bg-red-500'
-              : 'bg-indigo-500'
-          }`}
-        >
-          {app.notifications?.badgeCount && app.notifications.badgeCount > 0
-            ? app.notifications.badgeCount > 99
-              ? '99+'
-              : app.notifications.badgeCount
-            : app.instances.length}
-        </motion.span>
-      )}
-
       {/* Tooltip */}
       <div className="absolute hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50 left-full ml-2 shadow-xl">
         {app.name}

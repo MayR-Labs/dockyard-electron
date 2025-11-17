@@ -23,7 +23,6 @@ interface AppTileProps {
   onUpdateApp?: (id: string, data: Partial<App>) => void;
   onOpenOptions?: () => void;
   activeInstanceId?: string;
-  onSelectInstance?: (instanceId: string) => void;
 }
 
 export function AppTile({
@@ -35,7 +34,6 @@ export function AppTile({
   onUpdateApp,
   onOpenOptions,
   activeInstanceId,
-  onSelectInstance,
 }: AppTileProps) {
   // Use custom hooks for instance and navigation management
   const { instanceId, isCreating } = useAppInstance(app, activeInstanceId, onUpdateApp);
@@ -113,23 +111,8 @@ export function AppTile({
           {/* App Info */}
           <div className="flex items-center gap-2 ml-2 border-l border-gray-700 pl-3">
             {app.icon && <img src={app.icon} alt={app.name} className="w-5 h-5 rounded" />}
+
             <span className="text-sm font-medium text-gray-300">{app.name}</span>
-            {app.instances.length > 1 && instanceId && (
-              <label className="text-xs text-gray-400 flex items-center gap-1">
-                <span className="hidden sm:inline">Instance</span>
-                <select
-                  value={instanceId}
-                  onChange={(event) => onSelectInstance?.(event.target.value)}
-                  className="bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200 text-xs"
-                >
-                  {app.instances.map((instance, index) => (
-                    <option key={instance.id} value={instance.id}>
-                      {instance.name || `Instance ${index + 1}`}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
           </div>
         </div>
 

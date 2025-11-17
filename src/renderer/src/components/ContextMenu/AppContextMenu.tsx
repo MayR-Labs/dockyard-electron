@@ -12,32 +12,24 @@ interface AppContextMenuProps {
   y: number;
   appId: string;
   appName: string;
-  instances?: AppInstance[];
-  activeInstanceId?: string;
   onClose: () => void;
-  onNewInstance: () => void;
   onSettings: () => void;
   onHibernate: () => void;
   onDelete: () => void;
-  onSelectInstance?: (instanceId: string) => void;
 }
 
 /**
- * Context menu with app-related actions (new instance, settings, hibernate, delete)
+ * Context menu with app-related actions (settings, hibernate, delete)
  */
 export function AppContextMenu({
   x,
   y,
   appId,
   appName,
-  instances = [],
-  activeInstanceId,
   onClose,
-  onNewInstance,
   onSettings,
   onHibernate,
   onDelete,
-  onSelectInstance,
 }: AppContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -90,69 +82,6 @@ export function AppContextMenu({
       <div className="px-3 py-2 border-b border-gray-700">
         <p className="text-xs font-medium text-gray-400 truncate">{appName}</p>
       </div>
-
-      {instances.length > 1 && (
-        <div className="border-b border-gray-700">
-          <div className="px-3 py-2">
-            <p className="text-xs font-medium text-gray-500 mb-1">Instances</p>
-            <div className="flex flex-col gap-1">
-              {instances.map((instance, index) => {
-                const isActiveInstance = instance.id === activeInstanceId;
-                return (
-                  <button
-                    key={instance.id}
-                    onClick={() => {
-                      onSelectInstance?.(instance.id);
-                      onClose();
-                    }}
-                    className={`w-full px-2 py-1 rounded text-left text-xs flex items-center gap-2 transition ${
-                      isActiveInstance
-                        ? 'bg-indigo-600/20 text-indigo-200'
-                        : 'text-gray-300 hover:bg-gray-700'
-                    }`}
-                  >
-                    {isActiveInstance ? (
-                      <svg className="w-3 h-3 text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    ) : (
-                      <span className="w-3" />
-                    )}
-                    <span>
-                      {instance.name || `Instance ${index + 1}`}
-                      {instance.hibernated && (
-                        <span className="ml-1 text-[10px] text-gray-500">(sleeping)</span>
-                      )}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      <button
-        onClick={() => {
-          onNewInstance();
-          onClose();
-        }}
-        className="w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-2"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-          />
-        </svg>
-        Duplicate Instance
-      </button>
 
       <button
         onClick={() => {

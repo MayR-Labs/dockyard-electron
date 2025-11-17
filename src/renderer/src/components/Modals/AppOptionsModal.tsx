@@ -16,7 +16,6 @@ interface AppOptionsModalProps {
   zoomLevel: number;
   onClose: () => void;
   onZoomChange: (level: number) => void;
-  onDuplicate: () => void;
   onSettings: () => void;
   onHibernate: () => void;
   onDelete: () => void;
@@ -29,7 +28,6 @@ export function AppOptionsModal({
   zoomLevel,
   onClose,
   onZoomChange,
-  onDuplicate,
   onSettings,
   onHibernate,
   onDelete,
@@ -127,7 +125,6 @@ export function AppOptionsModal({
                 <ZoomControls zoomLevel={zoomLevel} onZoomChange={onZoomChange} />
 
                 <AppActions
-                  onDuplicate={() => handleActionWithClose(onDuplicate)}
                   onSettings={() => handleActionWithClose(onSettings)}
                   onHibernate={() => handleActionWithClose(onHibernate)}
                 />

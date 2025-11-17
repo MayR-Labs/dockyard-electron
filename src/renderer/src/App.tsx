@@ -18,7 +18,6 @@ import { StatusBar } from './components/Layout/StatusBar';
 import { AddAppModal } from './components/Modals/AddAppModal';
 import { EditAppModal } from './components/Modals/EditAppModal';
 import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal';
-import { CreateInstanceModal } from './components/Modals/CreateInstanceModal';
 import { AppOptionsModal } from './components/Modals/AppOptionsModal';
 import { AppContextMenu } from './components/ContextMenu/AppContextMenu';
 import { WorkspaceContextMenu } from './components/ContextMenu/WorkspaceContextMenu';
@@ -26,7 +25,7 @@ import { WorkspaceSwitcherModal } from './components/Modals/WorkspaceSwitcherMod
 import { PerformanceDashboard } from './components/DevTools/PerformanceDashboard';
 import { SessionManager } from './components/DevTools/SessionManager';
 import { WorkspaceSettingsModal } from './components/Modals/WorkspaceSettingsModal';
-import { App as AppType, AppInstance } from '../../shared/types/app';
+import { App as AppType } from '../../shared/types/app';
 
 function App() {
   // Store hooks
@@ -50,7 +49,6 @@ function App() {
   const [isAddAppModalOpen, setIsAddAppModalOpen] = useState(false);
   const [isEditAppModalOpen, setIsEditAppModalOpen] = useState(false);
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
-  const [isCreateInstanceModalOpen, setIsCreateInstanceModalOpen] = useState(false);
   const [isAppOptionsModalOpen, setIsAppOptionsModalOpen] = useState(false);
   const [isWorkspaceSettingsModalOpen, setIsWorkspaceSettingsModalOpen] = useState(false);
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
@@ -82,7 +80,6 @@ function App() {
       isAddAppModalOpen ||
       isEditAppModalOpen ||
       isCreateWorkspaceModalOpen ||
-      isCreateInstanceModalOpen ||
       isAppOptionsModalOpen ||
       isPerformanceDashboardOpen ||
       isSessionManagerOpen ||
@@ -93,7 +90,6 @@ function App() {
       isAddAppModalOpen,
       isEditAppModalOpen,
       isCreateWorkspaceModalOpen,
-      isCreateInstanceModalOpen,
       isAppOptionsModalOpen,
       isPerformanceDashboardOpen,
       isSessionManagerOpen,
@@ -190,23 +186,6 @@ function App() {
     } finally {
       setAppAwakeState(appId, false);
     }
-  };
-
-  const handleSelectInstance = (appId: string, instanceId: string) => {
-    const app = apps.find((a) => a.id === appId);
-    if (!app || !app.instances.some((inst) => inst.id === instanceId)) {
-      return;
-    }
-
-    setActiveInstances((prev) => {
-      if (prev[appId] === instanceId) {
-        return prev;
-      }
-      return {
-        ...prev,
-        [appId]: instanceId,
-      };
-    });
   };
 
   // Clean up awake map when apps list changes
@@ -426,24 +405,6 @@ function App() {
     await updateApp(id, data);
   };
 
-  const handleCreateInstance = async (appId: string, instance: AppInstance) => {
-    const app = apps.find((a) => a.id === appId);
-    if (!app) return;
-
-    // Add the new instance to the app
-    await updateApp(appId, {
-      instances: [...app.instances, instance],
-    });
-  };
-
-  const handleOpenNewInstance = (appId: string) => {
-    const app = apps.find((a) => a.id === appId);
-    if (app) {
-      setSelectedApp(app);
-      setIsCreateInstanceModalOpen(true);
-    }
-  };
-
   const handleReorderApps = async (draggedAppId: string, targetIndex: number) => {
     if (!activeWorkspace) return;
 
@@ -625,7 +586,6 @@ function App() {
               }
             }}
             activeInstances={activeInstances}
-            onInstanceSelect={handleSelectInstance}
           />
 
           {/* Dock - right or bottom position */}
@@ -687,15 +647,6 @@ function App() {
         onClose={() => setIsCreateWorkspaceModalOpen(false)}
         onCreateWorkspace={handleCreateWorkspace}
       />
-      <CreateInstanceModal
-        isOpen={isCreateInstanceModalOpen}
-        app={selectedApp}
-        onClose={() => {
-          setIsCreateInstanceModalOpen(false);
-          setSelectedApp(null);
-        }}
-        onCreateInstance={handleCreateInstance}
-      />
       {isWorkspaceSettingsModalOpen && activeWorkspace && (
         <WorkspaceSettingsModal
           workspace={activeWorkspace}
@@ -711,13 +662,7 @@ function App() {
           y={contextMenu.y}
           appId={contextMenu.appId}
           appName={contextMenu.appName}
-          instances={contextMenuApp?.instances || []}
-          activeInstanceId={activeInstances[contextMenu.appId]}
-          onSelectInstance={(instanceId) => handleSelectInstance(contextMenu.appId, instanceId)}
           onClose={() => setContextMenu(null)}
-          onNewInstance={() => {
-            handleOpenNewInstance(contextMenu.appId);
-          }}
           onSettings={() => {
             const app = workspaceApps.find((a) => a.id === contextMenu.appId);
             if (app) {
@@ -810,11 +755,6 @@ function App() {
                 zoomLevel: level,
               },
             });
-          }
-        }}
-        onDuplicate={() => {
-          if (selectedApp) {
-            handleOpenNewInstance(selectedApp.id);
           }
         }}
         onSettings={() => {
