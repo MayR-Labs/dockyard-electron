@@ -54,9 +54,11 @@ export function AppOptionsModal({
 
   if (!isOpen || !app) return null;
 
-  const handleActionWithClose = (action: () => void) => {
+  const handleActionWithClose = (action: () => void, { closeAfter = true } = {}) => {
     action();
-    onClose();
+    if (closeAfter) {
+      onClose();
+    }
   };
 
   const handleResponsiveModeChange = (width: number, height: number) => {
@@ -125,7 +127,7 @@ export function AppOptionsModal({
                 <ZoomControls zoomLevel={zoomLevel} onZoomChange={onZoomChange} />
 
                 <AppActions
-                  onSettings={() => handleActionWithClose(onSettings)}
+                  onSettings={() => handleActionWithClose(onSettings, { closeAfter: false })}
                   onHibernate={() => handleActionWithClose(onHibernate)}
                 />
 
