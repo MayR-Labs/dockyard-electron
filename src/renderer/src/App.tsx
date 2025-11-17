@@ -610,6 +610,7 @@ function App() {
               position={dockPosition}
               size={dockSize}
               activeAppId={activeAppId}
+              awakeApps={awakeApps}
               onAppClick={setActiveAppId}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();
@@ -655,6 +656,7 @@ function App() {
               position={dockPosition}
               size={dockSize}
               activeAppId={activeAppId}
+              awakeApps={awakeApps}
               onAppClick={setActiveAppId}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();

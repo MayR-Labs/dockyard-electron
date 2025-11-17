@@ -17,6 +17,7 @@ interface DockProps {
   onAppContextMenu: (appId: string, e: React.MouseEvent) => void;
   onAddApp: () => void;
   onReorder?: (appId: string, targetIndex: number) => void;
+  awakeApps?: Record<string, boolean>;
 }
 
 /**
@@ -31,6 +32,7 @@ export function Dock({
   onAppContextMenu,
   onAddApp,
   onReorder,
+  awakeApps,
 }: DockProps) {
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -83,6 +85,7 @@ export function Dock({
           <DockIcon
             app={app}
             isActive={app.id === activeAppId}
+            isAwake={!!awakeApps?.[app.id]}
             onClick={() => onAppClick(app.id)}
             onContextMenu={(e) => onAppContextMenu(app.id, e)}
           />
@@ -111,6 +114,7 @@ export function Dock({
 interface DockIconProps {
   app: App;
   isActive: boolean;
+  isAwake: boolean;
   onClick: () => void;
   onContextMenu: (e: React.MouseEvent) => void;
 }
@@ -118,7 +122,7 @@ interface DockIconProps {
 /**
  * Individual dock icon component with tooltip and instance badge
  */
-function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
+function DockIcon({ app, isActive, isAwake, onClick, onContextMenu }: DockIconProps) {
   const [isDragging, setIsDragging] = useState(false);
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -132,15 +136,17 @@ function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
   };
 
   return (
-    <motion.div
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: isDragging ? 0.5 : 1 }}
-      transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+    <div
       className="relative group"
       draggable
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
+      <motion.div
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: isDragging ? 0.5 : 1 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+      >
       <motion.button
         whileHover={{ scale: 1.1, y: -2 }}
         whileTap={{ scale: 0.95 }}
@@ -154,21 +160,42 @@ function DockIcon({ app, isActive, onClick, onContextMenu }: DockIconProps) {
               ? 'bg-indigo-600 ring-2 ring-indigo-400 shadow-lg shadow-indigo-500/50'
               : 'bg-gray-800 hover:bg-gray-700'
           }
+          ${isAwake ? '' : 'opacity-60'}
           ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}
         `}
         title={app.name}
       >
         {app.icon ? (
-          <img src={app.icon} alt={app.name} className="w-8 h-8 rounded" />
+          <img
+            src={app.icon}
+            alt={app.name}
+            className={`w-8 h-8 rounded ${isAwake ? '' : 'grayscale saturate-0 opacity-60'}`}
+          />
         ) : (
-          <span className="text-xl">{app.name.charAt(0).toUpperCase()}</span>
+          <span className={`text-xl ${isAwake ? '' : 'text-gray-400'}`}>
+            {app.name.charAt(0).toUpperCase()}
+          </span>
         )}
       </motion.button>
 
-      {/* Tooltip */}
-      <div className="absolute hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50 left-full ml-2 shadow-xl">
-        {app.name}
-      </div>
-    </motion.div>
+        {/* Running indicator */}
+        <div className="absolute inset-x-0 -bottom-1 flex justify-center">
+          <span
+            className={`h-1.5 w-4 rounded-full transition-all duration-200 ${
+              isActive
+                ? 'bg-white'
+                : isAwake
+                  ? 'bg-emerald-400/80'
+                  : 'bg-gray-500/30'
+            }`}
+          />
+        </div>
+
+        {/* Tooltip */}
+        <div className="absolute hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50 left-full ml-2 shadow-xl">
+          {app.name}
+        </div>
+      </motion.div>
+    </div>
   );
 }
