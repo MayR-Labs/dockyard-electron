@@ -25,6 +25,7 @@ import { WorkspaceContextMenu } from './components/ContextMenu/WorkspaceContextM
 import { WorkspaceSwitcherModal } from './components/Modals/WorkspaceSwitcherModal';
 import { PerformanceDashboard } from './components/DevTools/PerformanceDashboard';
 import { SessionManager } from './components/DevTools/SessionManager';
+import { WorkspaceSettingsModal } from './components/Modals/WorkspaceSettingsModal';
 import { App as AppType, AppInstance } from '../../shared/types/app';
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
   const [isCreateInstanceModalOpen, setIsCreateInstanceModalOpen] = useState(false);
   const [isAppOptionsModalOpen, setIsAppOptionsModalOpen] = useState(false);
+  const [isWorkspaceSettingsModalOpen, setIsWorkspaceSettingsModalOpen] = useState(false);
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [isWorkspaceSwitcherOpen, setIsWorkspaceSwitcherOpen] = useState(false);
@@ -331,6 +333,32 @@ function App() {
     }
   };
 
+  const handleSaveWorkspaceSettings = async (settings: {
+    dockPosition: 'top' | 'bottom' | 'left' | 'right';
+    dockSize: number;
+    sessionMode: 'isolated' | 'shared';
+    hibernationEnabled: boolean;
+    idleTimeMinutes: number;
+  }) => {
+    if (!activeWorkspace) return;
+
+    await updateWorkspace(activeWorkspace.id, {
+      sessionMode: settings.sessionMode,
+      hibernation: {
+        ...activeWorkspace.hibernation,
+        enabled: settings.hibernationEnabled,
+        idleTimeMinutes: settings.idleTimeMinutes,
+      },
+      layout: {
+        ...activeWorkspace.layout,
+        dockPosition: settings.dockPosition,
+        dockSize: settings.dockSize,
+      },
+    });
+
+    setIsWorkspaceSettingsModalOpen(false);
+  };
+
   const handleUpdateApp = async (id: string, data: Partial<AppType>) => {
     await updateApp(id, data);
   };
@@ -567,6 +595,9 @@ function App() {
         memoryUsage="256 MB"
         doNotDisturb={settings?.notifications.doNotDisturb || false}
         onToggleDnd={handleToggleDnd}
+        onOpenWorkspaceSettings={
+          activeWorkspace ? () => setIsWorkspaceSettingsModalOpen(true) : undefined
+        }
         onOpenPerformance={() => setIsPerformanceDashboardOpen(true)}
         onOpenSessions={() => setIsSessionManagerOpen(true)}
       />
@@ -600,6 +631,13 @@ function App() {
         }}
         onCreateInstance={handleCreateInstance}
       />
+      {isWorkspaceSettingsModalOpen && activeWorkspace && (
+        <WorkspaceSettingsModal
+          workspace={activeWorkspace}
+          onClose={() => setIsWorkspaceSettingsModalOpen(false)}
+          onSave={handleSaveWorkspaceSettings}
+        />
+      )}
 
       {/* Context Menus */}
       {contextMenu && (
@@ -668,6 +706,9 @@ function App() {
                 dockPosition: position,
               },
             });
+          }}
+          onOpenSettings={() => {
+            setIsWorkspaceSettingsModalOpen(true);
           }}
         />
       )}

@@ -55,7 +55,7 @@ ElectronWebView.displayName = 'ElectronWebView';
 export function WebViewContainer({ app, instanceId, isCreating = false }: WebViewContainerProps) {
   const webviewRef = useRef<WebviewTag | null>(null);
   const [isReady, setIsReady] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [_, setIsLoading] = useState(true);
   const responsiveContainerRef = useRef<HTMLDivElement | null>(null);
   const [responsiveScale, setResponsiveScale] = useState(1);
 

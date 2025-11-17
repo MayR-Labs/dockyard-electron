@@ -16,6 +16,7 @@ interface WorkspaceContextMenuProps {
   onDelete: () => void;
   onHibernate: () => void;
   onChangeDockPosition: (position: 'top' | 'bottom' | 'left' | 'right') => void;
+  onOpenSettings: () => void;
 }
 
 /**
@@ -31,6 +32,7 @@ export function WorkspaceContextMenu({
   onDelete,
   onHibernate,
   onChangeDockPosition,
+  onOpenSettings,
 }: WorkspaceContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -73,6 +75,24 @@ export function WorkspaceContextMenu({
       <div className="px-3 py-2 border-b border-gray-700">
         <p className="text-xs font-medium text-gray-400 truncate">{workspaceName}</p>
       </div>
+
+      <button
+        onClick={() => {
+          onOpenSettings();
+          onClose();
+        }}
+        className="w-full px-3 py-2 text-left text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l.7 2.154a1 1 0 00.95.69h2.262c.969 0 1.371 1.24.588 1.81l-1.832 1.332a1 1 0 00-.364 1.118l.7 2.154c.3.921-.755 1.688-1.54 1.118l-1.832-1.332a1 1 0 00-1.175 0l-1.832 1.332c-.784.57-1.838-.197-1.539-1.118l.7-2.154a1 1 0 00-.364-1.118L4.55 7.58c-.783-.57-.38-1.81.588-1.81H7.4a1 1 0 00.95-.69l.7-2.154z"
+          />
+        </svg>
+        Workspace Settings
+      </button>
 
       <button
         onClick={() => {

@@ -4,6 +4,7 @@ interface StatusBarProps {
   onToggleDnd: () => void;
   onOpenPerformance?: () => void;
   onOpenSessions?: () => void;
+  onOpenWorkspaceSettings?: () => void;
 }
 
 export function StatusBar({
@@ -12,6 +13,7 @@ export function StatusBar({
   onToggleDnd,
   onOpenPerformance,
   onOpenSessions,
+  onOpenWorkspaceSettings,
 }: StatusBarProps) {
   return (
     <div className="h-8 bg-gray-900 border-t border-gray-800 flex items-center justify-between px-4 text-xs">
@@ -34,6 +36,24 @@ export function StatusBar({
 
       {/* Right: Controls */}
       <div className="flex items-center gap-2">
+        {onOpenWorkspaceSettings && (
+          <button
+            onClick={onOpenWorkspaceSettings}
+            className="flex items-center gap-1 px-2 py-1 rounded text-gray-400 hover:bg-gray-800 transition"
+            title="Workspace settings"
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l.7 2.154a1 1 0 00.95.69h2.262c.969 0 1.371 1.24.588 1.81l-1.832 1.332a1 1 0 00-.364 1.118l.7 2.154c.3.921-.755 1.688-1.54 1.118l-1.832-1.332a1 1 0 00-1.175 0l-1.832 1.332c-.784.57-1.838-.197-1.539-1.118l.7-2.154a1 1 0 00-.364-1.118L4.55 7.58c-.783-.57-.38-1.81.588-1.81H7.4a1 1 0 00.95-.69l.7-2.154z"
+              />
+            </svg>
+            <span>Workspace</span>
+          </button>
+        )}
+
         {/* DevTools buttons */}
         {onOpenPerformance && (
           <button
