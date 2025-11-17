@@ -66,6 +66,7 @@ export function WebViewContainer({
   const responsiveContainerRef = useRef<HTMLDivElement | null>(null);
   const [responsiveScale, setResponsiveScale] = useState(1);
   const lastUserAgent = useRef<string | undefined>(app.userAgent);
+  const lastAudioMuted = useRef<boolean | undefined>(app.audio?.muted);
 
   // Get the instance details
   const instance = app.instances.find((i) => i.id === instanceId);
@@ -278,6 +279,19 @@ export function WebViewContainer({
         lastUserAgent.current = app.userAgent;
       });
   }, [app.id, app.userAgent, instanceId, isReady]);
+
+    useEffect(() => {
+      if (!isElectron() || !instanceId || !isReady || !window.dockyard?.webview) return;
+      const nextMuted = app.audio?.muted ?? false;
+      if (lastAudioMuted.current === nextMuted) return;
+
+      window.dockyard.webview
+        .setAudioMuted(app.id, instanceId, nextMuted)
+        .catch((error: Error) => console.error('Failed to set audio mute state', error))
+        .finally(() => {
+          lastAudioMuted.current = nextMuted;
+        });
+    }, [app.audio?.muted, app.id, instanceId, isReady]);
 
   const showLoadingIndicator = typeof isLoading === 'boolean' ? isLoading : internalLoading;
 

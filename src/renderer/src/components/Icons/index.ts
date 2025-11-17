@@ -20,6 +20,8 @@ export {
   MenuDotsIcon,
   LoadingIcon,
   PrintIcon,
+  VolumeOnIcon,
+  VolumeOffIcon,
 } from './CommonIcons';
 
 export {

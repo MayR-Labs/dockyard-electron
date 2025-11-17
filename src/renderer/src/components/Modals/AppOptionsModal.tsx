@@ -22,6 +22,8 @@ interface AppOptionsModalProps {
   onDelete: () => void;
   onResponsiveModeChange?: (width: number, height: number) => void;
   onUserAgentChange: (userAgent?: string | null) => void;
+  isMuted: boolean;
+  onToggleMute: (muted: boolean) => void;
 }
 
 export function AppOptionsModal({
@@ -36,6 +38,8 @@ export function AppOptionsModal({
   onDelete,
   onResponsiveModeChange,
   onUserAgentChange,
+  isMuted,
+  onToggleMute,
 }: AppOptionsModalProps) {
   const [activeTab, setActiveTab] = useState<'general' | 'responsive'>('general');
   const modalRef = useRef<HTMLDivElement>(null);
@@ -138,6 +142,12 @@ export function AppOptionsModal({
                   onSettings={() => handleActionWithClose(onSettings, { closeAfter: false })}
                   onCustomize={() => handleActionWithClose(onCustomize)}
                   onHibernate={() => handleActionWithClose(onHibernate)}
+                  onToggleMute={() =>
+                    handleActionWithClose(() => onToggleMute(!isMuted), {
+                      closeAfter: false,
+                    })
+                  }
+                  isMuted={isMuted}
                 />
 
                 <UserAgentSettings

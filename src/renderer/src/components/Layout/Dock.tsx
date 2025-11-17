@@ -68,29 +68,35 @@ export function Dock({
 
   return (
     <div style={dockStyle} className={containerClass}>
-      {apps.map((app, index) => (
-        <div
-          key={app.id}
-          onDragOver={(e) => handleDragOver(e, index)}
-          onDragLeave={handleDragLeave}
-          onDrop={(e) => handleDrop(e, index)}
-          className={`relative ${
-            dragOverIndex === index
-              ? isHorizontal
-                ? 'border-l-2 border-indigo-500'
-                : 'border-t-2 border-indigo-500'
-              : ''
-          }`}
-        >
-          <DockIcon
-            app={app}
-            isActive={app.id === activeAppId}
-            isAwake={!!awakeApps?.[app.id]}
-            onClick={() => onAppClick(app.id)}
-            onContextMenu={(e) => onAppContextMenu(app.id, e)}
-          />
-        </div>
-      ))}
+      {apps.map((app, index) => {
+        const persistedAwake = app.instances.some((inst) => !inst.hibernated);
+        const transientAwake = awakeApps?.[app.id];
+        const isAwake = typeof transientAwake === 'boolean' ? transientAwake : persistedAwake;
+
+        return (
+          <div
+            key={app.id}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, index)}
+            className={`relative ${
+              dragOverIndex === index
+                ? isHorizontal
+                  ? 'border-l-2 border-indigo-500'
+                  : 'border-t-2 border-indigo-500'
+                : ''
+            }`}
+          >
+            <DockIcon
+              app={app}
+              isActive={app.id === activeAppId}
+              isAwake={isAwake}
+              onClick={() => onAppClick(app.id)}
+              onContextMenu={(e) => onAppContextMenu(app.id, e)}
+            />
+          </div>
+        );
+      })}
 
       {/* Add App Button */}
       <button

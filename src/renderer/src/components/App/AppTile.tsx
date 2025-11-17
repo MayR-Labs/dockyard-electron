@@ -9,7 +9,16 @@ import { motion } from 'framer-motion';
 import type { FindInPageOptions } from 'electron';
 import { App } from '../../../../shared/types/app';
 import { AppShortcutSignal } from '../../types/shortcuts';
-import { MenuDotsIcon, SearchIcon, CloseIcon, PrintIcon, ChevronLeftIcon, ChevronRightIcon } from '../Icons';
+import {
+  MenuDotsIcon,
+  SearchIcon,
+  CloseIcon,
+  PrintIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  VolumeOnIcon,
+  VolumeOffIcon,
+} from '../Icons';
 import { NavigationControls } from '../AppControls/NavigationControls';
 import { URLBar } from '../AppControls/URLBar';
 import { WebViewContainer } from '../Layout/WebViewContainer';
@@ -27,6 +36,7 @@ interface AppTileProps {
   onOpenOptions?: () => void;
   activeInstanceId?: string;
   shortcutSignal?: AppShortcutSignal | null;
+  onToggleMute?: (appId: string, muted: boolean, instanceId?: string) => void;
 }
 
 export function AppTile({
@@ -39,6 +49,7 @@ export function AppTile({
   onOpenOptions,
   activeInstanceId,
   shortcutSignal,
+  onToggleMute,
 }: AppTileProps) {
   // Use custom hooks for instance and navigation management
   const { instanceId, isCreating } = useAppInstance(app, activeInstanceId, onUpdateApp);
@@ -52,6 +63,7 @@ export function AppTile({
   const [matchCase, setMatchCase] = useState(false);
   const findInputRef = useRef<HTMLInputElement>(null);
   const processedShortcutRef = useRef<number>(0);
+  const isMuted = app.audio?.muted ?? false;
 
   const handleWakeApp = (e?: MouseEvent) => {
     e?.stopPropagation();
@@ -83,6 +95,11 @@ export function AppTile({
   const handledNavigate = (url: string) => {
     if (!isAwake) return;
     navigate(url);
+  };
+
+  const handleToggleMute = () => {
+    if (!onToggleMute) return;
+    onToggleMute(app.id, !isMuted, instanceId);
   };
 
   const stopFind = useCallback(
@@ -249,6 +266,19 @@ export function AppTile({
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggleMute();
+            }}
+            className={`p-2 rounded-lg transition-colors text-gray-400 hover:text-white hover:bg-gray-700 ${
+              isMuted ? 'text-amber-300' : ''
+            }`}
+            title={isMuted ? 'Unmute app' : 'Mute app'}
+          >
+            {isMuted ? <VolumeOffIcon className="w-4 h-4" /> : <VolumeOnIcon className="w-4 h-4" />}
+          </button>
+
           <button
             onClick={(e) => {
               e.stopPropagation();

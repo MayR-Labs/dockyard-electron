@@ -140,6 +140,7 @@ export interface DockyardAPI {
       options?: Electron.WebContentsPrintOptions
     ) => Promise<void>;
     setUserAgent: (appId: string, instanceId: string, userAgent?: string | null) => Promise<void>;
+    setAudioMuted: (appId: string, instanceId: string, muted: boolean) => Promise<void>;
   };
   settings: {
     get: () => Promise<Settings>;

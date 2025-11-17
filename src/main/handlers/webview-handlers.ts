@@ -40,6 +40,7 @@ export class WebViewHandlers {
     this.registerStopFindInPageHandler();
     this.registerPrintHandler();
     this.registerSetUserAgentHandler();
+    this.registerSetAudioMutedHandler();
   }
 
   private registerRegisterHandler(): void {
@@ -261,6 +262,15 @@ export class WebViewHandlers {
       IPC_CHANNELS.WEBVIEW.SET_USER_AGENT,
       async (_event, appId: string, instanceId: string, userAgent?: string | null) => {
         await this.webViewManager.setUserAgent(appId, instanceId, userAgent ?? undefined);
+      }
+    );
+  }
+
+  private registerSetAudioMutedHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.WEBVIEW.SET_AUDIO_MUTED,
+      async (_event, appId: string, instanceId: string, muted: boolean) => {
+        this.webViewManager.setAudioMuted(appId, instanceId, muted);
       }
     );
   }

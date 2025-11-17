@@ -67,6 +67,7 @@ export const IPC_CHANNELS = {
     STOP_FIND_IN_PAGE: 'webview:stop-find-in-page',
     PRINT: 'webview:print',
     SET_USER_AGENT: 'webview:set-user-agent',
+    SET_AUDIO_MUTED: 'webview:set-audio-muted',
   },
   WINDOW: {
     TOGGLE_DEVTOOLS: 'window:toggle-devtools',

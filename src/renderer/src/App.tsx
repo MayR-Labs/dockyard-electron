@@ -61,7 +61,13 @@ function App() {
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [isWorkspaceSwitcherOpen, setIsWorkspaceSwitcherOpen] = useState(false);
-  const [selectedApp, setSelectedApp] = useState<AppType | null>(null);
+  const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
+  const selectedApp = useMemo(() => {
+    if (!selectedAppId) {
+      return null;
+    }
+    return apps.find((appEntry) => appEntry.id === selectedAppId) ?? null;
+  }, [apps, selectedAppId]);
   const [customizationAppId, setCustomizationAppId] = useState<string | null>(null);
   const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
   const [activeInstances, setActiveInstances] = useState<Record<string, string>>({});
@@ -98,6 +104,7 @@ function App() {
     appName: string;
     x: number;
     y: number;
+    isMuted: boolean;
   } | null>(null);
 
   const [workspaceContextMenu, setWorkspaceContextMenu] = useState<{
@@ -161,6 +168,13 @@ function App() {
       setActiveWorkspace(workspaces[0].id);
     }
   }, [workspaces, activeWorkspaceId, setActiveWorkspace]);
+
+  useEffect(() => {
+    if (isAppOptionsModalOpen && !selectedApp) {
+      setIsAppOptionsModalOpen(false);
+      setSelectedAppId(null);
+    }
+  }, [isAppOptionsModalOpen, selectedApp]);
 
   // Handlers
   const handleToggleDnd = () => {
@@ -510,9 +524,36 @@ function App() {
     setIsWorkspaceSettingsModalOpen(false);
   };
 
-  const handleUpdateApp = async (id: string, data: Partial<AppType>) => {
-    await updateApp(id, data);
-  };
+  const handleUpdateApp = useCallback(
+    async (id: string, data: Partial<AppType>) => {
+      await updateApp(id, data);
+    },
+    [updateApp]
+  );
+
+  const handleToggleMute = useCallback(
+    async (appId: string, muted: boolean, instanceId?: string) => {
+      await handleUpdateApp(appId, {
+        audio: {
+          muted,
+        },
+      });
+
+      const targetInstanceId = instanceId ?? getInstanceIdRef.current(appId);
+      if (!targetInstanceId) {
+        return;
+      }
+
+      if (window.dockyard?.webview?.setAudioMuted) {
+        window.dockyard.webview
+          .setAudioMuted(appId, targetInstanceId, muted)
+          .catch((error: unknown) => {
+            console.error('Failed to toggle audio mute', error);
+          });
+      }
+    },
+    [handleUpdateApp]
+  );
 
   const openAppCustomizationModal = (appId: string) => {
     setCustomizationAppId(appId);
@@ -676,6 +717,7 @@ function App() {
                     appName: app.name,
                     x: e.clientX,
                     y: e.clientY,
+                    isMuted: app.audio?.muted ?? false,
                   });
                 }
               }}
@@ -697,12 +739,13 @@ function App() {
             onOpenOptions={(appId) => {
               const app = workspaceApps.find((a) => a.id === appId);
               if (app) {
-                setSelectedApp(app);
+                setSelectedAppId(app.id);
                 setIsAppOptionsModalOpen(true);
               }
             }}
             activeInstances={activeInstances}
             shortcutSignal={shortcutSignal}
+            onToggleMute={handleToggleMute}
           />
 
           {/* Dock - right or bottom position */}
@@ -723,6 +766,7 @@ function App() {
                     appName: app.name,
                     x: e.clientX,
                     y: e.clientY,
+                    isMuted: app.audio?.muted ?? false,
                   });
                 }
               }}
@@ -757,7 +801,7 @@ function App() {
         app={selectedApp}
         onClose={() => {
           setIsEditAppModalOpen(false);
-          setSelectedApp(null);
+          setSelectedAppId(null);
         }}
         onUpdateApp={handleUpdateApp}
       />
@@ -799,7 +843,7 @@ function App() {
           onSettings={() => {
             const app = workspaceApps.find((a) => a.id === contextMenu.appId);
             if (app) {
-              setSelectedApp(app);
+              setSelectedAppId(app.id);
               setIsAppOptionsModalOpen(true);
             }
             setContextMenu(null);
@@ -813,6 +857,8 @@ function App() {
               setActiveAppId(null);
             }
           }}
+          isMuted={contextMenu.isMuted}
+          onToggleMute={(muted) => handleToggleMute(contextMenu.appId, muted)}
         />
       )}
 
@@ -876,9 +922,10 @@ function App() {
         isOpen={isAppOptionsModalOpen}
         app={selectedApp}
         zoomLevel={selectedApp?.display?.zoomLevel || 1.0}
+        isMuted={selectedApp?.audio?.muted ?? false}
         onClose={() => {
           setIsAppOptionsModalOpen(false);
-          setSelectedApp(null);
+          setSelectedAppId(null);
         }}
         onZoomChange={(level) => {
           if (selectedApp) {
@@ -900,14 +947,14 @@ function App() {
           if (selectedApp) {
             openAppCustomizationModal(selectedApp.id);
             setIsAppOptionsModalOpen(false);
-            setSelectedApp(null);
+            setSelectedAppId(null);
           }
         }}
         onHibernate={() => {
           if (selectedApp && selectedApp.instances.length > 0) {
             handleHibernateAppRequest(selectedApp.id, selectedApp.instances[0].id);
             setIsAppOptionsModalOpen(false);
-            setSelectedApp(null);
+            setSelectedAppId(null);
           }
         }}
         onDelete={async () => {
@@ -917,7 +964,7 @@ function App() {
               setActiveAppId(null);
             }
             setIsAppOptionsModalOpen(false);
-            setSelectedApp(null);
+            setSelectedAppId(null);
           }
         }}
         onResponsiveModeChange={(width, height) => {
@@ -943,6 +990,11 @@ function App() {
             handleUpdateApp(selectedApp.id, {
               userAgent: value || undefined,
             });
+          }
+        }}
+        onToggleMute={(muted) => {
+          if (selectedApp) {
+            handleToggleMute(selectedApp.id, muted);
           }
         }}
       />

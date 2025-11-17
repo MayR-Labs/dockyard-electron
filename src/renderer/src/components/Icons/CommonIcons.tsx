@@ -114,3 +114,21 @@ export function PrintIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function VolumeOnIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 6v12l-3.75-3.75H5.25A2.25 2.25 0 013 12.75v-1.5A2.25 2.25 0 015.25 9h3L12 5.25V6z" />
+      <path d="M16.5 9.75a2.25 2.25 0 010 4.5m1.5-6.75a5.25 5.25 0 010 8.25" />
+    </Icon>
+  );
+}
+
+export function VolumeOffIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 6v12l-3.75-3.75H5.25A2.25 2.25 0 013 12.75v-1.5A2.25 2.25 0 015.25 9h3L12 5.25V6z" />
+      <path d="M16.5 12l4.5 4.5m0-4.5L16.5 16.5" />
+    </Icon>
+  );
+}

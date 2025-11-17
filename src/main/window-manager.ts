@@ -65,11 +65,25 @@ export class WindowManager {
   }
 
   private registerInputShortcuts(window: BrowserWindow): void {
+    const handler = this.createShortcutHandler();
+
+    window.webContents.on('before-input-event', handler);
+
+    app.on('web-contents-created', (_event, contents) => {
+      if (contents.getType() === 'webview') {
+        contents.on('before-input-event', handler);
+      }
+    });
+  }
+
+  private createShortcutHandler() {
     const isMac = process.platform === 'darwin';
 
-    window.webContents.on('before-input-event', (event, input) => {
+    return (event: Electron.Event, input: Electron.Input) => {
       const key = input.key?.toLowerCase();
-      if (!key) return;
+      if (!key) {
+        return;
+      }
 
       const cmdOrCtrl = isMac ? input.meta : input.control;
       const isF5 = input.key?.toUpperCase() === 'F5';
@@ -116,7 +130,7 @@ export class WindowManager {
         event.preventDefault();
         this.emitShortcutEvent(IPC_EVENTS.SHORTCUT_TOGGLE_DEVTOOLS);
       }
-    });
+    };
   }
 
   private emitShortcutEvent(channel: string): void {

@@ -68,6 +68,15 @@ export function UserAgentSettings({ userAgent, onChange }: UserAgentSettingsProp
     return preset ? preset.id : userAgent ? 'custom' : 'default';
   }, [userAgent]);
 
+  const activePreset = useMemo(
+    () => USER_AGENT_PRESETS.find((entry) => entry.id === activePresetId),
+    [activePresetId]
+  );
+  const activeLabel = activePresetId === 'custom'
+    ? 'Custom user agent'
+    : activePreset?.label || 'Dockyard Default';
+  const isCustomActive = activePresetId === 'custom';
+
   useEffect(() => {
     const shouldReset = !userAgent || USER_AGENT_PRESETS.some((entry) => entry.value === userAgent);
     const nextValue = shouldReset ? '' : userAgent;
@@ -76,8 +85,13 @@ export function UserAgentSettings({ userAgent, onChange }: UserAgentSettingsProp
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-gray-300">User Agent</h3>
+      <div className="flex flex-col gap-1 mb-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-300">User Agent</h3>
+          <p className="text-[11px] uppercase tracking-wide text-gray-500">
+            Active: <span className="text-gray-200">{activeLabel}</span>
+          </p>
+        </div>
         {userAgent && (
           <button
             onClick={() => onChange(undefined)}
@@ -89,30 +103,53 @@ export function UserAgentSettings({ userAgent, onChange }: UserAgentSettingsProp
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2">
-        {USER_AGENT_PRESETS.map((preset) => (
+        {USER_AGENT_PRESETS.map((preset) => {
+          const isActive = activePresetId === preset.id;
+          return (
           <button
             key={preset.id}
             onClick={() => onChange(preset.value)}
             className={`text-left rounded-lg border px-3 py-2 transition hover:border-indigo-400 hover:text-white ${
-              activePresetId === preset.id
-                ? 'border-indigo-500 bg-indigo-500/10 text-white'
+              isActive
+                ? 'border-indigo-500 bg-indigo-500/10 text-white shadow-inner shadow-indigo-900/20'
                 : 'border-gray-700 text-gray-300'
             }`}
           >
-            <div className="text-sm font-medium">{preset.label}</div>
+            <div className="flex items-center justify-between gap-2">
+              <div className="text-sm font-medium">{preset.label}</div>
+              {isActive && (
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-indigo-200 bg-indigo-500/20 px-2 py-0.5 rounded-full">
+                  Active
+                </span>
+              )}
+            </div>
             <div className="text-xs text-gray-400">{preset.description}</div>
           </button>
-        ))}
+          );
+        })}
       </div>
 
-      <div className="mt-4">
-        <p className="text-xs text-gray-400 mb-2">Custom user agent</p>
+      <div
+        className={`mt-4 rounded-xl border px-4 py-3 ${
+          isCustomActive ? 'border-indigo-500 bg-indigo-500/5' : 'border-gray-800'
+        }`}
+      >
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs text-gray-400">Custom user agent</p>
+          {isCustomActive && (
+            <span className="text-[10px] font-semibold uppercase tracking-wide text-indigo-200 bg-indigo-500/20 px-2 py-0.5 rounded-full">
+              Active
+            </span>
+          )}
+        </div>
         <div className="flex flex-col gap-2 sm:flex-row">
           <input
             value={customValue}
             onChange={(e) => setCustomValue(e.target.value)}
             placeholder="Mozilla/5.0 (...)"
-            className="flex-1 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm text-gray-100 focus:border-indigo-500 focus:outline-none"
+            className={`flex-1 rounded-lg border px-3 py-2 text-sm text-gray-100 focus:border-indigo-500 focus:outline-none ${
+              isCustomActive ? 'border-indigo-500 bg-gray-900/70' : 'border-gray-700 bg-gray-800'
+            }`}
           />
           <button
             onClick={() => onChange(customValue.trim() || undefined)}

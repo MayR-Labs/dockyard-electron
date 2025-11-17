@@ -22,6 +22,10 @@ export interface AppDisplaySettings {
   };
 }
 
+export interface AppAudioSettings {
+  muted: boolean;
+}
+
 export interface App {
   id: string;
   name: string;
@@ -34,6 +38,7 @@ export interface App {
   instances: AppInstance[];
   notifications?: AppNotificationSettings;
   display?: AppDisplaySettings;
+  audio?: AppAudioSettings;
   createdAt: string;
   updatedAt: string;
 }

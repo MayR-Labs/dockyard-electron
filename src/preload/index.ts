@@ -194,6 +194,8 @@ const dockyardAPI: DockyardAPI = {
     ) => ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.PRINT, appId, instanceId, options),
     setUserAgent: (appId: string, instanceId: string, userAgent?: string | null) =>
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.SET_USER_AGENT, appId, instanceId, userAgent),
+    setAudioMuted: (appId: string, instanceId: string, muted: boolean) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.SET_AUDIO_MUTED, appId, instanceId, muted),
   },
 
   // Settings APIs

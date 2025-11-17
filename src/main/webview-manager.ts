@@ -234,6 +234,13 @@ export class WebViewManager {
     }
   }
 
+  setAudioMuted(appId: string, instanceId: string, muted: boolean): void {
+    const webContents = this.getWebContents(appId, instanceId);
+    if (webContents && !webContents.isDestroyed()) {
+      webContents.setAudioMuted(muted);
+    }
+  }
+
   /**
    * Update last active timestamp
    */

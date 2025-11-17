@@ -4,15 +4,17 @@
  * Single Responsibility: App action button group
  */
 
-import { SettingsIcon, MoonIcon, DocumentIcon } from '../../Icons';
+import { SettingsIcon, MoonIcon, DocumentIcon, VolumeOnIcon, VolumeOffIcon } from '../../Icons';
 
 interface AppActionsProps {
   onSettings: () => void;
   onCustomize: () => void;
   onHibernate: () => void;
+  onToggleMute: () => void;
+  isMuted: boolean;
 }
 
-export function AppActions({ onSettings, onCustomize, onHibernate }: AppActionsProps) {
+export function AppActions({ onSettings, onCustomize, onHibernate, onToggleMute, isMuted }: AppActionsProps) {
   return (
     <div>
       <h3 className="text-sm font-semibold text-gray-300 mb-3">Actions</h3>
@@ -36,6 +38,23 @@ export function AppActions({ onSettings, onCustomize, onHibernate }: AppActionsP
           <div>
             <div className="text-white font-medium">Customise App</div>
             <div className="text-xs text-gray-400">Manage injected CSS/JS for this app</div>
+          </div>
+        </button>
+
+        <button
+          onClick={onToggleMute}
+          className="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-left rounded-lg transition flex items-center gap-3"
+        >
+          {isMuted ? (
+            <VolumeOffIcon className="w-5 h-5 text-amber-300" />
+          ) : (
+            <VolumeOnIcon className="w-5 h-5 text-emerald-300" />
+          )}
+          <div>
+            <div className="text-white font-medium">{isMuted ? 'Unmute audio' : 'Mute audio'}</div>
+            <div className="text-xs text-gray-400">
+              {isMuted ? 'Allow this app to play sound' : 'Silence audio output for this app'}
+            </div>
           </div>
         </button>
 

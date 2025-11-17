@@ -26,6 +26,7 @@ interface WorkspaceCanvasProps {
   onOpenOptions?: (appId: string) => void;
   activeInstances?: Record<string, string>;
   shortcutSignal?: AppShortcutSignal | null;
+  onToggleMute?: (appId: string, muted: boolean, instanceId?: string) => void;
 }
 
 export function WorkspaceCanvas({
@@ -40,6 +41,7 @@ export function WorkspaceCanvas({
   onOpenOptions,
   activeInstances,
   shortcutSignal,
+  onToggleMute,
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
@@ -147,20 +149,27 @@ export function WorkspaceCanvas({
       )}
 
       <div className="flex-1 relative">
-        {apps.map((app) => (
-          <AppTile
-            key={app.id}
-            app={app}
-            isActive={resolvedActiveAppId === app.id}
-            isAwake={!!awakeApps[app.id]}
-            onSelect={() => onAppSelect(app.id)}
-            onWakeApp={() => onWakeApp(app.id)}
-            onUpdateApp={onUpdateApp}
-            activeInstanceId={activeInstances?.[app.id]}
-            onOpenOptions={() => onOpenOptions?.(app.id)}
-            shortcutSignal={shortcutSignal}
-          />
-        ))}
+        {apps.map((app) => {
+          const persistedAwake = app.instances.some((instance) => !instance.hibernated);
+          const transientAwake = awakeApps[app.id];
+          const isAwake = typeof transientAwake === 'boolean' ? transientAwake : persistedAwake;
+
+          return (
+            <AppTile
+              key={app.id}
+              app={app}
+              isActive={resolvedActiveAppId === app.id}
+              isAwake={isAwake}
+              onSelect={() => onAppSelect(app.id)}
+              onWakeApp={() => onWakeApp(app.id)}
+              onUpdateApp={onUpdateApp}
+              activeInstanceId={activeInstances?.[app.id]}
+              onOpenOptions={() => onOpenOptions?.(app.id)}
+              shortcutSignal={shortcutSignal}
+              onToggleMute={onToggleMute}
+            />
+          );
+        })}
 
         {!resolvedActiveAppId && apps.length > 0 && (
           <EmptyWorkspaceState
