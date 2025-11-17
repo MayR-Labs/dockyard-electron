@@ -58,6 +58,7 @@ function App() {
   const [isWorkspaceSwitcherOpen, setIsWorkspaceSwitcherOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<AppType | null>(null);
   const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
+  const [activeInstances, setActiveInstances] = useState<Record<string, string>>({});
 
   // Context menu state
   const [contextMenu, setContextMenu] = useState<{
@@ -155,7 +156,14 @@ function App() {
   const getInstanceId = (appId: string, explicitInstanceId?: string) => {
     if (explicitInstanceId) return explicitInstanceId;
     const app = apps.find((a) => a.id === appId);
-    return app?.instances[0]?.id;
+    if (!app) return undefined;
+
+    const preferred = activeInstances[appId];
+    if (preferred && app.instances.some((inst) => inst.id === preferred)) {
+      return preferred;
+    }
+
+    return app.instances[0]?.id;
   };
 
   const handleWakeAppRequest = async (appId: string, instanceId?: string) => {
@@ -184,6 +192,23 @@ function App() {
     }
   };
 
+  const handleSelectInstance = (appId: string, instanceId: string) => {
+    const app = apps.find((a) => a.id === appId);
+    if (!app || !app.instances.some((inst) => inst.id === instanceId)) {
+      return;
+    }
+
+    setActiveInstances((prev) => {
+      if (prev[appId] === instanceId) {
+        return prev;
+      }
+      return {
+        ...prev,
+        [appId]: instanceId,
+      };
+    });
+  };
+
   // Clean up awake map when apps list changes
   useEffect(() => {
     setAwakeApps((prev) => {
@@ -195,6 +220,40 @@ function App() {
         }
       }
       return next;
+    });
+  }, [apps]);
+
+  useEffect(() => {
+    setActiveInstances((prev) => {
+      let changed = false;
+      const next = { ...prev };
+
+      const validAppIds = new Set(apps.map((app) => app.id));
+      for (const appId of Object.keys(next)) {
+        if (!validAppIds.has(appId)) {
+          delete next[appId];
+          changed = true;
+        }
+      }
+
+      apps.forEach((app) => {
+        if (app.instances.length === 0) {
+          if (next[app.id]) {
+            delete next[app.id];
+            changed = true;
+          }
+          return;
+        }
+
+        const current = next[app.id];
+        const hasCurrent = current && app.instances.some((inst) => inst.id === current);
+        if (!hasCurrent) {
+          next[app.id] = app.instances[0].id;
+          changed = true;
+        }
+      });
+
+      return changed ? next : prev;
     });
   }, [apps]);
 
@@ -248,6 +307,10 @@ function App() {
       if (orderB === -1) return -1;
       return orderA - orderB;
     });
+
+  const contextMenuApp = contextMenu
+    ? workspaceApps.find((app) => app.id === contextMenu.appId) || null
+    : null;
 
   const handleCreateWorkspace = async (data: {
     name: string;
@@ -561,6 +624,8 @@ function App() {
                 setIsAppOptionsModalOpen(true);
               }
             }}
+            activeInstances={activeInstances}
+            onInstanceSelect={handleSelectInstance}
           />
 
           {/* Dock - right or bottom position */}
@@ -646,6 +711,9 @@ function App() {
           y={contextMenu.y}
           appId={contextMenu.appId}
           appName={contextMenu.appName}
+          instances={contextMenuApp?.instances || []}
+          activeInstanceId={activeInstances[contextMenu.appId]}
+          onSelectInstance={(instanceId) => handleSelectInstance(contextMenu.appId, instanceId)}
           onClose={() => setContextMenu(null)}
           onNewInstance={() => {
             handleOpenNewInstance(contextMenu.appId);
@@ -659,8 +727,7 @@ function App() {
             setContextMenu(null);
           }}
           onHibernate={() => {
-            const app = workspaceApps.find((a) => a.id === contextMenu.appId);
-            handleHibernateAppRequest(contextMenu.appId, app?.instances[0]?.id);
+            handleHibernateAppRequest(contextMenu.appId);
           }}
           onDelete={async () => {
             await deleteApp(contextMenu.appId);

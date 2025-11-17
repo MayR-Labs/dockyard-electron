@@ -22,6 +22,8 @@ interface WorkspaceCanvasProps {
   onAddCustomApp?: () => void;
   onUpdateApp?: (id: string, data: Partial<App>) => void;
   onOpenOptions?: (appId: string) => void;
+  activeInstances?: Record<string, string>;
+  onInstanceSelect?: (appId: string, instanceId: string) => void;
 }
 
 export function WorkspaceCanvas({
@@ -34,6 +36,8 @@ export function WorkspaceCanvas({
   onAddCustomApp,
   onUpdateApp,
   onOpenOptions,
+  activeInstances,
+  onInstanceSelect,
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
@@ -91,6 +95,7 @@ export function WorkspaceCanvas({
           activeAppIds={activeAppIds}
           layoutMode={layoutMode}
           onLayoutChange={handleLayoutChange}
+          resolveInstanceId={(appId) => activeInstances?.[appId]}
         />
       </div>
     );
@@ -148,6 +153,10 @@ export function WorkspaceCanvas({
             onSelect={() => onAppSelect(app.id)}
             onWakeApp={() => onWakeApp(app.id)}
             onUpdateApp={onUpdateApp}
+            activeInstanceId={activeInstances?.[app.id]}
+            onSelectInstance={(instanceId) =>
+              onInstanceSelect?.(app.id, instanceId)
+            }
             onOpenOptions={() => onOpenOptions?.(app.id)}
           />
         ))}

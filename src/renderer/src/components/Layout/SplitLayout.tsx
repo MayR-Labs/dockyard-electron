@@ -15,12 +15,19 @@ interface SplitLayoutProps {
   activeAppIds: string[]; // Array of app IDs to display
   layoutMode: LayoutMode;
   onLayoutChange: (mode: LayoutMode, panels: { appId: string; size?: number }[]) => void;
+  resolveInstanceId?: (appId: string) => string | undefined;
 }
 
 /**
  * SplitLayout component that displays multiple apps side by side or in a grid
  */
-export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: SplitLayoutProps) {
+export function SplitLayout({
+  apps,
+  activeAppIds,
+  layoutMode,
+  onLayoutChange,
+  resolveInstanceId,
+}: SplitLayoutProps) {
   const [panelSizes, setPanelSizes] = useState<number[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +52,12 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
   if (activeAppIds.length === 1 || layoutMode === 'single') {
     // Single app view - shouldn't happen in SplitLayout but handle it gracefully
     const app = apps.find((a) => a.id === activeAppIds[0]);
-    const instanceId = app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
+    const selectedInstanceId = resolveInstanceId?.(activeAppIds[0]);
+    const instanceId = selectedInstanceId
+      ? selectedInstanceId
+      : app?.instances && app.instances.length > 0
+        ? app.instances[0].id
+        : undefined;
 
     return (
       <div className="flex-1 bg-gray-900 flex flex-col">
@@ -66,8 +78,12 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
         {activeAppIds.map((appId, index) => {
           const app = apps.find((a) => a.id === appId);
           const size = panelSizes[index] || 50;
-          const instanceId =
-            app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
+          const selectedInstanceId = resolveInstanceId?.(appId);
+          const instanceId = selectedInstanceId
+            ? selectedInstanceId
+            : app?.instances && app.instances.length > 0
+              ? app.instances[0].id
+              : undefined;
 
           return (
             <motion.div
@@ -186,8 +202,12 @@ export function SplitLayout({ apps, activeAppIds, layoutMode, onLayoutChange }: 
       >
         {activeAppIds.map((appId) => {
           const app = apps.find((a) => a.id === appId);
-          const instanceId =
-            app?.instances && app.instances.length > 0 ? app.instances[0].id : undefined;
+          const selectedInstanceId = resolveInstanceId?.(appId);
+          const instanceId = selectedInstanceId
+            ? selectedInstanceId
+            : app?.instances && app.instances.length > 0
+              ? app.instances[0].id
+              : undefined;
 
           return (
             <motion.div
