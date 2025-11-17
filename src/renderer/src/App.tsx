@@ -4,7 +4,7 @@
  * Refactored to follow SOLID principles with proper separation of concerns
  */
 
-import { useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useWorkspaceStore } from './store/workspaces';
 import { useAppStore } from './store/apps';
@@ -26,6 +26,7 @@ import { PerformanceDashboard } from './components/DevTools/PerformanceDashboard
 import { SessionManager } from './components/DevTools/SessionManager';
 import { WorkspaceSettingsModal } from './components/Modals/WorkspaceSettingsModal';
 import { App as AppType } from '../../shared/types/app';
+import { IPC_EVENTS } from '../../shared/constants';
 
 function App() {
   // Store hooks
@@ -149,18 +150,21 @@ function App() {
     });
   };
 
-  const getInstanceId = (appId: string, explicitInstanceId?: string) => {
-    if (explicitInstanceId) return explicitInstanceId;
-    const app = apps.find((a) => a.id === appId);
-    if (!app) return undefined;
+  const getInstanceId = useCallback(
+    (appId: string, explicitInstanceId?: string) => {
+      if (explicitInstanceId) return explicitInstanceId;
+      const app = apps.find((a) => a.id === appId);
+      if (!app) return undefined;
 
-    const preferred = activeInstances[appId];
-    if (preferred && app.instances.some((inst) => inst.id === preferred)) {
-      return preferred;
-    }
+      const preferred = activeInstances[appId];
+      if (preferred && app.instances.some((inst) => inst.id === preferred)) {
+        return preferred;
+      }
 
-    return app.instances[0]?.id;
-  };
+      return app.instances[0]?.id;
+    },
+    [activeInstances, apps]
+  );
 
   const handleWakeAppRequest = async (appId: string, instanceId?: string) => {
     const targetInstanceId = getInstanceId(appId, instanceId);
@@ -187,6 +191,62 @@ function App() {
       setAppAwakeState(appId, false);
     }
   };
+
+  const handleToggleDockyardDevTools = () => {
+    if (!window.dockyard?.window?.toggleDevTools) {
+      return;
+    }
+
+    window.dockyard.window.toggleDevTools().catch((error: unknown) => {
+      console.error('Failed to toggle Dockyard devtools', error);
+    });
+  };
+
+  useEffect(() => {
+    if (!window.dockyard?.on || !window.dockyard?.off || !window.dockyard?.webview) {
+      return;
+    }
+
+    const performReload = (ignoreCache: boolean) => {
+      if (!activeAppId) return;
+      if (!awakeApps[activeAppId]) return;
+      const instanceId = getInstanceId(activeAppId);
+      if (!instanceId) return;
+
+      const action = ignoreCache
+        ? window.dockyard.webview.forceReload
+        : window.dockyard.webview.reload;
+
+      action(activeAppId, instanceId).catch((error: unknown) => {
+        console.error(ignoreCache ? 'Force reload failed' : 'Reload failed', error);
+      });
+    };
+
+    const toggleAppDevtools = () => {
+      if (!activeAppId) return;
+      if (!awakeApps[activeAppId]) return;
+      const instanceId = getInstanceId(activeAppId);
+      if (!instanceId) return;
+
+      window.dockyard.webview.toggleDevTools(activeAppId, instanceId).catch((error: unknown) => {
+        console.error('Failed to toggle app devtools', error);
+      });
+    };
+
+    const reloadListener = () => performReload(false);
+    const forceReloadListener = () => performReload(true);
+    const toggleDevtoolsListener = () => toggleAppDevtools();
+
+    window.dockyard.on(IPC_EVENTS.SHORTCUT_RELOAD, reloadListener);
+    window.dockyard.on(IPC_EVENTS.SHORTCUT_FORCE_RELOAD, forceReloadListener);
+    window.dockyard.on(IPC_EVENTS.SHORTCUT_TOGGLE_DEVTOOLS, toggleDevtoolsListener);
+
+    return () => {
+      window.dockyard.off(IPC_EVENTS.SHORTCUT_RELOAD, reloadListener);
+      window.dockyard.off(IPC_EVENTS.SHORTCUT_FORCE_RELOAD, forceReloadListener);
+      window.dockyard.off(IPC_EVENTS.SHORTCUT_TOGGLE_DEVTOOLS, toggleDevtoolsListener);
+    };
+  }, [activeAppId, awakeApps, getInstanceId]);
 
   // Clean up awake map when apps list changes
   useEffect(() => {
@@ -625,6 +685,7 @@ function App() {
         }
         onOpenPerformance={() => setIsPerformanceDashboardOpen(true)}
         onOpenSessions={() => setIsSessionManagerOpen(true)}
+        onToggleDockyardDevTools={handleToggleDockyardDevTools}
       />
 
       {/* Modals */}

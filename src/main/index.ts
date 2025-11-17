@@ -44,11 +44,11 @@ async function initialize(): Promise<void> {
   // Initialize webview manager (new)
   webViewManager = new WebViewManager();
 
-  // Initialize IPC handlers
-  new IPCHandlers(storeManager, browserViewManager, webViewManager);
-
   // Initialize window manager
   windowManager = new WindowManager();
+
+  // Initialize IPC handlers
+  new IPCHandlers(storeManager, browserViewManager, webViewManager, windowManager);
 
   // Create main window
   const mainWindow = windowManager.createMainWindow();

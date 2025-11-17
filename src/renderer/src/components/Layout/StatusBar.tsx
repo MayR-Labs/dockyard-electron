@@ -5,6 +5,7 @@ interface StatusBarProps {
   onOpenPerformance?: () => void;
   onOpenSessions?: () => void;
   onOpenWorkspaceSettings?: () => void;
+  onToggleDockyardDevTools?: () => void;
 }
 
 export function StatusBar({
@@ -14,6 +15,7 @@ export function StatusBar({
   onOpenPerformance,
   onOpenSessions,
   onOpenWorkspaceSettings,
+  onToggleDockyardDevTools,
 }: StatusBarProps) {
   return (
     <div className="h-8 bg-gray-900 border-t border-gray-800 flex items-center justify-between px-4 text-xs">
@@ -88,6 +90,24 @@ export function StatusBar({
               />
             </svg>
             <span>Sessions</span>
+          </button>
+        )}
+
+        {onToggleDockyardDevTools && (
+          <button
+            onClick={onToggleDockyardDevTools}
+            className="flex items-center gap-1 px-2 py-1 rounded text-gray-400 hover:bg-gray-800 transition"
+            title="Toggle Dockyard Developer Tools"
+          >
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 4h4l2 4-2 4H5l-2-4 2-4zm10 0h4l2 4-2 4h-4l-2-4 2-4zm-5 12h4l2 4-2 4h-4l-2-4 2-4z"
+              />
+            </svg>
+            <span>Dockyard DevTools</span>
           </button>
         )}
 

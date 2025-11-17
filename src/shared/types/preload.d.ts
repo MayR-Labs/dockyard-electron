@@ -43,6 +43,7 @@ export interface DockyardAPI {
     goBack: (appId: string, instanceId: string) => Promise<void>;
     goForward: (appId: string, instanceId: string) => Promise<void>;
     reload: (appId: string, instanceId: string) => Promise<void>;
+    forceReload: (appId: string, instanceId: string) => Promise<void>;
     getState: (
       appId: string,
       instanceId: string
@@ -55,6 +56,7 @@ export interface DockyardAPI {
     setZoom: (appId: string, instanceId: string, zoomFactor: number) => Promise<void>;
     openDevTools: (appId: string, instanceId: string) => Promise<void>;
     closeDevTools: (appId: string, instanceId: string) => Promise<void>;
+    toggleDevTools: (appId: string, instanceId: string) => Promise<void>;
     clearSession: (partitionId: string) => Promise<void>;
     getMemory: (
       appId: string,
@@ -86,6 +88,7 @@ export interface DockyardAPI {
     goBack: (appId: string, instanceId: string) => Promise<void>;
     goForward: (appId: string, instanceId: string) => Promise<void>;
     reload: (appId: string, instanceId: string) => Promise<void>;
+    forceReload: (appId: string, instanceId: string) => Promise<void>;
     getState: (
       appId: string,
       instanceId: string
@@ -98,6 +101,7 @@ export interface DockyardAPI {
     setZoom: (appId: string, instanceId: string, zoomFactor: number) => Promise<void>;
     openDevTools: (appId: string, instanceId: string) => Promise<void>;
     closeDevTools: (appId: string, instanceId: string) => Promise<void>;
+    toggleDevTools: (appId: string, instanceId: string) => Promise<void>;
     clearSession: (partitionId: string) => Promise<void>;
     getMemory: (
       appId: string,
@@ -130,6 +134,9 @@ export interface DockyardAPI {
       silent?: boolean;
     }) => Promise<void>;
     updateBadge: (appId: string, count: number) => Promise<App>;
+  };
+  window: {
+    toggleDevTools: () => Promise<void>;
   };
   on: (channel: DockyardEventChannel, callback: DockyardEventListener) => void;
   off: (channel: DockyardEventChannel, callback: DockyardEventListener) => void;

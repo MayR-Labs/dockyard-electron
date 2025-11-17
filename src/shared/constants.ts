@@ -32,10 +32,12 @@ export const IPC_CHANNELS = {
     GO_BACK: 'browser-view:go-back',
     GO_FORWARD: 'browser-view:go-forward',
     RELOAD: 'browser-view:reload',
+    FORCE_RELOAD: 'browser-view:force-reload',
     GET_STATE: 'browser-view:get-state',
     SET_ZOOM: 'browser-view:set-zoom',
     OPEN_DEVTOOLS: 'browser-view:open-devtools',
     CLOSE_DEVTOOLS: 'browser-view:close-devtools',
+    TOGGLE_DEVTOOLS: 'browser-view:toggle-devtools',
     CLEAR_SESSION: 'browser-view:clear-session',
     GET_MEMORY: 'browser-view:get-memory',
     GET_CPU: 'browser-view:get-cpu',
@@ -48,15 +50,20 @@ export const IPC_CHANNELS = {
     GO_BACK: 'webview:go-back',
     GO_FORWARD: 'webview:go-forward',
     RELOAD: 'webview:reload',
+    FORCE_RELOAD: 'webview:force-reload',
     GET_STATE: 'webview:get-state',
     SET_ZOOM: 'webview:set-zoom',
     OPEN_DEVTOOLS: 'webview:open-devtools',
     CLOSE_DEVTOOLS: 'webview:close-devtools',
+    TOGGLE_DEVTOOLS: 'webview:toggle-devtools',
     CLEAR_SESSION: 'webview:clear-session',
     GET_MEMORY: 'webview:get-memory',
     GET_CPU: 'webview:get-cpu',
     GET_ALL: 'webview:get-all',
     UPDATE_ACTIVE: 'webview:update-active',
+  },
+  WINDOW: {
+    TOGGLE_DEVTOOLS: 'window:toggle-devtools',
   },
   SETTINGS: {
     GET: 'settings:get',
@@ -73,6 +80,9 @@ export const IPC_EVENTS = {
   WORKSPACE_CHANGED: 'workspace-changed',
   APP_UPDATED: 'app-updated',
   NOTIFICATION: 'notification',
+  SHORTCUT_RELOAD: 'shortcut:reload',
+  SHORTCUT_FORCE_RELOAD: 'shortcut:force-reload',
+  SHORTCUT_TOGGLE_DEVTOOLS: 'shortcut:toggle-devtools',
 } as const;
 
 // Default values

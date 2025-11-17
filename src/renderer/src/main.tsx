@@ -303,6 +303,7 @@ if (typeof window !== 'undefined' && !window.dockyard) {
       goBack: async (_appId, _instanceId) => undefined,
       goForward: async (_appId, _instanceId) => undefined,
       reload: async (_appId, _instanceId) => undefined,
+      forceReload: async (_appId, _instanceId) => undefined,
       getState: async (appId: string, instanceId: string) => {
         const view = ensureMockView(appId, instanceId);
         return {
@@ -315,6 +316,7 @@ if (typeof window !== 'undefined' && !window.dockyard) {
       setZoom: async (_appId, _instanceId, _zoomFactor) => undefined,
       openDevTools: async (_appId, _instanceId) => undefined,
       closeDevTools: async (_appId, _instanceId) => undefined,
+      toggleDevTools: async (_appId, _instanceId) => undefined,
       clearSession: async (_partitionId) => undefined,
       getMemory: async (appId, instanceId) => {
         ensureMockView(appId, instanceId);
@@ -353,6 +355,7 @@ if (typeof window !== 'undefined' && !window.dockyard) {
       goBack: async (_appId, _instanceId) => undefined,
       goForward: async (_appId, _instanceId) => undefined,
       reload: async (_appId, _instanceId) => undefined,
+      forceReload: async (_appId, _instanceId) => undefined,
       getState: async (appId: string, instanceId: string) => {
         const view = ensureMockView(appId, instanceId);
         return {
@@ -365,6 +368,7 @@ if (typeof window !== 'undefined' && !window.dockyard) {
       setZoom: async (_appId, _instanceId, _zoomFactor) => undefined,
       openDevTools: async (_appId, _instanceId) => undefined,
       closeDevTools: async (_appId, _instanceId) => undefined,
+      toggleDevTools: async (_appId, _instanceId) => undefined,
       clearSession: async (_partitionId) => undefined,
       getMemory: async (appId, instanceId) => {
         ensureMockView(appId, instanceId);
@@ -406,6 +410,11 @@ if (typeof window !== 'undefined' && !window.dockyard) {
           throw new Error('App not found');
         }
         return app;
+      },
+    },
+    window: {
+      toggleDevTools: async () => {
+        console.log('Mock: toggle Dockyard devtools');
       },
     },
     on: (channel: DockyardEventChannel, callback: DockyardEventListener) => {

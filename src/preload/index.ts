@@ -6,6 +6,9 @@ const validEventChannels = [
   IPC_EVENTS.WORKSPACE_CHANGED,
   IPC_EVENTS.APP_UPDATED,
   IPC_EVENTS.NOTIFICATION,
+  IPC_EVENTS.SHORTCUT_RELOAD,
+  IPC_EVENTS.SHORTCUT_FORCE_RELOAD,
+  IPC_EVENTS.SHORTCUT_TOGGLE_DEVTOOLS,
 ] as const;
 
 type DockyardEventChannel = (typeof validEventChannels)[number];
@@ -105,6 +108,8 @@ const dockyardAPI: DockyardAPI = {
       ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GO_FORWARD, appId, instanceId),
     reload: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.RELOAD, appId, instanceId),
+    forceReload: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.FORCE_RELOAD, appId, instanceId),
     getState: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.GET_STATE, appId, instanceId),
     setZoom: (appId: string, instanceId: string, zoomFactor: number) =>
@@ -113,6 +118,8 @@ const dockyardAPI: DockyardAPI = {
       ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.OPEN_DEVTOOLS, appId, instanceId),
     closeDevTools: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.CLOSE_DEVTOOLS, appId, instanceId),
+    toggleDevTools: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.TOGGLE_DEVTOOLS, appId, instanceId),
     clearSession: (partitionId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.BROWSER_VIEW.CLEAR_SESSION, partitionId),
     getMemory: (appId: string, instanceId: string) =>
@@ -142,6 +149,8 @@ const dockyardAPI: DockyardAPI = {
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.GO_FORWARD, appId, instanceId),
     reload: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.RELOAD, appId, instanceId),
+    forceReload: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.FORCE_RELOAD, appId, instanceId),
     getState: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.GET_STATE, appId, instanceId),
     setZoom: (appId: string, instanceId: string, zoomFactor: number) =>
@@ -150,6 +159,8 @@ const dockyardAPI: DockyardAPI = {
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.OPEN_DEVTOOLS, appId, instanceId),
     closeDevTools: (appId: string, instanceId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.CLOSE_DEVTOOLS, appId, instanceId),
+    toggleDevTools: (appId: string, instanceId: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.TOGGLE_DEVTOOLS, appId, instanceId),
     clearSession: (partitionId: string) =>
       ipcRenderer.invoke(IPC_CHANNELS.WEBVIEW.CLEAR_SESSION, partitionId),
     getMemory: (appId: string, instanceId: string) =>
@@ -173,6 +184,11 @@ const dockyardAPI: DockyardAPI = {
       ipcRenderer.invoke(IPC_CHANNELS.NOTIFICATION.SHOW, options),
     updateBadge: (appId: string, count: number) =>
       ipcRenderer.invoke(IPC_CHANNELS.NOTIFICATION.UPDATE_BADGE, appId, count),
+  },
+
+  // Window APIs
+  window: {
+    toggleDevTools: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW.TOGGLE_DEVTOOLS),
   },
 
   // Event listeners

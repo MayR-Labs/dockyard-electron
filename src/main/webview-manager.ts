@@ -104,6 +104,13 @@ export class WebViewManager {
     }
   }
 
+  forceReload(appId: string, instanceId: string): void {
+    const webContents = this.getWebContents(appId, instanceId);
+    if (webContents && !webContents.isDestroyed()) {
+      webContents.reloadIgnoringCache();
+    }
+  }
+
   /**
    * Get navigation state
    */
@@ -151,7 +158,7 @@ export class WebViewManager {
   openDevTools(appId: string, instanceId: string): void {
     const webContents = this.getWebContents(appId, instanceId);
     if (webContents && !webContents.isDestroyed()) {
-      webContents.openDevTools();
+      webContents.openDevTools({ mode: 'bottom' });
     }
   }
 
@@ -162,6 +169,17 @@ export class WebViewManager {
     const webContents = this.getWebContents(appId, instanceId);
     if (webContents && !webContents.isDestroyed()) {
       webContents.closeDevTools();
+    }
+  }
+
+  toggleDevTools(appId: string, instanceId: string): void {
+    const webContents = this.getWebContents(appId, instanceId);
+    if (webContents && !webContents.isDestroyed()) {
+      if (webContents.isDevToolsOpened()) {
+        webContents.closeDevTools();
+      } else {
+        webContents.openDevTools({ mode: 'right' });
+      }
     }
   }
 

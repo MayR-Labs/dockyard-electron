@@ -25,10 +25,12 @@ export class BrowserViewHandlers {
     this.registerGoBackHandler();
     this.registerGoForwardHandler();
     this.registerReloadHandler();
+    this.registerForceReloadHandler();
     this.registerGetStateHandler();
     this.registerSetZoomHandler();
     this.registerOpenDevToolsHandler();
     this.registerCloseDevToolsHandler();
+    this.registerToggleDevToolsHandler();
     this.registerClearSessionHandler();
     this.registerGetMemoryHandler();
     this.registerGetCPUHandler();
@@ -114,6 +116,15 @@ export class BrowserViewHandlers {
     );
   }
 
+  private registerForceReloadHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.BROWSER_VIEW.FORCE_RELOAD,
+      async (_event, appId: string, instanceId: string) => {
+        this.browserViewManager.forceReload(appId, instanceId);
+      }
+    );
+  }
+
   private registerGetStateHandler(): void {
     ipcMain.handle(
       IPC_CHANNELS.BROWSER_VIEW.GET_STATE,
@@ -146,6 +157,15 @@ export class BrowserViewHandlers {
       IPC_CHANNELS.BROWSER_VIEW.CLOSE_DEVTOOLS,
       async (_event, appId: string, instanceId: string) => {
         this.browserViewManager.closeDevTools(appId, instanceId);
+      }
+    );
+  }
+
+  private registerToggleDevToolsHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.BROWSER_VIEW.TOGGLE_DEVTOOLS,
+      async (_event, appId: string, instanceId: string) => {
+        this.browserViewManager.toggleDevTools(appId, instanceId);
       }
     );
   }

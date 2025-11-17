@@ -23,10 +23,12 @@ export class WebViewHandlers {
     this.registerGoBackHandler();
     this.registerGoForwardHandler();
     this.registerReloadHandler();
+    this.registerForceReloadHandler();
     this.registerGetStateHandler();
     this.registerSetZoomHandler();
     this.registerOpenDevToolsHandler();
     this.registerCloseDevToolsHandler();
+    this.registerToggleDevToolsHandler();
     this.registerClearSessionHandler();
     this.registerGetMemoryHandler();
     this.registerGetCPUHandler();
@@ -94,6 +96,15 @@ export class WebViewHandlers {
     );
   }
 
+  private registerForceReloadHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.WEBVIEW.FORCE_RELOAD,
+      async (_event, appId: string, instanceId: string) => {
+        this.webViewManager.forceReload(appId, instanceId);
+      }
+    );
+  }
+
   private registerGetStateHandler(): void {
     ipcMain.handle(
       IPC_CHANNELS.WEBVIEW.GET_STATE,
@@ -126,6 +137,15 @@ export class WebViewHandlers {
       IPC_CHANNELS.WEBVIEW.CLOSE_DEVTOOLS,
       async (_event, appId: string, instanceId: string) => {
         this.webViewManager.closeDevTools(appId, instanceId);
+      }
+    );
+  }
+
+  private registerToggleDevToolsHandler(): void {
+    ipcMain.handle(
+      IPC_CHANNELS.WEBVIEW.TOGGLE_DEVTOOLS,
+      async (_event, appId: string, instanceId: string) => {
+        this.webViewManager.toggleDevTools(appId, instanceId);
       }
     );
   }

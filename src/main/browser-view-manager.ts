@@ -232,6 +232,15 @@ export class BrowserViewManager {
     }
   }
 
+  forceReload(appId: string, instanceId: string): void {
+    const viewId = this.getViewId(appId, instanceId);
+    const entry = this.views.get(viewId);
+
+    if (entry && !entry.view.webContents.isDestroyed()) {
+      entry.view.webContents.reloadIgnoringCache();
+    }
+  }
+
   /**
    * Get navigation state
    */
@@ -285,6 +294,19 @@ export class BrowserViewManager {
 
     if (entry && !entry.view.webContents.isDestroyed()) {
       entry.view.webContents.openDevTools();
+    }
+  }
+
+  toggleDevTools(appId: string, instanceId: string): void {
+    const viewId = this.getViewId(appId, instanceId);
+    const entry = this.views.get(viewId);
+
+    if (entry && !entry.view.webContents.isDestroyed()) {
+      if (entry.view.webContents.isDevToolsOpened()) {
+        entry.view.webContents.closeDevTools();
+      } else {
+        entry.view.webContents.openDevTools({ mode: 'right' });
+      }
     }
   }
 

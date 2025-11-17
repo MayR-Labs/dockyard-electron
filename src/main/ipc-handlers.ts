@@ -14,6 +14,8 @@ import { SettingsHandlers } from './handlers/settings-handlers';
 import { NotificationHandlers } from './handlers/notification-handlers';
 import { BrowserViewHandlers } from './handlers/browserview-handlers';
 import { WebViewHandlers } from './handlers/webview-handlers';
+import { WindowHandlers } from './handlers/window-handlers';
+import { WindowManager } from './window-manager';
 
 export class IPCHandlers {
   private profileHandlers!: ProfileHandlers;
@@ -23,11 +25,13 @@ export class IPCHandlers {
   private notificationHandlers!: NotificationHandlers;
   private browserViewHandlers!: BrowserViewHandlers;
   private webViewHandlers!: WebViewHandlers;
+  private windowHandlers!: WindowHandlers;
 
   constructor(
     private storeManager: StoreManager,
     private browserViewManager: BrowserViewManager,
-    private webViewManager: WebViewManager
+    private webViewManager: WebViewManager,
+    private windowManager: WindowManager
   ) {
     this.initializeHandlers();
   }
@@ -41,5 +45,6 @@ export class IPCHandlers {
     this.notificationHandlers = new NotificationHandlers(this.storeManager);
     this.browserViewHandlers = new BrowserViewHandlers(this.storeManager, this.browserViewManager);
     this.webViewHandlers = new WebViewHandlers(this.webViewManager);
+    this.windowHandlers = new WindowHandlers(this.windowManager);
   }
 }
