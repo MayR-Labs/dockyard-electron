@@ -11,6 +11,7 @@ import { LayoutControls } from './LayoutControls';
 import { SplitLayout } from './SplitLayout';
 import { QuickStartGuide } from './QuickStartGuide';
 import { AppTile } from '../App/AppTile';
+import { EmptyWorkspaceState } from './EmptyWorkspaceState';
 
 interface WorkspaceCanvasProps {
   apps: App[];
@@ -99,7 +100,8 @@ export function WorkspaceCanvas({
     );
   }
 
-  const resolvedActiveAppId = activeAppId || apps[0]?.id || null;
+  const activeAppExists = activeAppId ? apps.some((app) => app.id === activeAppId) : false;
+  const resolvedActiveAppId = activeAppExists ? activeAppId : null;
 
   return (
     <div className="flex-1 bg-gray-950 relative flex flex-col">
@@ -155,6 +157,14 @@ export function WorkspaceCanvas({
             onOpenOptions={() => onOpenOptions?.(app.id)}
           />
         ))}
+
+        {!resolvedActiveAppId && apps.length > 0 && (
+          <EmptyWorkspaceState
+            apps={apps}
+            onSelectApp={onAppSelect}
+            onAddCustomApp={onAddCustomApp}
+          />
+        )}
       </div>
     </div>
   );
