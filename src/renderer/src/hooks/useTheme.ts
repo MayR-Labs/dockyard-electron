@@ -16,20 +16,16 @@ export function useTheme({ mode, accentColor, backgroundStyle }: UseThemeOptions
   const [effectiveTheme, setEffectiveTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
-    // Determine effective theme
+    // Calculate effective theme
     let theme: 'light' | 'dark' = 'dark';
-    
     if (mode === 'system') {
-      // Detect system preference
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       theme = isDark ? 'dark' : 'light';
     } else {
       theme = mode;
     }
 
-    setEffectiveTheme(theme);
-
-    // Apply theme class to body
+    // Apply theme class to document
     document.documentElement.classList.remove('theme-light', 'theme-dark');
     if (theme === 'light') {
       document.documentElement.classList.add('theme-light');
@@ -61,8 +57,8 @@ export function useTheme({ mode, accentColor, backgroundStyle }: UseThemeOptions
     if (mode !== 'system') return;
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      const theme = e.matches ? 'dark' : 'light';
+    const handleChange = () => {
+      const theme = mediaQuery.matches ? 'dark' : 'light';
       setEffectiveTheme(theme);
       
       document.documentElement.classList.remove('theme-light', 'theme-dark');
