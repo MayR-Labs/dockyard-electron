@@ -1,5 +1,4 @@
-import { ipcMain, session, WebContents } from 'electron';
-import { App, AppInstance } from '../shared/types/app';
+import { app, session, WebContents, webContents as electronWebContents } from 'electron';
 
 interface WebViewEntry {
   webContentsId: number;
@@ -64,8 +63,7 @@ export class WebViewManager {
     if (!entry) return null;
 
     try {
-      const { webContents } = require('electron');
-      return webContents.fromId(entry.webContentsId);
+      return electronWebContents.fromId(entry.webContentsId);
     } catch {
       return null;
     }
@@ -215,8 +213,8 @@ export class WebViewManager {
 
     try {
       const pid = webContents.getOSProcessId();
-      const appMetrics = require('electron').app.getAppMetrics();
-      const processMetrics = appMetrics.find((m: any) => m.pid === pid);
+      const appMetrics = app.getAppMetrics();
+      const processMetrics = appMetrics.find((metric) => metric.pid === pid);
 
       if (processMetrics && processMetrics.memory) {
         return {
@@ -224,8 +222,8 @@ export class WebViewManager {
           privateBytes: processMetrics.memory.privateBytes || 0,
         };
       }
-    } catch (e) {
-      console.error('Failed to get memory usage:', e);
+    } catch (error) {
+      console.error('Failed to get memory usage:', error);
     }
 
     return { workingSetSize: 0, privateBytes: 0 };
@@ -243,14 +241,14 @@ export class WebViewManager {
 
     try {
       const pid = webContents.getOSProcessId();
-      const appMetrics = require('electron').app.getAppMetrics();
-      const processMetrics = appMetrics.find((m: any) => m.pid === pid);
+      const appMetrics = app.getAppMetrics();
+      const processMetrics = appMetrics.find((metric) => metric.pid === pid);
 
       if (processMetrics && processMetrics.cpu) {
         return processMetrics.cpu.percentCPUUsage || 0;
       }
-    } catch (e) {
-      console.error('Failed to get CPU usage:', e);
+    } catch (error) {
+      console.error('Failed to get CPU usage:', error);
     }
 
     return 0;

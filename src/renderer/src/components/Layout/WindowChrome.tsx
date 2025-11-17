@@ -2,22 +2,55 @@ interface WindowChromeProps {
   currentWorkspace: string;
   onProfileClick: () => void;
   onSearchClick: () => void;
+  onWorkspaceSwitchClick: () => void;
+  onWorkspaceContextMenu?: (e: React.MouseEvent) => void;
 }
 
 export function WindowChrome({
   currentWorkspace,
   onProfileClick,
   onSearchClick,
+  onWorkspaceSwitchClick,
+  onWorkspaceContextMenu,
 }: WindowChromeProps) {
   return (
     <div className="h-12 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 select-none">
-      {/* Left: Profile selector */}
-      <div className="flex items-center gap-4">
+      <div className="flex">
+        {/* Profile selector */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onProfileClick}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition"
+          >
+            <span className="text-sm font-medium text-gray-300">Default Profile</span>
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Current workspace name with switcher */}
         <button
-          onClick={onProfileClick}
+          onClick={onWorkspaceSwitchClick}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            onWorkspaceContextMenu?.(e);
+          }}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition"
         >
-          <span className="text-sm font-medium text-gray-300">Default Profile</span>
+          <span className="text-sm font-medium text-gray-300">
+            {currentWorkspace || 'No Workspace Selected'}
+          </span>
           <svg
             className="w-4 h-4 text-gray-400"
             fill="none"
@@ -27,11 +60,6 @@ export function WindowChrome({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-      </div>
-
-      {/* Center: Current workspace name */}
-      <div className="text-sm font-medium text-gray-300">
-        {currentWorkspace || 'No Workspace Selected'}
       </div>
 
       {/* Right: Search and window controls */}

@@ -16,6 +16,8 @@ interface WorkspaceCanvasProps {
   apps: App[];
   activeAppId: string | null;
   onAppSelect: (appId: string) => void;
+  awakeApps: Record<string, boolean>;
+  onWakeApp: (appId: string) => void;
   onAddSampleApps?: () => void;
   onAddCustomApp?: () => void;
   onUpdateApp?: (id: string, data: Partial<App>) => void;
@@ -26,6 +28,8 @@ export function WorkspaceCanvas({
   apps,
   activeAppId,
   onAppSelect,
+  awakeApps,
+  onWakeApp,
   onAddSampleApps,
   onAddCustomApp,
   onUpdateApp,
@@ -33,14 +37,6 @@ export function WorkspaceCanvas({
 }: WorkspaceCanvasProps) {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
-  const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
-  const handleWakeApp = (appId: string) => {
-    setAwakeApps((prev) => {
-      if (prev[appId]) return prev;
-      return { ...prev, [appId]: true };
-    });
-  };
-
 
   // Ensure there is always a selected app when apps exist
   useEffect(() => {
@@ -118,29 +114,27 @@ export function WorkspaceCanvas({
             }}
           />
 
-          {apps.length > 1 && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500">Add to layout:</span>
-              <select
-                onChange={(e) => {
-                  if (e.target.value) {
-                    handleAddToLayout(e.target.value);
-                  }
-                }}
-                value=""
-                className="text-xs bg-gray-800 text-gray-300 rounded px-2 py-1 border border-gray-700"
-              >
-                <option value="">Select app...</option>
-                {apps
-                  .filter((app) => !activeAppIds.includes(app.id))
-                  .map((app) => (
-                    <option key={app.id} value={app.id}>
-                      {app.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-500">Add to layout:</span>
+            <select
+              onChange={(e) => {
+                if (e.target.value) {
+                  handleAddToLayout(e.target.value);
+                }
+              }}
+              value=""
+              className="text-xs bg-gray-800 text-gray-300 rounded px-2 py-1 border border-gray-700"
+            >
+              <option value="">Select app...</option>
+              {apps
+                .filter((app) => !activeAppIds.includes(app.id))
+                .map((app) => (
+                  <option key={app.id} value={app.id}>
+                    {app.name}
+                  </option>
+                ))}
+            </select>
+          </div>
         </div>
       )}
 
@@ -152,7 +146,7 @@ export function WorkspaceCanvas({
             isActive={resolvedActiveAppId === app.id}
             isAwake={!!awakeApps[app.id]}
             onSelect={() => onAppSelect(app.id)}
-            onWakeApp={() => handleWakeApp(app.id)}
+            onWakeApp={() => onWakeApp(app.id)}
             onUpdateApp={onUpdateApp}
             onOpenOptions={() => onOpenOptions?.(app.id)}
           />

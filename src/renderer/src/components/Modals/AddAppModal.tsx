@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface AddAppModalProps {
   isOpen: boolean;
-  workspaceId: string;
   onClose: () => void;
   onAddApp: (appData: {
     name: string;
@@ -13,7 +12,7 @@ interface AddAppModalProps {
   }) => Promise<void>;
 }
 
-export function AddAppModal({ isOpen, workspaceId, onClose, onAddApp }: AddAppModalProps) {
+export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

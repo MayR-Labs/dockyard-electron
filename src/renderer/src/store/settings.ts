@@ -7,6 +7,7 @@
 import { create } from 'zustand';
 import { Settings } from '../../../shared/types';
 import { settingsAPI } from '../services/api';
+import { getErrorMessage } from '../utils/errors';
 
 interface SettingsStore {
   settings: Settings | null;
@@ -28,8 +29,8 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
     try {
       const settings = await settingsAPI.get();
       set({ settings, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
     }
   },
 
@@ -38,8 +39,8 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
     try {
       const settings = await settingsAPI.update(data);
       set({ settings, loading: false });
-    } catch (error: any) {
-      set({ error: error.message, loading: false });
+    } catch (error: unknown) {
+      set({ error: getErrorMessage(error), loading: false });
     }
   },
 }));

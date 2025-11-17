@@ -45,12 +45,26 @@ export function BrowserViewContainer({
     const updateBounds = () => {
       if (containerRef.current && window.dockyard?.browserView) {
         const rect = containerRef.current.getBoundingClientRect();
-        const bounds = {
+        let bounds = {
           x: Math.round(rect.left),
           y: Math.round(rect.top),
           width: Math.round(rect.width),
           height: Math.round(rect.height),
         };
+
+        // Apply responsive mode if enabled
+        if (app.display?.responsiveMode?.enabled) {
+          const { width, height } = app.display.responsiveMode;
+          // Center the responsive view within the container
+          const offsetX = Math.max(0, Math.round((rect.width - width) / 2));
+          const offsetY = Math.max(0, Math.round((rect.height - height) / 2));
+          bounds = {
+            x: Math.round(rect.left + offsetX),
+            y: Math.round(rect.top + offsetY),
+            width: Math.min(width, rect.width),
+            height: Math.min(height, rect.height),
+          };
+        }
 
         window.dockyard.browserView.show(app.id, instanceId, bounds).catch((error) => {
           console.error('Failed to show BrowserView:', error);
@@ -90,7 +104,7 @@ export function BrowserViewContainer({
         resizeObserver.disconnect();
       }
     };
-  }, [app.id, app.display?.zoomLevel, instanceId]);
+  }, [app.id, app.display?.zoomLevel, app.display?.responsiveMode, instanceId]);
 
   // Update zoom level when it changes
   useEffect(() => {
@@ -127,9 +141,25 @@ export function BrowserViewContainer({
   }
 
   // Electron environment: render container for BrowserView
+  const responsiveMode = app.display?.responsiveMode;
+  const isResponsive = responsiveMode?.enabled && responsiveMode.width > 0 && responsiveMode.height > 0;
+
   return (
-    <div ref={containerRef} className="flex-1 bg-gray-900 relative" style={{ minHeight: 0 }}>
+    <div ref={containerRef} className="flex-1 bg-gray-900 relative flex items-center justify-center" style={{ minHeight: 0 }}>
       {/* The BrowserView will be rendered here by Electron */}
+      {isResponsive && (
+        <div 
+          className="absolute border-2 border-indigo-500/50 rounded-lg pointer-events-none"
+          style={{
+            width: responsiveMode.width,
+            height: responsiveMode.height,
+          }}
+        >
+          <div className="absolute -top-6 left-0 text-xs text-indigo-400 font-mono bg-gray-900 px-2 py-1 rounded">
+            {responsiveMode.width} × {responsiveMode.height}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,11 @@
+import { IPC_EVENTS } from '../constants';
 import { ProfileMetadata } from './profile';
 import { Workspace } from './workspace';
 import { App } from './app';
 import { Settings } from './settings';
+
+export type DockyardEventChannel = (typeof IPC_EVENTS)[keyof typeof IPC_EVENTS];
+export type DockyardEventListener = (...args: unknown[]) => void;
 
 export interface DockyardAPI {
   profiles: {
@@ -127,8 +131,8 @@ export interface DockyardAPI {
     }) => Promise<void>;
     updateBadge: (appId: string, count: number) => Promise<App>;
   };
-  on: (channel: string, callback: (...args: any[]) => void) => void;
-  off: (channel: string, callback: (...args: any[]) => void) => void;
+  on: (channel: DockyardEventChannel, callback: DockyardEventListener) => void;
+  off: (channel: DockyardEventChannel, callback: DockyardEventListener) => void;
 }
 
 declare global {

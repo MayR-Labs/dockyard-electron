@@ -29,16 +29,12 @@ export class SettingsHandlers {
     ipcMain.handle(IPC_CHANNELS.SETTINGS.UPDATE, async (_event, data: Partial<Settings>) => {
       const store = this.storeManager.getSettingsStore();
 
-      // Deep merge the settings
-      const currentSettings = store.store;
-      const updatedSettings = {
-        ...currentSettings,
-        ...data,
-      };
-
       // Update each key separately to preserve nested structure
-      Object.keys(data).forEach((key) => {
-        store.set(key as any, (data as any)[key]);
+      (Object.keys(data) as Array<keyof Settings>).forEach((key) => {
+        const value = data[key];
+        if (typeof value !== 'undefined') {
+          store.set(key, value);
+        }
       });
 
       return store.store;

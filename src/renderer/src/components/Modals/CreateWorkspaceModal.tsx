@@ -158,7 +158,9 @@ export function CreateWorkspaceModal({
             <label className="block text-sm font-medium text-gray-300 mb-2">Dock Position</label>
             <select
               value={dockPosition}
-              onChange={(e) => setDockPosition(e.target.value as any)}
+              onChange={(e) =>
+                setDockPosition(e.target.value as 'top' | 'bottom' | 'left' | 'right')
+              }
               className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               disabled={isSubmitting}
             >

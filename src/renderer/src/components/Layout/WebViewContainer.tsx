@@ -11,7 +11,9 @@
  * persist:{profileSlug}-{workspaceSlug}-{appSlug}-{instanceId}
  */
 
-import { useRef, useEffect, useState } from 'react';
+import { createElement, forwardRef, useEffect, useRef, useState } from 'react';
+import type { DetailedHTMLProps, HTMLAttributes } from 'react';
+import type { DidFailLoadEvent, WebviewTag } from 'electron';
 import { App } from '../../../../shared/types/app';
 import { LoadingIcon } from '../Icons';
 import { isElectron } from '../../utils/environment';
@@ -23,34 +25,49 @@ interface WebViewContainerProps {
   isCreating?: boolean;
 }
 
-// Extend the JSX types to include webview
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      webview: React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
-          src?: string;
-          partition?: string;
-          allowpopups?: string;
-          webpreferences?: string;
-          nodeintegration?: string;
-          disablewebsecurity?: string;
-          preload?: string;
-        },
-        HTMLElement
-      >;
-    }
-  }
-}
+type WebviewNewWindowEvent = Event & {
+  url?: string;
+  preventDefault: () => void;
+};
+
+type ElectronWebViewProps = DetailedHTMLProps<
+  HTMLAttributes<WebviewTag> & {
+    src?: string;
+    partition?: string;
+    allowpopups?: string;
+    webpreferences?: string;
+    nodeintegration?: string;
+    disablewebsecurity?: string;
+    preload?: string;
+  },
+  WebviewTag
+>;
+
+const ElectronWebView = forwardRef<WebviewTag, ElectronWebViewProps>((props, ref) =>
+  createElement('webview', {
+    ...props,
+    ref,
+  })
+);
+
+ElectronWebView.displayName = 'ElectronWebView';
 
 export function WebViewContainer({ app, instanceId, isCreating = false }: WebViewContainerProps) {
-  const webviewRef = useRef<any>(null);
+  const webviewRef = useRef<WebviewTag | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const responsiveContainerRef = useRef<HTMLDivElement | null>(null);
+  const [responsiveScale, setResponsiveScale] = useState(1);
 
   // Get the instance details
   const instance = app.instances.find((i) => i.id === instanceId);
   const partitionId = instance?.partitionId || '';
+  const responsiveMode = app.display?.responsiveMode;
+  const responsiveEnabled = Boolean(
+    responsiveMode?.enabled && responsiveMode.width && responsiveMode.height
+  );
+  const responsiveWidth = responsiveMode?.width ?? 0;
+  const responsiveHeight = responsiveMode?.height ?? 0;
 
   useEffect(() => {
     if (!isElectron() || !instanceId || !webviewRef.current) return;
@@ -82,7 +99,7 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
       setIsLoading(true);
     };
 
-    const handleDidFailLoad = (event: any) => {
+    const handleDidFailLoad = (event: DidFailLoadEvent) => {
       console.error('WebView failed to load:', event);
       setIsLoading(false);
     };
@@ -106,7 +123,7 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
       }
     };
 
-    const handleNewWindow = (event: any) => {
+    const handleNewWindow = (event: WebviewNewWindowEvent) => {
       // Open links in default browser
       const url = event.url;
       if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
@@ -156,6 +173,65 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
     webview.setZoomFactor(app.display.zoomLevel);
   }, [app.display?.zoomLevel, isReady]);
 
+  // Responsive scaling: keep framed webview visible even when viewport smaller
+  useEffect(() => {
+    if (!responsiveEnabled) {
+      const frameId = window.requestAnimationFrame(() => setResponsiveScale(1));
+      return () => window.cancelAnimationFrame(frameId);
+    }
+
+    const container = responsiveContainerRef.current;
+    if (!container) {
+      return undefined;
+    }
+
+    const padding = 48; // account for container padding when measuring space
+    let frameId: number | null = null;
+
+    const scheduleScaleUpdate = () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        if (!responsiveEnabled || !responsiveWidth || !responsiveHeight) {
+          setResponsiveScale(1);
+          frameId = null;
+          return;
+        }
+
+        const availableWidth = Math.max(container.clientWidth - padding, 100);
+        const availableHeight = Math.max(container.clientHeight - padding, 100);
+        const widthScale = availableWidth / responsiveWidth;
+        const heightScale = availableHeight / responsiveHeight;
+        const nextScale = Math.min(1, widthScale, heightScale);
+        const resolvedScale = Number.isFinite(nextScale) ? Math.max(0.3, nextScale) : 1;
+        setResponsiveScale(resolvedScale);
+        frameId = null;
+      });
+    };
+
+    scheduleScaleUpdate();
+
+    const resizeObserver =
+      typeof ResizeObserver !== 'undefined' ? new ResizeObserver(scheduleScaleUpdate) : null;
+    if (resizeObserver) {
+      resizeObserver.observe(container);
+    }
+
+    window.addEventListener('resize', scheduleScaleUpdate);
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      window.removeEventListener('resize', scheduleScaleUpdate);
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
+  }, [responsiveEnabled, responsiveWidth, responsiveHeight]);
+
   // Update active status when focused
   useEffect(() => {
     if (!isElectron() || !instanceId || !webviewRef.current) return;
@@ -198,34 +274,78 @@ export function WebViewContainer({ app, instanceId, isCreating = false }: WebVie
     return <BrowserDevPlaceholder appName={app.name} appUrl={app.url} appIcon={app.icon} />;
   }
 
+  const webviewStyles = responsiveEnabled
+    ? {
+        width: `${responsiveWidth}px`,
+        height: `${responsiveHeight}px`,
+        display: 'flex',
+        border: 'none',
+        borderRadius: '18px',
+        overflow: 'hidden',
+      }
+    : {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        border: 'none',
+      };
+
+  const webviewElement = (
+    <ElectronWebView
+      ref={webviewRef}
+      src={app.url}
+      partition={partitionId}
+      webpreferences="contextIsolation=yes, nodeIntegration=no, sandbox=yes"
+      style={webviewStyles}
+    />
+  );
+
+  const renderLoadingOverlay = () => {
+    if (!isLoading) {
+      return null;
+    }
+
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-gray-900/70 backdrop-blur-sm z-20 pointer-events-none">
+        <div className="flex items-center gap-2 text-sm font-medium text-gray-100">
+          <LoadingIcon className="w-5 h-5 text-indigo-400 animate-spin" />
+          <span>Loading {app.name}</span>
+        </div>
+      </div>
+    );
+  };
+
+  if (responsiveEnabled) {
+    return (
+      <div
+        ref={responsiveContainerRef}
+        className="flex-1 bg-gray-900 relative flex items-center justify-center overflow-auto px-6 py-8"
+        style={{ minHeight: 0 }}
+      >
+        {renderLoadingOverlay()}
+        <div
+          className="relative rounded-3xl border border-gray-800 bg-black shadow-2xl"
+          style={{
+            width: `${responsiveWidth}px`,
+            height: `${responsiveHeight}px`,
+            transform: `scale(${responsiveScale})`,
+            transformOrigin: 'top left',
+          }}
+        >
+          <div className="absolute top-3 right-4 text-xs font-semibold text-gray-100 bg-gray-900/70 px-3 py-1 rounded-full z-10">
+            {responsiveWidth} × {responsiveHeight}
+          </div>
+          {webviewElement}
+        </div>
+      </div>
+    );
+  }
+
   // Electron environment: render webview
   return (
     <div className="flex-1 bg-gray-900 relative" style={{ minHeight: 0 }}>
-      {/* Loading overlay */}
-      {/* {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
-          <div className="text-center text-gray-400">
-            <div className="mb-4 flex justify-center">
-              <LoadingIcon className="w-12 h-12 opacity-50 animate-spin" />
-            </div>
-            <p className="text-sm">Loading {app.name}...</p>
-          </div>
-        </div>
-      )} */}
-
-      {/* WebView element */}
-      <webview
-        ref={webviewRef}
-        src={app.url}
-        partition={partitionId}
-        webpreferences="contextIsolation=yes, nodeIntegration=no, sandbox=yes"
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          border: 'none',
-        }}
-      />
+      {renderLoadingOverlay()}
+      {webviewElement}
     </div>
   );
 }

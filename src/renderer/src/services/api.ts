@@ -76,12 +76,12 @@ export const appAPI = {
     return window.dockyard.apps.delete(id);
   },
 
-  hibernate: (id: string): Promise<void> => {
-    return window.dockyard.apps.hibernate(id);
+  hibernate: (appId: string, instanceId: string): Promise<void> => {
+    return window.dockyard.apps.hibernate(appId, instanceId);
   },
 
-  resume: (id: string): Promise<void> => {
-    return window.dockyard.apps.resume(id);
+  resume: (appId: string, instanceId: string): Promise<void> => {
+    return window.dockyard.apps.resume(appId, instanceId);
   },
 
   createInstance: (appId: string, data: { name?: string; sessionMode?: 'isolated' | 'shared' }) => {

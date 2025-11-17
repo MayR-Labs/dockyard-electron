@@ -67,6 +67,7 @@ export default tseslint.config(
       'no-console': 'off', // Allow console in Electron apps
       'prefer-const': 'warn',
       'no-var': 'error',
+      'func-names': 'off', // Allow arrow callbacks and inline handlers without naming noise
     },
   }
 );
