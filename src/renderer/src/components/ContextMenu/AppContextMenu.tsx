@@ -4,7 +4,7 @@
  * Single Responsibility: Context menu UI and interactions
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 interface AppContextMenuProps {
   x: number;
@@ -56,11 +56,28 @@ export function AppContextMenu({
     };
   }, [onClose]);
 
+  const { left, top } = useMemo(() => {
+    const menuWidth = 220; // approximate width in px
+    const menuHeight = 220; // approximate height in px
+    const padding = 8;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    const computedLeft = x + menuWidth + padding > viewportWidth ? x - menuWidth : x;
+    const computedTop = y + menuHeight + padding > viewportHeight ? y - menuHeight : y;
+
+    return {
+      left: Math.max(padding, computedLeft),
+      top: Math.max(padding, computedTop),
+    };
+  }, [x, y]);
+
   return (
     <div
       ref={menuRef}
       className="fixed bg-gray-800 border border-gray-700 rounded-lg shadow-2xl py-1 z-50 min-w-48"
-      style={{ left: x, top: y }}
+      style={{ left, top }}
       data-app-id={appId}
     >
       <div className="px-3 py-2 border-b border-gray-700">
