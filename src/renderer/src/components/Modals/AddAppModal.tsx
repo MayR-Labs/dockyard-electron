@@ -385,9 +385,10 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {filteredApps.map((app) => (
+                {filteredApps.map((app, index) => (
                   <button
-                    key={app.name}
+                    id={`app-#${index}-${app.name}`}
+                    key={`#${index}-${app.name}`}
                     onClick={() => handlePopularAppSelect(app)}
                     className="p-4 bg-gray-800 hover:bg-gray-750 rounded-xl transition text-left group border border-gray-700 hover:border-indigo-500"
                   >
@@ -573,7 +574,7 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
         </form>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-800">
+        <div id="add-app-footer" className="p-6 border-t border-gray-800">
           <div className="flex gap-3">
             <button
               type="button"
