@@ -40,6 +40,16 @@ export interface PopularApp {
 }
 
 export const POPULAR_APPS: PopularApp[] = [
+  // MayR Labs Suite
+  {
+    name: 'LearnBits',
+    url: 'https://learnbits.mayrlabs.com',
+    logo_url: 'https://learnbits.mayrlabs.com/favicon.ico',
+    description: 'Learn Tech. Bit by Bit',
+    categories: ['Educational'],
+    suite: 'MayR Labs',
+  },
+
   // Google Suite
   {
     name: 'Gmail',

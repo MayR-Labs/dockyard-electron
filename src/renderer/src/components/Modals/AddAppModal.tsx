@@ -61,7 +61,7 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
       filtered = filtered.filter((app) => app.suite === selectedSuite);
     }
 
-    return filtered;
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
   }, [searchQuery, selectedCategory, selectedSuite]);
 
   if (!isOpen) {
