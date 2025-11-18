@@ -30,16 +30,134 @@ export type AppCategory =
 
 export type AppSuite = 'Apple' | 'Google' | 'MayR Labs' | 'Microsoft' | 'Yandex' | 'Zoho' | null;
 
+export const APP_COLLECTIONS = {
+  ARTICLE_PUBLISHING: 'Article Publishing Stack',
+  LEARNING_LAB: 'MayR Learning Stack',
+  TEAM_PRODUCTIVITY: 'Team Productivity Stack',
+} as const;
+
 export interface PopularApp {
+  id: string;
   name: string;
   url: string;
   logo_url: string;
   description: string;
   categories: AppCategory[];
+  collections: string[];
+  suite: AppSuite;
+}
+
+interface BasePopularApp {
+  name: string;
+  url: string;
+  logo_url: string;
+  description: string;
+  categories: AppCategory[];
+  collections?: string[];
   suite?: AppSuite;
 }
 
-export const POPULAR_APPS: PopularApp[] = [
+type SuiteName = Exclude<AppSuite, null>;
+
+type SuiteHelper = (
+  name: string,
+  url: string,
+  logoUrl: string,
+  description: string,
+  categories: AppCategory[],
+  collections?: string[]
+) => PopularApp;
+
+const slugifyAppName = (name: string) =>
+  name
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+const toAppId = (name: string) => `app-${slugifyAppName(name)}`;
+
+const normalizeCollections = (collections?: string[]) => Array.from(new Set(collections ?? []));
+
+export const popularApp = (
+  name: string,
+  url: string,
+  logoUrl: string,
+  description: string,
+  categories: AppCategory[],
+  collections: string[] = [],
+  suite: AppSuite = null
+): PopularApp => ({
+  id: toAppId(name),
+  name,
+  url,
+  logo_url: logoUrl,
+  description,
+  categories,
+  collections: normalizeCollections(collections),
+  suite,
+});
+
+const createSuiteHelper =
+  (suite: SuiteName): SuiteHelper =>
+  (name, url, logoUrl, description, categories, collections = []) =>
+    popularApp(name, url, logoUrl, description, categories, collections, suite);
+
+export const mlApp = createSuiteHelper('MayR Labs');
+export const appleApp = createSuiteHelper('Apple');
+export const googleApp = createSuiteHelper('Google');
+export const msApp = createSuiteHelper('Microsoft');
+export const yandexApp = createSuiteHelper('Yandex');
+export const zohoApp = createSuiteHelper('Zoho');
+
+const SUITE_HELPERS: Record<SuiteName, SuiteHelper> = {
+  'MayR Labs': mlApp,
+  Apple: appleApp,
+  Google: googleApp,
+  Microsoft: msApp,
+  Yandex: yandexApp,
+  Zoho: zohoApp,
+};
+
+const dedupeApps = (apps: PopularApp[]) => {
+  const seen = new Set<string>();
+  return apps.filter((app) => {
+    if (seen.has(app.id)) {
+      return false;
+    }
+    seen.add(app.id);
+    return true;
+  });
+};
+
+const sortApps = (apps: PopularApp[]) => [...apps].sort((a, b) => a.name.localeCompare(b.name));
+
+const toPopularApp = (app: BasePopularApp): PopularApp => {
+  const collections = app.collections ?? [];
+  if (app.suite && SUITE_HELPERS[app.suite as SuiteName]) {
+    return SUITE_HELPERS[app.suite as SuiteName](
+      app.name,
+      app.url,
+      app.logo_url,
+      app.description,
+      app.categories,
+      collections
+    );
+  }
+
+  return popularApp(
+    app.name,
+    app.url,
+    app.logo_url,
+    app.description,
+    app.categories,
+    collections,
+    app.suite ?? null
+  );
+};
+
+const RAW_POPULAR_APPS: BasePopularApp[] = [
   // MayR Labs Suite
   {
     name: 'LearnBits',
@@ -47,6 +165,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://learnbits.mayrlabs.com/favicon.ico',
     description: 'Learn Tech. Bit by Bit',
     categories: ['Educational'],
+    collections: [APP_COLLECTIONS.LEARNING_LAB],
     suite: 'MayR Labs',
   },
   {
@@ -55,6 +174,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://learnflow.mayrlabs.com/favicon.ico',
     description: 'Create personalized courses on any topic with AI tuned to your learning style.',
     categories: ['Educational', 'Artificial Intelligence'],
+    collections: [APP_COLLECTIONS.LEARNING_LAB],
     suite: 'MayR Labs',
   },
   {
@@ -63,6 +183,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://quizwise.mayrlabs.com/favicon.ico',
     description: 'Challenge and expand your knowledge across multiple tech domains.',
     categories: ['Educational'],
+    collections: [APP_COLLECTIONS.LEARNING_LAB],
     suite: 'MayR Labs',
   },
   {
@@ -87,6 +208,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://prepai.mayrlabs.com/favicon.ico',
     description: 'AI-powered prep companion for WAEC, NECO, JAMB, and GCE exams.',
     categories: ['Educational', 'Artificial Intelligence'],
+    collections: [APP_COLLECTIONS.LEARNING_LAB],
     suite: 'MayR Labs',
   },
   {
@@ -129,6 +251,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png',
     description: 'Cloud storage and file synchronization service',
     categories: ['Cloud Storage'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
     suite: 'Google',
   },
   {
@@ -137,6 +260,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico',
     description: 'Online word processor for creating and editing documents',
     categories: ['Blogging & Writing', 'Focus & Productivity'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
     suite: 'Google',
   },
   {
@@ -594,6 +718,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://a.slack-edge.com/80588/marketing/img/meta/favicon-32.png',
     description: 'Team communication and collaboration platform',
     categories: ['Messaging & Social'],
+    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
   },
   {
     name: 'Discord',
@@ -622,6 +747,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://st1.zoom.us/static/6.3.11058/image/new/favicon/favicon-96x96.png',
     description: 'Video conferencing and online meetings',
     categories: ['Voice & Video Calls'],
+    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
   },
   {
     name: 'Skype',
@@ -639,6 +765,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://www.notion.so/images/favicon.ico',
     description: 'All-in-one workspace for notes, tasks, wikis, and databases',
     categories: ['Notes & Whiteboards', 'Task Management', 'Focus & Productivity'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING, APP_COLLECTIONS.TEAM_PRODUCTIVITY],
   },
   {
     name: 'Trello',
@@ -646,6 +773,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://trello.com/favicon.ico',
     description: 'Visual project management with boards and cards',
     categories: ['Task Management', 'Product Management'],
+    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
   },
   {
     name: 'Asana',
@@ -653,6 +781,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://assets.asana.biz/m/1979cd4145cb5c8d/original/favicon.ico',
     description: 'Work management platform for teams',
     categories: ['Task Management', 'Product Management'],
+    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
   },
   {
     name: 'Monday.com',
@@ -660,6 +789,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://monday.com/static/img/favicons/favicon.ico',
     description: 'Work operating system for team collaboration',
     categories: ['Product Management', 'Task Management'],
+    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
   },
   {
     name: 'ClickUp',
@@ -667,6 +797,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://clickup.com/favicon.ico',
     description: 'All-in-one productivity platform',
     categories: ['Task Management', 'Product Management', 'Focus & Productivity'],
+    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
   },
   {
     name: 'Todoist',
@@ -715,7 +846,8 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Mural',
     url: 'https://www.mural.co',
-    logo_url: 'https://cdn.prod.website-files.com/62e11362da2667ac3d0e6ed5/63f8b1b0585b45a64baf52da_Mural_Favicon_32x32.png',
+    logo_url:
+      'https://cdn.prod.website-files.com/62e11362da2667ac3d0e6ed5/63f8b1b0585b45a64baf52da_Mural_Favicon_32x32.png',
     description: 'Digital workspace for visual collaboration',
     categories: ['Notes & Whiteboards'],
   },
@@ -838,6 +970,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca',
     description: 'Professional networking platform',
     categories: ['Messaging & Social'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
   },
   {
     name: 'Twitter / X',
@@ -1025,6 +1158,7 @@ export const POPULAR_APPS: PopularApp[] = [
       'https://cdn-static-1.medium.com/_/fp/icons/favicon-rebrand-medium.3Y6xpZ-0FSdWDnPM3hSBIA.ico',
     description: 'Online publishing platform',
     categories: ['Blogging & Writing'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
   },
   {
     name: 'WordPress.com',
@@ -1032,6 +1166,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://s0.wp.com/i/favicon.ico',
     description: 'Website and blog hosting platform',
     categories: ['Blogging & Writing'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
   },
   {
     name: 'Substack',
@@ -1039,6 +1174,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://substack.com/favicon.ico',
     description: 'Newsletter publishing platform',
     categories: ['Blogging & Writing'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
   },
   {
     name: 'Ghost',
@@ -1053,6 +1189,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://static-web.grammarly.com/cms/master/public/favicon.ico',
     description: 'Writing assistant for grammar and spelling',
     categories: ['Blogging & Writing'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
   },
 
   // Music & Audio
@@ -1167,6 +1304,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://chatgpt.com/favicon.ico',
     description: 'AI-powered conversational assistant',
     categories: ['Artificial Intelligence'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
   },
   {
     name: 'Claude',
@@ -1249,6 +1387,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://www.notion.so/images/favicon.ico',
     description: 'Team workspace and knowledge management',
     categories: ['Administration', 'Focus & Productivity'],
+    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
   },
 
   // Miscellaneous
@@ -1258,6 +1397,7 @@ export const POPULAR_APPS: PopularApp[] = [
     logo_url: 'https://www.wikipedia.org/static/favicon/wikipedia.ico',
     description: 'Free online encyclopedia',
     categories: ['Misc'],
+    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
   },
   {
     name: 'Google Keep',
@@ -2691,6 +2831,8 @@ export const POPULAR_APPS: PopularApp[] = [
     categories: ['IDE & Coding Resources', 'Product Management'],
   },
 ];
+
+export const POPULAR_APPS: PopularApp[] = sortApps(dedupeApps(RAW_POPULAR_APPS.map(toPopularApp)));
 
 export const APP_CATEGORIES: AppCategory[] = [
   'Accounting & Finance',
