@@ -47,16 +47,6 @@ export interface PopularApp {
   suite: AppSuite;
 }
 
-interface BasePopularApp {
-  name: string;
-  url: string;
-  logo_url: string;
-  description: string;
-  categories: AppCategory[];
-  collections?: string[];
-  suite?: AppSuite;
-}
-
 type SuiteName = Exclude<AppSuite, null>;
 
 type SuiteHelper = (
@@ -111,15 +101,6 @@ export const msApp = createSuiteHelper('Microsoft');
 export const yandexApp = createSuiteHelper('Yandex');
 export const zohoApp = createSuiteHelper('Zoho');
 
-const SUITE_HELPERS: Record<SuiteName, SuiteHelper> = {
-  'MayR Labs': mlApp,
-  Apple: appleApp,
-  Google: googleApp,
-  Microsoft: msApp,
-  Yandex: yandexApp,
-  Zoho: zohoApp,
-};
-
 const dedupeApps = (apps: PopularApp[]) => {
   const seen = new Set<string>();
   return apps.filter((app) => {
@@ -133,2706 +114,2587 @@ const dedupeApps = (apps: PopularApp[]) => {
 
 const sortApps = (apps: PopularApp[]) => [...apps].sort((a, b) => a.name.localeCompare(b.name));
 
-const toPopularApp = (app: BasePopularApp): PopularApp => {
-  const collections = app.collections ?? [];
-  if (app.suite && SUITE_HELPERS[app.suite as SuiteName]) {
-    return SUITE_HELPERS[app.suite as SuiteName](
-      app.name,
-      app.url,
-      app.logo_url,
-      app.description,
-      app.categories,
-      collections
-    );
-  }
+export const POPULAR_APPS: PopularApp[] = sortApps(
+  dedupeApps([
+    // MayR Labs Suite
+    mlApp(
+      'LearnBits',
+      'https://learnbits.mayrlabs.com',
+      'https://learnbits.mayrlabs.com/favicon.ico',
+      'Learn Tech. Bit by Bit',
+      ['Educational'],
+      [APP_COLLECTIONS.LEARNING_LAB]
+    ),
+    mlApp(
+      'LearnFlow',
+      'https://learnflow.mayrlabs.com',
+      'https://learnflow.mayrlabs.com/favicon.ico',
+      'Create personalized courses on any topic with AI tuned to your learning style.',
+      ['Educational', 'Artificial Intelligence'],
+      [APP_COLLECTIONS.LEARNING_LAB]
+    ),
+    mlApp(
+      'QuizWise',
+      'https://quizwise.mayrlabs.com',
+      'https://quizwise.mayrlabs.com/favicon.ico',
+      'Challenge and expand your knowledge across multiple tech domains.',
+      ['Educational'],
+      [APP_COLLECTIONS.LEARNING_LAB]
+    ),
+    mlApp(
+      'Fun Arcade',
+      'https://arcade.mayrlabs.com',
+      'https://arcade.mayrlabs.com/favicon.ico',
+      'Rediscover timeless classics and fresh mini-games ready to play anywhere.',
+      ['Misc']
+    ),
+    mlApp(
+      'ShellBase',
+      'https://shellbase.mayrlabs.com',
+      'https://shellbase.mayrlabs.com/favicon.ico',
+      'Interactive command-line cheat sheet built with Next.js to streamline workflows.',
+      ['IDE & Coding Resources']
+    ),
+    mlApp(
+      'PrepAI',
+      'https://prepai.mayrlabs.com',
+      'https://prepai.mayrlabs.com/favicon.ico',
+      'AI-powered prep companion for WAEC, NECO, JAMB, and GCE exams.',
+      ['Educational', 'Artificial Intelligence'],
+      [APP_COLLECTIONS.LEARNING_LAB]
+    ),
+    mlApp(
+      'ContentForge',
+      'https://contentforge.mayrlabs.com',
+      'https://contentforge.mayrlabs.com/favicon.ico',
+      'Plan and generate content faster with Tovix AI assistance.',
+      ['Artificial Intelligence', 'Blogging & Writing']
+    ),
+    mlApp(
+      'WWTBAM',
+      'https://wwtbam.mayrlabs.com',
+      'https://wwtbam.mayrlabs.com/favicon.ico',
+      'Who Wants To Be A Millionaire challenge game with classic trivia style.',
+      ['Misc', 'Educational']
+    ),
 
-  return popularApp(
-    app.name,
-    app.url,
-    app.logo_url,
-    app.description,
-    app.categories,
-    collections,
-    app.suite ?? null
-  );
-};
-
-const RAW_POPULAR_APPS: BasePopularApp[] = [
-  // MayR Labs Suite
-  {
-    name: 'LearnBits',
-    url: 'https://learnbits.mayrlabs.com',
-    logo_url: 'https://learnbits.mayrlabs.com/favicon.ico',
-    description: 'Learn Tech. Bit by Bit',
-    categories: ['Educational'],
-    collections: [APP_COLLECTIONS.LEARNING_LAB],
-    suite: 'MayR Labs',
-  },
-  {
-    name: 'LearnFlow',
-    url: 'https://learnflow.mayrlabs.com',
-    logo_url: 'https://learnflow.mayrlabs.com/favicon.ico',
-    description: 'Create personalized courses on any topic with AI tuned to your learning style.',
-    categories: ['Educational', 'Artificial Intelligence'],
-    collections: [APP_COLLECTIONS.LEARNING_LAB],
-    suite: 'MayR Labs',
-  },
-  {
-    name: 'QuizWise',
-    url: 'https://quizwise.mayrlabs.com',
-    logo_url: 'https://quizwise.mayrlabs.com/favicon.ico',
-    description: 'Challenge and expand your knowledge across multiple tech domains.',
-    categories: ['Educational'],
-    collections: [APP_COLLECTIONS.LEARNING_LAB],
-    suite: 'MayR Labs',
-  },
-  {
-    name: 'Fun Arcade',
-    url: 'https://arcade.mayrlabs.com',
-    logo_url: 'https://arcade.mayrlabs.com/favicon.ico',
-    description: 'Rediscover timeless classics and fresh mini-games ready to play anywhere.',
-    categories: ['Misc'],
-    suite: 'MayR Labs',
-  },
-  {
-    name: 'ShellBase',
-    url: 'https://shellbase.mayrlabs.com',
-    logo_url: 'https://shellbase.mayrlabs.com/favicon.ico',
-    description: 'Interactive command-line cheat sheet built with Next.js to streamline workflows.',
-    categories: ['IDE & Coding Resources'],
-    suite: 'MayR Labs',
-  },
-  {
-    name: 'PrepAI',
-    url: 'https://prepai.mayrlabs.com',
-    logo_url: 'https://prepai.mayrlabs.com/favicon.ico',
-    description: 'AI-powered prep companion for WAEC, NECO, JAMB, and GCE exams.',
-    categories: ['Educational', 'Artificial Intelligence'],
-    collections: [APP_COLLECTIONS.LEARNING_LAB],
-    suite: 'MayR Labs',
-  },
-  {
-    name: 'ContentForge',
-    url: 'https://contentforge.mayrlabs.com',
-    logo_url: 'https://contentforge.mayrlabs.com/favicon.ico',
-    description: 'Plan and generate content faster with Tovix AI assistance.',
-    categories: ['Artificial Intelligence', 'Blogging & Writing'],
-    suite: 'MayR Labs',
-  },
-  {
-    name: 'WWTBAM',
-    url: 'https://wwtbam.mayrlabs.com',
-    logo_url: 'https://wwtbam.mayrlabs.com/favicon.ico',
-    description: 'Who Wants To Be A Millionaire challenge game with classic trivia style.',
-    categories: ['Misc', 'Educational'],
-    suite: 'MayR Labs',
-  },
-
-  // Google Suite
-  {
-    name: 'Gmail',
-    url: 'https://mail.google.com',
-    logo_url: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico',
-    description: 'Email service by Google with powerful search and organization',
-    categories: ['Email'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Calendar',
-    url: 'https://calendar.google.com',
-    logo_url: 'https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_1.ico',
-    description: 'Schedule and manage events, meetings, and reminders',
-    categories: ['Calendar & Scheduling'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Drive',
-    url: 'https://drive.google.com',
-    logo_url: 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png',
-    description: 'Cloud storage and file synchronization service',
-    categories: ['Cloud Storage'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Docs',
-    url: 'https://docs.google.com',
-    logo_url: 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico',
-    description: 'Online word processor for creating and editing documents',
-    categories: ['Blogging & Writing', 'Focus & Productivity'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Sheets',
-    url: 'https://sheets.google.com',
-    logo_url: 'https://ssl.gstatic.com/docs/spreadsheets/favicon3.ico',
-    description: 'Online spreadsheet application for data analysis',
-    categories: ['Accounting & Finance', 'Focus & Productivity'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Slides',
-    url: 'https://slides.google.com',
-    logo_url: 'https://ssl.gstatic.com/docs/presentations/images/favicon5.ico',
-    description: 'Create and edit presentations online',
-    categories: ['Focus & Productivity'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Meet',
-    url: 'https://meet.google.com',
-    logo_url:
+    // Google Suite
+    googleApp(
+      'Gmail',
+      'https://mail.google.com',
+      'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico',
+      'Email service by Google with powerful search and organization',
+      ['Email']
+    ),
+    googleApp(
+      'Google Calendar',
+      'https://calendar.google.com',
+      'https://calendar.google.com/googlecalendar/images/favicons_2020q4/calendar_1.ico',
+      'Schedule and manage events, meetings, and reminders',
+      ['Calendar & Scheduling']
+    ),
+    googleApp(
+      'Google Drive',
+      'https://drive.google.com',
+      'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png',
+      'Cloud storage and file synchronization service',
+      ['Cloud Storage'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING]
+    ),
+    googleApp(
+      'Google Docs',
+      'https://docs.google.com',
+      'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico',
+      'Online word processor for creating and editing documents',
+      ['Blogging & Writing', 'Focus & Productivity'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING]
+    ),
+    googleApp(
+      'Google Sheets',
+      'https://sheets.google.com',
+      'https://ssl.gstatic.com/docs/spreadsheets/favicon3.ico',
+      'Online spreadsheet application for data analysis',
+      ['Accounting & Finance', 'Focus & Productivity']
+    ),
+    googleApp(
+      'Google Slides',
+      'https://slides.google.com',
+      'https://ssl.gstatic.com/docs/presentations/images/favicon5.ico',
+      'Create and edit presentations online',
+      ['Focus & Productivity']
+    ),
+    googleApp(
+      'Google Meet',
+      'https://meet.google.com',
       'https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png',
-    description: 'Video conferencing and online meetings',
-    categories: ['Voice & Video Calls'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Chat',
-    url: 'https://chat.google.com',
-    logo_url: 'https://www.gstatic.com/images/branding/product/2x/chat_2020q4_48dp.png',
-    description: 'Team messaging and collaboration platform',
-    categories: ['Messaging & Social'],
-    suite: 'Google',
-  },
-  {
-    name: 'YouTube',
-    url: 'https://youtube.com',
-    logo_url: 'https://www.youtube.com/favicon.ico',
-    description: 'Video sharing and streaming platform',
-    categories: ['Streaming Platforms'],
-    suite: 'Google',
-  },
-  {
-    name: 'YouTube Music',
-    url: 'https://music.youtube.com',
-    logo_url: 'https://music.youtube.com/img/favicon_144.png',
-    description: 'Music streaming service by Google',
-    categories: ['Music', 'Streaming Platforms'],
-    suite: 'Google',
-  },
-  {
-    name: 'Gemini',
-    url: 'https://gemini.google.com',
-    logo_url: 'https://www.gstatic.com/ai/gemini/favicon.ico',
-    description: 'Conversational AI assistant built on Google DeepMind models.',
-    categories: ['Artificial Intelligence'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Messages',
-    url: 'https://messages.google.com/web',
-    logo_url: 'https://messages.google.com/web/favicon.ico',
-    description: 'Rich messaging on the web with RCS, SMS, and device sync.',
-    categories: ['Messaging & Social'],
-    suite: 'Google',
-  },
-  {
-    name: 'Firebase',
-    url: 'https://firebase.google.com',
-    logo_url: 'https://firebase.google.com/favicon.ico',
-    description: 'Backend-as-a-service platform for building and scaling apps.',
-    categories: ['IDE & Coding Resources', 'Administration'],
-    suite: 'Google',
-  },
-  {
-    name: 'Firebase Studio',
-    url: 'https://studio.firebase.google.com',
-    logo_url: 'https://studio.firebase.google.com/favicon.ico',
-    description: 'Visual workspace for managing Firebase data and extensions.',
-    categories: ['IDE & Coding Resources', 'Product Management'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Ads',
-    url: 'https://ads.google.com',
-    logo_url: 'https://ads.google.com/favicon.ico',
-    description: 'Plan and manage search, display, and video advertising.',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google AdSense',
-    url: 'https://www.google.com/adsense',
-    logo_url: 'https://www.google.com/adsense/static/images/favicon.ico',
-    description: 'Monetize web content with contextual ads from Google.',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Analytics',
-    url: 'https://analytics.google.com',
-    logo_url: 'https://analytics.google.com/favicon.ico',
-    description: 'Measure site and app performance with advanced analytics.',
-    categories: ['Advertising & Marketing', 'Focus & Productivity'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Classroom',
-    url: 'https://classroom.google.com',
-    logo_url: 'https://ssl.gstatic.com/classroom/ic_product_classroom_144.png',
-    description: 'Manage assignments, grades, and announcements for classes.',
-    categories: ['Educational'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Cloud',
-    url: 'https://cloud.google.com',
-    logo_url: 'https://cloud.google.com/favicon.ico',
-    description: 'Cloud infrastructure, AI, and data services from Google.',
-    categories: ['Administration', 'Cloud Storage'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Contacts',
-    url: 'https://contacts.google.com',
-    logo_url: 'https://contacts.google.com/favicon.ico',
-    description: 'Centralized contact manager synced across Google services.',
-    categories: ['Administration'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Data Studio',
-    url: 'https://datastudio.google.com',
-    logo_url: 'https://datastudio.google.com/favicon.ico',
-    description: 'Build interactive reports and dashboards (now Looker Studio).',
-    categories: ['Focus & Productivity', 'Product Management'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Maps',
-    url: 'https://maps.google.com',
-    logo_url: 'https://maps.google.com/favicon.ico',
-    description: 'Explore maps, routes, and places worldwide.',
-    categories: ['Misc', 'Focus & Productivity'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google News',
-    url: 'https://news.google.com',
-    logo_url: 'https://news.google.com/favicon.ico',
-    description: 'Personalized news briefing sourced from global publishers.',
-    categories: ['Misc'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Optimize',
-    url: 'https://optimize.google.com',
-    logo_url: 'https://optimize.google.com/favicon.ico',
-    description: 'Run experiments and personalize websites with Google Optimize.',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Photos',
-    url: 'https://photos.google.com',
-    logo_url: 'https://ssl.gstatic.com/social/photosui/images/favicon.ico',
-    description: 'Store, search, and share photos backed by Google AI.',
-    categories: ['Cloud Storage', 'Misc'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Tag Manager',
-    url: 'https://tagmanager.google.com',
-    logo_url: 'https://tagmanager.google.com/favicon.ico',
-    description: 'Deploy and manage marketing tags without editing code.',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Translate',
-    url: 'https://translate.google.com',
-    logo_url: 'https://translate.google.com/favicon.ico',
-    description: 'Translate text, speech, and documents between languages.',
-    categories: ['Blogging & Writing', 'Focus & Productivity'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Voice',
-    url: 'https://voice.google.com',
-    logo_url: 'https://voice.google.com/favicon.ico',
-    description: 'Cloud phone numbers, voicemail, and texting.',
-    categories: ['Voice & Video Calls', 'Messaging & Social'],
-    suite: 'Google',
-  },
-  {
-    name: 'Hangouts',
-    url: 'https://hangouts.google.com',
-    logo_url: 'https://hangouts.google.com/favicon.ico',
-    description: 'Legacy Google messaging and calling experience on the web.',
-    categories: ['Messaging & Social', 'Voice & Video Calls'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Nest',
-    url: 'https://home.google.com',
-    logo_url: 'https://home.google.com/favicon.ico',
-    description: 'Manage Nest smart home devices directly from the browser.',
-    categories: ['Misc'],
-    suite: 'Google',
-  },
-  {
-    name: 'NotebookLM',
-    url: 'https://notebooklm.google.com',
-    logo_url: 'https://notebooklm.google.com/favicon.ico',
-    description: 'AI-powered research notebook for summarizing and querying sources.',
-    categories: ['Artificial Intelligence', 'Notes & Whiteboards'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Tasks',
-    url: 'https://tasks.google.com',
-    logo_url: 'https://tasks.google.com/favicon.ico',
-    description: 'Capture and organize tasks synced across Gmail and Calendar.',
-    categories: ['Task Management'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Taskboard',
-    url: 'https://workspace.google.com/products/tasks/',
-    logo_url: 'https://workspace.google.com/static/apple-touch-icon.png',
-    description: 'Board view for Google Tasks to visualize work in columns.',
-    categories: ['Task Management', 'Focus & Productivity'],
-    suite: 'Google',
-  },
+      'Video conferencing and online meetings',
+      ['Voice & Video Calls']
+    ),
+    googleApp(
+      'Google Chat',
+      'https://chat.google.com',
+      'https://www.gstatic.com/images/branding/product/2x/chat_2020q4_48dp.png',
+      'Team messaging and collaboration platform',
+      ['Messaging & Social']
+    ),
+    googleApp(
+      'YouTube',
+      'https://youtube.com',
+      'https://www.youtube.com/favicon.ico',
+      'Video sharing and streaming platform',
+      ['Streaming Platforms']
+    ),
+    googleApp(
+      'YouTube Music',
+      'https://music.youtube.com',
+      'https://music.youtube.com/img/favicon_144.png',
+      'Music streaming service by Google',
+      ['Music', 'Streaming Platforms']
+    ),
+    googleApp(
+      'Gemini',
+      'https://gemini.google.com',
+      'https://www.gstatic.com/ai/gemini/favicon.ico',
+      'Conversational AI assistant built on Google DeepMind models.',
+      ['Artificial Intelligence']
+    ),
+    googleApp(
+      'Google Messages',
+      'https://messages.google.com/web',
+      'https://messages.google.com/web/favicon.ico',
+      'Rich messaging on the web with RCS, SMS, and device sync.',
+      ['Messaging & Social']
+    ),
+    googleApp(
+      'Firebase',
+      'https://firebase.google.com',
+      'https://firebase.google.com/favicon.ico',
+      'Backend-as-a-service platform for building and scaling apps.',
+      ['IDE & Coding Resources', 'Administration']
+    ),
+    googleApp(
+      'Firebase Studio',
+      'https://studio.firebase.google.com',
+      'https://studio.firebase.google.com/favicon.ico',
+      'Visual workspace for managing Firebase data and extensions.',
+      ['IDE & Coding Resources', 'Product Management']
+    ),
+    googleApp(
+      'Google Ads',
+      'https://ads.google.com',
+      'https://ads.google.com/favicon.ico',
+      'Plan and manage search, display, and video advertising.',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google AdSense',
+      'https://www.google.com/adsense',
+      'https://www.google.com/adsense/static/images/favicon.ico',
+      'Monetize web content with contextual ads from Google.',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google Analytics',
+      'https://analytics.google.com',
+      'https://analytics.google.com/favicon.ico',
+      'Measure site and app performance with advanced analytics.',
+      ['Advertising & Marketing', 'Focus & Productivity']
+    ),
+    googleApp(
+      'Google Classroom',
+      'https://classroom.google.com',
+      'https://ssl.gstatic.com/classroom/ic_product_classroom_144.png',
+      'Manage assignments, grades, and announcements for classes.',
+      ['Educational']
+    ),
+    googleApp(
+      'Google Cloud',
+      'https://cloud.google.com',
+      'https://cloud.google.com/favicon.ico',
+      'Cloud infrastructure, AI, and data services from Google.',
+      ['Administration', 'Cloud Storage']
+    ),
+    googleApp(
+      'Google Contacts',
+      'https://contacts.google.com',
+      'https://contacts.google.com/favicon.ico',
+      'Centralized contact manager synced across Google services.',
+      ['Administration']
+    ),
+    googleApp(
+      'Google Data Studio',
+      'https://datastudio.google.com',
+      'https://datastudio.google.com/favicon.ico',
+      'Build interactive reports and dashboards (now Looker Studio).',
+      ['Focus & Productivity', 'Product Management']
+    ),
+    googleApp(
+      'Google Maps',
+      'https://maps.google.com',
+      'https://maps.google.com/favicon.ico',
+      'Explore maps, routes, and places worldwide.',
+      ['Misc', 'Focus & Productivity']
+    ),
+    googleApp(
+      'Google News',
+      'https://news.google.com',
+      'https://news.google.com/favicon.ico',
+      'Personalized news briefing sourced from global publishers.',
+      ['Misc']
+    ),
+    googleApp(
+      'Google Optimize',
+      'https://optimize.google.com',
+      'https://optimize.google.com/favicon.ico',
+      'Run experiments and personalize websites with Google Optimize.',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google Photos',
+      'https://photos.google.com',
+      'https://ssl.gstatic.com/social/photosui/images/favicon.ico',
+      'Store, search, and share photos backed by Google AI.',
+      ['Cloud Storage', 'Misc']
+    ),
+    googleApp(
+      'Google Tag Manager',
+      'https://tagmanager.google.com',
+      'https://tagmanager.google.com/favicon.ico',
+      'Deploy and manage marketing tags without editing code.',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google Translate',
+      'https://translate.google.com',
+      'https://translate.google.com/favicon.ico',
+      'Translate text, speech, and documents between languages.',
+      ['Blogging & Writing', 'Focus & Productivity']
+    ),
+    googleApp(
+      'Google Voice',
+      'https://voice.google.com',
+      'https://voice.google.com/favicon.ico',
+      'Cloud phone numbers, voicemail, and texting.',
+      ['Voice & Video Calls', 'Messaging & Social']
+    ),
+    googleApp(
+      'Hangouts',
+      'https://hangouts.google.com',
+      'https://hangouts.google.com/favicon.ico',
+      'Legacy Google messaging and calling experience on the web.',
+      ['Messaging & Social', 'Voice & Video Calls']
+    ),
+    googleApp(
+      'Google Nest',
+      'https://home.google.com',
+      'https://home.google.com/favicon.ico',
+      'Manage Nest smart home devices directly from the browser.',
+      ['Misc']
+    ),
+    googleApp(
+      'NotebookLM',
+      'https://notebooklm.google.com',
+      'https://notebooklm.google.com/favicon.ico',
+      'AI-powered research notebook for summarizing and querying sources.',
+      ['Artificial Intelligence', 'Notes & Whiteboards']
+    ),
+    googleApp(
+      'Google Tasks',
+      'https://tasks.google.com',
+      'https://tasks.google.com/favicon.ico',
+      'Capture and organize tasks synced across Gmail and Calendar.',
+      ['Task Management']
+    ),
+    googleApp(
+      'Google Taskboard',
+      'https://workspace.google.com/products/tasks/',
+      'https://workspace.google.com/static/apple-touch-icon.png',
+      'Board view for Google Tasks to visualize work in columns.',
+      ['Task Management', 'Focus & Productivity']
+    ),
 
-  // Microsoft Suite
-  {
-    name: 'Outlook',
-    url: 'https://outlook.office.com',
-    logo_url: 'https://res.cdn.office.net/assets/mail/images/favicon_outlook_web.ico',
-    description: 'Email and calendar service by Microsoft',
-    categories: ['Email', 'Calendar & Scheduling'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Microsoft Teams',
-    url: 'https://teams.microsoft.com',
-    logo_url: 'https://statics.teams.cdn.office.net/hashedassets/favicon/prod/favicon.ico',
-    description: 'Team collaboration and video conferencing platform',
-    categories: ['Voice & Video Calls', 'Messaging & Social'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'OneDrive',
-    url: 'https://onedrive.live.com',
-    logo_url: 'https://onedrive.live.com/favicon.ico',
-    description: 'Cloud storage service by Microsoft',
-    categories: ['Cloud Storage'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Microsoft To Do',
-    url: 'https://to-do.office.com',
-    logo_url: 'https://to-do.cdn.office.net/production/assets/favicon.ico',
-    description: 'Task management and to-do lists',
-    categories: ['Task Management'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'OneNote',
-    url: 'https://www.onenote.com/notebooks',
-    logo_url: 'https://www.onenote.com/favicon.ico',
-    description: 'Digital note-taking application',
-    categories: ['Notes & Whiteboards'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Microsoft Excel',
-    url: 'https://www.office.com/launch/excel',
-    logo_url: 'https://res.cdn.office.net/assets/mail/file-icon/png/xlsx_16x16.png',
-    description: 'Web-based Excel for building spreadsheets and dashboards.',
-    categories: ['Accounting & Finance', 'Focus & Productivity'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Microsoft Word',
-    url: 'https://www.office.com/launch/word',
-    logo_url: 'https://res.cdn.office.net/assets/mail/file-icon/png/docx_16x16.png',
-    description: 'Create and edit documents online with Microsoft Word.',
-    categories: ['Blogging & Writing', 'Focus & Productivity'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Microsoft PowerPoint',
-    url: 'https://www.office.com/launch/powerpoint',
-    logo_url: 'https://res.cdn.office.net/assets/mail/file-icon/png/pptx_16x16.png',
-    description: 'Design and present slides directly from the browser.',
-    categories: ['Focus & Productivity'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Microsoft Copilot',
-    url: 'https://copilot.microsoft.com',
-    logo_url: 'https://copilot.microsoft.com/favicon.ico',
-    description: 'AI assistant that accelerates writing, coding, and browsing tasks.',
-    categories: ['Artificial Intelligence', 'Focus & Productivity'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Outlook 365',
-    url: 'https://outlook.office365.com',
-    logo_url: 'https://res.cdn.office.net/assets/mail/images/favicon_outlook_web.ico',
-    description: 'Enterprise Outlook experience for Microsoft 365 tenants.',
-    categories: ['Email', 'Calendar & Scheduling'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Microsoft Calendar',
-    url: 'https://outlook.live.com/calendar',
-    logo_url: 'https://res.cdn.office.net/assets/mail/images/favicon_outlook_web.ico',
-    description: 'Stand-alone Outlook Calendar view for scheduling events.',
-    categories: ['Calendar & Scheduling'],
-    suite: 'Microsoft',
-  },
+    // Microsoft Suite
+    msApp(
+      'Outlook',
+      'https://outlook.office.com',
+      'https://res.cdn.office.net/assets/mail/images/favicon_outlook_web.ico',
+      'Email and calendar service by Microsoft',
+      ['Email', 'Calendar & Scheduling']
+    ),
+    msApp(
+      'Microsoft Teams',
+      'https://teams.microsoft.com',
+      'https://statics.teams.cdn.office.net/hashedassets/favicon/prod/favicon.ico',
+      'Team collaboration and video conferencing platform',
+      ['Voice & Video Calls', 'Messaging & Social']
+    ),
+    msApp(
+      'OneDrive',
+      'https://onedrive.live.com',
+      'https://onedrive.live.com/favicon.ico',
+      'Cloud storage service by Microsoft',
+      ['Cloud Storage']
+    ),
+    msApp(
+      'Microsoft To Do',
+      'https://to-do.office.com',
+      'https://to-do.cdn.office.net/production/assets/favicon.ico',
+      'Task management and to-do lists',
+      ['Task Management']
+    ),
+    msApp(
+      'OneNote',
+      'https://www.onenote.com/notebooks',
+      'https://www.onenote.com/favicon.ico',
+      'Digital note-taking application',
+      ['Notes & Whiteboards']
+    ),
+    msApp(
+      'Microsoft Excel',
+      'https://www.office.com/launch/excel',
+      'https://res.cdn.office.net/assets/mail/file-icon/png/xlsx_16x16.png',
+      'Web-based Excel for building spreadsheets and dashboards.',
+      ['Accounting & Finance', 'Focus & Productivity']
+    ),
+    msApp(
+      'Microsoft Word',
+      'https://www.office.com/launch/word',
+      'https://res.cdn.office.net/assets/mail/file-icon/png/docx_16x16.png',
+      'Create and edit documents online with Microsoft Word.',
+      ['Blogging & Writing', 'Focus & Productivity']
+    ),
+    msApp(
+      'Microsoft PowerPoint',
+      'https://www.office.com/launch/powerpoint',
+      'https://res.cdn.office.net/assets/mail/file-icon/png/pptx_16x16.png',
+      'Design and present slides directly from the browser.',
+      ['Focus & Productivity']
+    ),
+    msApp(
+      'Microsoft Copilot',
+      'https://copilot.microsoft.com',
+      'https://copilot.microsoft.com/favicon.ico',
+      'AI assistant that accelerates writing, coding, and browsing tasks.',
+      ['Artificial Intelligence', 'Focus & Productivity']
+    ),
+    msApp(
+      'Outlook 365',
+      'https://outlook.office365.com',
+      'https://res.cdn.office.net/assets/mail/images/favicon_outlook_web.ico',
+      'Enterprise Outlook experience for Microsoft 365 tenants.',
+      ['Email', 'Calendar & Scheduling']
+    ),
+    msApp(
+      'Microsoft Calendar',
+      'https://outlook.live.com/calendar',
+      'https://res.cdn.office.net/assets/mail/images/favicon_outlook_web.ico',
+      'Stand-alone Outlook Calendar view for scheduling events.',
+      ['Calendar & Scheduling']
+    ),
 
-  // Apple Suite
-  {
-    name: 'iCloud Mail',
-    url: 'https://www.icloud.com/mail',
-    logo_url: 'https://www.icloud.com/favicon.ico',
-    description: 'Email service by Apple',
-    categories: ['Email'],
-    suite: 'Apple',
-  },
-  {
-    name: 'iCloud Calendar',
-    url: 'https://www.icloud.com/calendar',
-    logo_url: 'https://www.icloud.com/favicon.ico',
-    description: 'Calendar application by Apple',
-    categories: ['Calendar & Scheduling'],
-    suite: 'Apple',
-  },
-  {
-    name: 'iCloud Drive',
-    url: 'https://www.icloud.com/iclouddrive',
-    logo_url: 'https://www.icloud.com/favicon.ico',
-    description: 'Cloud storage service by Apple',
-    categories: ['Cloud Storage'],
-    suite: 'Apple',
-  },
-  {
-    name: 'iCloud Notes',
-    url: 'https://www.icloud.com/notes',
-    logo_url: 'https://www.icloud.com/favicon.ico',
-    description: 'Note-taking app by Apple',
-    categories: ['Notes & Whiteboards'],
-    suite: 'Apple',
-  },
-  {
-    name: 'iCloud Reminders',
-    url: 'https://www.icloud.com/reminders',
-    logo_url: 'https://www.icloud.com/favicon.ico',
-    description: 'Task and reminder management by Apple',
-    categories: ['Task Management'],
-    suite: 'Apple',
-  },
+    // Apple Suite
+    appleApp(
+      'iCloud Mail',
+      'https://www.icloud.com/mail',
+      'https://www.icloud.com/favicon.ico',
+      'Email service by Apple',
+      ['Email']
+    ),
+    appleApp(
+      'iCloud Calendar',
+      'https://www.icloud.com/calendar',
+      'https://www.icloud.com/favicon.ico',
+      'Calendar application by Apple',
+      ['Calendar & Scheduling']
+    ),
+    appleApp(
+      'iCloud Drive',
+      'https://www.icloud.com/iclouddrive',
+      'https://www.icloud.com/favicon.ico',
+      'Cloud storage service by Apple',
+      ['Cloud Storage']
+    ),
+    appleApp(
+      'iCloud Notes',
+      'https://www.icloud.com/notes',
+      'https://www.icloud.com/favicon.ico',
+      'Note-taking app by Apple',
+      ['Notes & Whiteboards']
+    ),
+    appleApp(
+      'iCloud Reminders',
+      'https://www.icloud.com/reminders',
+      'https://www.icloud.com/favicon.ico',
+      'Task and reminder management by Apple',
+      ['Task Management']
+    ),
 
-  // Zoho Suite
-  {
-    name: 'Zoho Mail',
-    url: 'https://mail.zoho.com',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Business email hosting service',
-    categories: ['Email'],
-    suite: 'Zoho',
-  },
-  {
-    name: 'Zoho CRM',
-    url: 'https://crm.zoho.com',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Customer relationship management software',
-    categories: ['Customer Support', 'Administration'],
-    suite: 'Zoho',
-  },
-  {
-    name: 'Zoho Projects',
-    url: 'https://projects.zoho.com',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Project management and collaboration',
-    categories: ['Product Management', 'Task Management'],
-    suite: 'Zoho',
-  },
-  {
-    name: 'Zoho Meeting',
-    url: 'https://meeting.zoho.com',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Online meeting and webinar platform',
-    categories: ['Voice & Video Calls'],
-    suite: 'Zoho',
-  },
-  {
-    name: 'Zoho Books',
-    url: 'https://books.zoho.com',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Accounting software for invoices, expenses, and tax-ready reports.',
-    categories: ['Accounting & Finance'],
-    suite: 'Zoho',
-  },
-  {
-    name: 'Zoho Cliq',
-    url: 'https://cliq.zoho.com',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Team messaging, channels, and calls within the Zoho suite.',
-    categories: ['Messaging & Social', 'Voice & Video Calls'],
-    suite: 'Zoho',
-  },
-  {
-    name: 'Zoho Notebook',
-    url: 'https://www.zoho.com/notebook/',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Beautiful note cards that sync across devices.',
-    categories: ['Notes & Whiteboards'],
-    suite: 'Zoho',
-  },
-  {
-    name: 'Zoho Sheet',
-    url: 'https://sheet.zoho.com',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Collaborative spreadsheets with automation and data cleanup.',
-    categories: ['Accounting & Finance', 'Focus & Productivity'],
-    suite: 'Zoho',
-  },
-  {
-    name: 'Zoho Show',
-    url: 'https://show.zoho.com',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Browser-based presentation tool for teams.',
-    categories: ['Focus & Productivity'],
-    suite: 'Zoho',
-  },
-  {
-    name: 'Zoho Writer',
-    url: 'https://writer.zoho.com',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Collaborative word processor with templates and review tools.',
-    categories: ['Blogging & Writing', 'Focus & Productivity'],
-    suite: 'Zoho',
-  },
+    // Zoho Suite
+    zohoApp(
+      'Zoho Mail',
+      'https://mail.zoho.com',
+      'https://www.zoho.com/favicon.ico',
+      'Business email hosting service',
+      ['Email']
+    ),
+    zohoApp(
+      'Zoho CRM',
+      'https://crm.zoho.com',
+      'https://www.zoho.com/favicon.ico',
+      'Customer relationship management software',
+      ['Customer Support', 'Administration']
+    ),
+    zohoApp(
+      'Zoho Projects',
+      'https://projects.zoho.com',
+      'https://www.zoho.com/favicon.ico',
+      'Project management and collaboration',
+      ['Product Management', 'Task Management']
+    ),
+    zohoApp(
+      'Zoho Meeting',
+      'https://meeting.zoho.com',
+      'https://www.zoho.com/favicon.ico',
+      'Online meeting and webinar platform',
+      ['Voice & Video Calls']
+    ),
+    zohoApp(
+      'Zoho Books',
+      'https://books.zoho.com',
+      'https://www.zoho.com/favicon.ico',
+      'Accounting software for invoices, expenses, and tax-ready reports.',
+      ['Accounting & Finance']
+    ),
+    zohoApp(
+      'Zoho Cliq',
+      'https://cliq.zoho.com',
+      'https://www.zoho.com/favicon.ico',
+      'Team messaging, channels, and calls within the Zoho suite.',
+      ['Messaging & Social', 'Voice & Video Calls']
+    ),
+    zohoApp(
+      'Zoho Notebook',
+      'https://www.zoho.com/notebook/',
+      'https://www.zoho.com/favicon.ico',
+      'Beautiful note cards that sync across devices.',
+      ['Notes & Whiteboards']
+    ),
+    zohoApp(
+      'Zoho Sheet',
+      'https://sheet.zoho.com',
+      'https://www.zoho.com/favicon.ico',
+      'Collaborative spreadsheets with automation and data cleanup.',
+      ['Accounting & Finance', 'Focus & Productivity']
+    ),
+    zohoApp(
+      'Zoho Show',
+      'https://show.zoho.com',
+      'https://www.zoho.com/favicon.ico',
+      'Browser-based presentation tool for teams.',
+      ['Focus & Productivity']
+    ),
+    zohoApp(
+      'Zoho Writer',
+      'https://writer.zoho.com',
+      'https://www.zoho.com/favicon.ico',
+      'Collaborative word processor with templates and review tools.',
+      ['Blogging & Writing', 'Focus & Productivity']
+    ),
 
-  // Communication & Messaging
-  {
-    name: 'Slack',
-    url: 'https://app.slack.com',
-    logo_url: 'https://a.slack-edge.com/80588/marketing/img/meta/favicon-32.png',
-    description: 'Team communication and collaboration platform',
-    categories: ['Messaging & Social'],
-    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
-  },
-  {
-    name: 'Discord',
-    url: 'https://discord.com/app',
-    logo_url: 'https://discord.com/assets/favicon.ico',
-    description: 'Voice, video, and text chat for communities',
-    categories: ['Messaging & Social', 'Voice & Video Calls'],
-  },
-  {
-    name: 'Telegram',
-    url: 'https://web.telegram.org',
-    logo_url: 'https://web.telegram.org/favicon.ico',
-    description: 'Cloud-based instant messaging service',
-    categories: ['Messaging & Social'],
-  },
-  {
-    name: 'WhatsApp',
-    url: 'https://web.whatsapp.com',
-    logo_url: 'https://static.whatsapp.net/rsrc.php/v3/y7/r/DSxOAUB0raA.png',
-    description: 'Messaging and voice/video calling',
-    categories: ['Messaging & Social', 'Voice & Video Calls'],
-  },
-  {
-    name: 'Zoom',
-    url: 'https://zoom.us',
-    logo_url: 'https://st1.zoom.us/static/6.3.11058/image/new/favicon/favicon-96x96.png',
-    description: 'Video conferencing and online meetings',
-    categories: ['Voice & Video Calls'],
-    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
-  },
-  {
-    name: 'Skype',
-    url: 'https://web.skype.com',
-    logo_url: 'https://secure.skypeassets.com/content/dam/scom/favicons/favicon-32x32.png',
-    description: 'Video chat and voice call service',
-    categories: ['Voice & Video Calls', 'Messaging & Social'],
-    suite: 'Microsoft',
-  },
+    // Communication & Messaging
+    popularApp(
+      'Slack',
+      'https://app.slack.com',
+      'https://a.slack-edge.com/80588/marketing/img/meta/favicon-32.png',
+      'Team communication and collaboration platform',
+      ['Messaging & Social'],
+      [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+    ),
+    popularApp(
+      'Discord',
+      'https://discord.com/app',
+      'https://discord.com/assets/favicon.ico',
+      'Voice, video, and text chat for communities',
+      ['Messaging & Social', 'Voice & Video Calls']
+    ),
+    popularApp(
+      'Telegram',
+      'https://web.telegram.org',
+      'https://web.telegram.org/favicon.ico',
+      'Cloud-based instant messaging service',
+      ['Messaging & Social']
+    ),
+    popularApp(
+      'WhatsApp',
+      'https://web.whatsapp.com',
+      'https://static.whatsapp.net/rsrc.php/v3/y7/r/DSxOAUB0raA.png',
+      'Messaging and voice/video calling',
+      ['Messaging & Social', 'Voice & Video Calls']
+    ),
+    popularApp(
+      'Zoom',
+      'https://zoom.us',
+      'https://st1.zoom.us/static/6.3.11058/image/new/favicon/favicon-96x96.png',
+      'Video conferencing and online meetings',
+      ['Voice & Video Calls'],
+      [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+    ),
+    msApp(
+      'Skype',
+      'https://web.skype.com',
+      'https://secure.skypeassets.com/content/dam/scom/favicons/favicon-32x32.png',
+      'Video chat and voice call service',
+      ['Voice & Video Calls', 'Messaging & Social']
+    ),
 
-  // Productivity & Task Management
-  {
-    name: 'Notion',
-    url: 'https://notion.so',
-    logo_url: 'https://www.notion.so/images/favicon.ico',
-    description: 'All-in-one workspace for notes, tasks, wikis, and databases',
-    categories: ['Notes & Whiteboards', 'Task Management', 'Focus & Productivity'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING, APP_COLLECTIONS.TEAM_PRODUCTIVITY],
-  },
-  {
-    name: 'Trello',
-    url: 'https://trello.com',
-    logo_url: 'https://trello.com/favicon.ico',
-    description: 'Visual project management with boards and cards',
-    categories: ['Task Management', 'Product Management'],
-    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
-  },
-  {
-    name: 'Asana',
-    url: 'https://app.asana.com',
-    logo_url: 'https://assets.asana.biz/m/1979cd4145cb5c8d/original/favicon.ico',
-    description: 'Work management platform for teams',
-    categories: ['Task Management', 'Product Management'],
-    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
-  },
-  {
-    name: 'Monday.com',
-    url: 'https://monday.com',
-    logo_url: 'https://monday.com/static/img/favicons/favicon.ico',
-    description: 'Work operating system for team collaboration',
-    categories: ['Product Management', 'Task Management'],
-    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
-  },
-  {
-    name: 'ClickUp',
-    url: 'https://app.clickup.com',
-    logo_url: 'https://clickup.com/favicon.ico',
-    description: 'All-in-one productivity platform',
-    categories: ['Task Management', 'Product Management', 'Focus & Productivity'],
-    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
-  },
-  {
-    name: 'Todoist',
-    url: 'https://todoist.com/app',
-    logo_url: 'https://todoist.com/favicon.ico',
-    description: 'Task manager and to-do list app',
-    categories: ['Task Management'],
-  },
-  {
-    name: 'Airtable',
-    url: 'https://airtable.com',
-    logo_url: 'https://airtable.com/images/favicon/favicon-32x32.png',
-    description: 'Cloud collaboration service with spreadsheet-database hybrid',
-    categories: ['Product Management', 'Focus & Productivity'],
-  },
-  {
-    name: 'Basecamp',
-    url: 'https://basecamp.com',
-    logo_url: 'https://basecamp.com/favicon.ico',
-    description: 'Project management and team collaboration',
-    categories: ['Product Management', 'Task Management'],
-  },
+    // Productivity & Task Management
+    popularApp(
+      'Notion',
+      'https://notion.so',
+      'https://www.notion.so/images/favicon.ico',
+      'All-in-one workspace for notes, tasks, wikis, and databases',
+      ['Notes & Whiteboards', 'Task Management', 'Focus & Productivity'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING, APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+    ),
+    popularApp(
+      'Trello',
+      'https://trello.com',
+      'https://trello.com/favicon.ico',
+      'Visual project management with boards and cards',
+      ['Task Management', 'Product Management'],
+      [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+    ),
+    popularApp(
+      'Asana',
+      'https://app.asana.com',
+      'https://assets.asana.biz/m/1979cd4145cb5c8d/original/favicon.ico',
+      'Work management platform for teams',
+      ['Task Management', 'Product Management'],
+      [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+    ),
+    popularApp(
+      'Monday.com',
+      'https://monday.com',
+      'https://monday.com/static/img/favicons/favicon.ico',
+      'Work operating system for team collaboration',
+      ['Product Management', 'Task Management'],
+      [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+    ),
+    popularApp(
+      'ClickUp',
+      'https://app.clickup.com',
+      'https://clickup.com/favicon.ico',
+      'All-in-one productivity platform',
+      ['Task Management', 'Product Management', 'Focus & Productivity'],
+      [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+    ),
+    popularApp(
+      'Todoist',
+      'https://todoist.com/app',
+      'https://todoist.com/favicon.ico',
+      'Task manager and to-do list app',
+      ['Task Management']
+    ),
+    popularApp(
+      'Airtable',
+      'https://airtable.com',
+      'https://airtable.com/images/favicon/favicon-32x32.png',
+      'Cloud collaboration service with spreadsheet-database hybrid',
+      ['Product Management', 'Focus & Productivity']
+    ),
+    popularApp(
+      'Basecamp',
+      'https://basecamp.com',
+      'https://basecamp.com/favicon.ico',
+      'Project management and team collaboration',
+      ['Product Management', 'Task Management']
+    ),
 
-  // Note-Taking & Whiteboards
-  {
-    name: 'Evernote',
-    url: 'https://www.evernote.com',
-    logo_url: 'https://evernote.com/favicon.ico',
-    description: 'Note taking and organization application',
-    categories: ['Notes & Whiteboards'],
-  },
-  {
-    name: 'Obsidian Sync',
-    url: 'https://obsidian.md',
-    logo_url: 'https://obsidian.md/favicon.ico',
-    description: 'Knowledge base and note-taking with markdown',
-    categories: ['Notes & Whiteboards'],
-  },
-  {
-    name: 'Miro',
-    url: 'https://miro.com',
-    logo_url: 'https://miro.com/favicon.ico',
-    description: 'Online collaborative whiteboard platform',
-    categories: ['Notes & Whiteboards', 'Product Management'],
-  },
-  {
-    name: 'Mural',
-    url: 'https://www.mural.co',
-    logo_url:
+    // Note-Taking & Whiteboards
+    popularApp(
+      'Evernote',
+      'https://www.evernote.com',
+      'https://evernote.com/favicon.ico',
+      'Note taking and organization application',
+      ['Notes & Whiteboards']
+    ),
+    popularApp(
+      'Obsidian Sync',
+      'https://obsidian.md',
+      'https://obsidian.md/favicon.ico',
+      'Knowledge base and note-taking with markdown',
+      ['Notes & Whiteboards']
+    ),
+    popularApp(
+      'Miro',
+      'https://miro.com',
+      'https://miro.com/favicon.ico',
+      'Online collaborative whiteboard platform',
+      ['Notes & Whiteboards', 'Product Management']
+    ),
+    popularApp(
+      'Mural',
+      'https://www.mural.co',
       'https://cdn.prod.website-files.com/62e11362da2667ac3d0e6ed5/63f8b1b0585b45a64baf52da_Mural_Favicon_32x32.png',
-    description: 'Digital workspace for visual collaboration',
-    categories: ['Notes & Whiteboards'],
-  },
-  {
-    name: 'Excalidraw',
-    url: 'https://excalidraw.com',
-    logo_url: 'https://excalidraw.com/favicon.ico',
-    description: 'Virtual whiteboard for sketching hand-drawn diagrams',
-    categories: ['Notes & Whiteboards'],
-  },
+      'Digital workspace for visual collaboration',
+      ['Notes & Whiteboards']
+    ),
+    popularApp(
+      'Excalidraw',
+      'https://excalidraw.com',
+      'https://excalidraw.com/favicon.ico',
+      'Virtual whiteboard for sketching hand-drawn diagrams',
+      ['Notes & Whiteboards']
+    ),
 
-  // Development & Coding
-  {
-    name: 'GitHub',
-    url: 'https://github.com',
-    logo_url: 'https://github.githubassets.com/favicons/favicon.svg',
-    description: 'Code hosting platform for version control and collaboration',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'GitLab',
-    url: 'https://gitlab.com',
-    logo_url:
+    // Development & Coding
+    popularApp(
+      'GitHub',
+      'https://github.com',
+      'https://github.githubassets.com/favicons/favicon.svg',
+      'Code hosting platform for version control and collaboration',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'GitLab',
+      'https://gitlab.com',
       'https://gitlab.com/assets/favicon-72a2cad5025aa931d6ea56c3201d1f18e68a8cd39788c7c80d5b2b82aa5143ef.png',
-    description: 'DevOps platform with Git repository management',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Bitbucket',
-    url: 'https://bitbucket.org',
-    logo_url: 'https://bitbucket.org/favicon.ico',
-    description: 'Git-based source code repository hosting service',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Stack Overflow',
-    url: 'https://stackoverflow.com',
-    logo_url: 'https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico',
-    description: 'Q&A community for programmers',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'CodePen',
-    url: 'https://codepen.io',
-    logo_url:
+      'DevOps platform with Git repository management',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Bitbucket',
+      'https://bitbucket.org',
+      'https://bitbucket.org/favicon.ico',
+      'Git-based source code repository hosting service',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Stack Overflow',
+      'https://stackoverflow.com',
+      'https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico',
+      'Q&A community for programmers',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'CodePen',
+      'https://codepen.io',
       'https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico',
-    description: 'Online code editor and development environment',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Replit',
-    url: 'https://replit.com',
-    logo_url: 'https://replit.com/public/images/favicon.ico',
-    description: 'Online IDE and collaborative coding platform',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'JSFiddle',
-    url: 'https://jsfiddle.net',
-    logo_url: 'https://jsfiddle.net/favicon.ico',
-    description: 'Online JavaScript, CSS, and HTML playground',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Vercel',
-    url: 'https://vercel.com',
-    logo_url: 'https://assets.vercel.com/image/upload/front/favicon/vercel/favicon.ico',
-    description: 'Platform for frontend frameworks and static sites',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Netlify',
-    url: 'https://app.netlify.com',
-    logo_url: 'https://www.netlify.com/favicon.ico',
-    description: 'Platform for web applications and static websites',
-    categories: ['IDE & Coding Resources'],
-  },
+      'Online code editor and development environment',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Replit',
+      'https://replit.com',
+      'https://replit.com/public/images/favicon.ico',
+      'Online IDE and collaborative coding platform',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'JSFiddle',
+      'https://jsfiddle.net',
+      'https://jsfiddle.net/favicon.ico',
+      'Online JavaScript, CSS, and HTML playground',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Vercel',
+      'https://vercel.com',
+      'https://assets.vercel.com/image/upload/front/favicon/vercel/favicon.ico',
+      'Platform for frontend frameworks and static sites',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Netlify',
+      'https://app.netlify.com',
+      'https://www.netlify.com/favicon.ico',
+      'Platform for web applications and static websites',
+      ['IDE & Coding Resources']
+    ),
 
-  // Design Tools
-  {
-    name: 'Figma',
-    url: 'https://www.figma.com',
-    logo_url: 'https://static.figma.com/app/icon/1/favicon.png',
-    description: 'Collaborative interface design tool',
-    categories: ['Design Suites'],
-  },
-  {
-    name: 'Canva',
-    url: 'https://www.canva.com',
-    logo_url: 'https://canva.com/favicon.ico',
-    description: 'Graphic design platform for creating visual content',
-    categories: ['Design Suites'],
-  },
-  {
-    name: 'Adobe Creative Cloud',
-    url: 'https://www.adobe.com/creativecloud.html',
-    logo_url: 'https://www.adobe.com/favicon.ico',
-    description: 'Suite of creative applications and services',
-    categories: ['Design Suites'],
-  },
-  // {
-  //   name: 'InVision',
-  //   url: 'https://www.invisionapp.com',
-  //   logo_url: 'https://www.invisionapp.com/favicon.ico',
-  //   description: 'Digital product design platform',
-  //   categories: ['Design Suites'],
-  // },
-  {
-    name: 'Sketch Cloud',
-    url: 'https://www.sketch.com',
-    logo_url: 'https://www.sketch.com/favicon.ico',
-    description: 'Design toolkit and collaboration platform',
-    categories: ['Design Suites'],
-  },
+    // Design Tools
+    popularApp(
+      'Figma',
+      'https://www.figma.com',
+      'https://static.figma.com/app/icon/1/favicon.png',
+      'Collaborative interface design tool',
+      ['Design Suites']
+    ),
+    popularApp(
+      'Canva',
+      'https://www.canva.com',
+      'https://canva.com/favicon.ico',
+      'Graphic design platform for creating visual content',
+      ['Design Suites']
+    ),
+    popularApp(
+      'Adobe Creative Cloud',
+      'https://www.adobe.com/creativecloud.html',
+      'https://www.adobe.com/favicon.ico',
+      'Suite of creative applications and services',
+      ['Design Suites']
+    ),
+    // {
+    //   name: 'InVision',
+    //   url: 'https://www.invisionapp.com',
+    //   logo_url: 'https://www.invisionapp.com/favicon.ico',
+    //   description: 'Digital product design platform',
+    //   categories: ['Design Suites'],
+    // },
+    popularApp(
+      'Sketch Cloud',
+      'https://www.sketch.com',
+      'https://www.sketch.com/favicon.ico',
+      'Design toolkit and collaboration platform',
+      ['Design Suites']
+    ),
 
-  // Social Media
-  {
-    name: 'LinkedIn',
-    url: 'https://www.linkedin.com',
-    logo_url: 'https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca',
-    description: 'Professional networking platform',
-    categories: ['Messaging & Social'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
-  },
-  {
-    name: 'Twitter / X',
-    url: 'https://twitter.com',
-    logo_url: 'https://abs.twimg.com/favicons/twitter.3.ico',
-    description: 'Social media platform for microblogging',
-    categories: ['Messaging & Social'],
-  },
-  {
-    name: 'Facebook',
-    url: 'https://www.facebook.com',
-    logo_url: 'https://web.facebook.com/favicon.ico',
-    description: 'Social networking service',
-    categories: ['Messaging & Social'],
-  },
-  {
-    name: 'Instagram',
-    url: 'https://www.instagram.com',
-    logo_url: 'https://static.cdninstagram.com/rsrc.php/v3/yI/r/VsNE-OHk_8a.png',
-    description: 'Photo and video sharing social network',
-    categories: ['Messaging & Social'],
-  },
-  {
-    name: 'Reddit',
-    url: 'https://www.reddit.com',
-    logo_url: 'https://www.redditstatic.com/desktop2x/img/favicon/favicon-96x96.png',
-    description: 'Social news aggregation and discussion',
-    categories: ['Messaging & Social'],
-  },
-  {
-    name: 'Mastodon',
-    url: 'https://joinmastodon.org',
-    logo_url: 'https://joinmastodon.org/_next/static/media/favicon-32x32.3a702fe9.png',
-    description: 'Decentralized social network',
-    categories: ['Messaging & Social'],
-  },
+    // Social Media
+    popularApp(
+      'LinkedIn',
+      'https://www.linkedin.com',
+      'https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca',
+      'Professional networking platform',
+      ['Messaging & Social'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING]
+    ),
+    popularApp(
+      'Twitter / X',
+      'https://twitter.com',
+      'https://abs.twimg.com/favicons/twitter.3.ico',
+      'Social media platform for microblogging',
+      ['Messaging & Social']
+    ),
+    popularApp(
+      'Facebook',
+      'https://www.facebook.com',
+      'https://web.facebook.com/favicon.ico',
+      'Social networking service',
+      ['Messaging & Social']
+    ),
+    popularApp(
+      'Instagram',
+      'https://www.instagram.com',
+      'https://static.cdninstagram.com/rsrc.php/v3/yI/r/VsNE-OHk_8a.png',
+      'Photo and video sharing social network',
+      ['Messaging & Social']
+    ),
+    popularApp(
+      'Reddit',
+      'https://www.reddit.com',
+      'https://www.redditstatic.com/desktop2x/img/favicon/favicon-96x96.png',
+      'Social news aggregation and discussion',
+      ['Messaging & Social']
+    ),
+    popularApp(
+      'Mastodon',
+      'https://joinmastodon.org',
+      'https://joinmastodon.org/_next/static/media/favicon-32x32.3a702fe9.png',
+      'Decentralized social network',
+      ['Messaging & Social']
+    ),
 
-  // Customer Support
-  {
-    name: 'Zendesk',
-    url: 'https://www.zendesk.com',
-    logo_url: 'https://www.zendesk.com/favicon.ico',
-    description: 'Customer service software and support ticketing',
-    categories: ['Customer Support'],
-  },
-  {
-    name: 'Intercom',
-    url: 'https://www.intercom.com',
-    logo_url: 'https://www.intercom.com/favicon.ico',
-    description: 'Customer messaging platform',
-    categories: ['Customer Support', 'Messaging & Social'],
-  },
-  {
-    name: 'Freshdesk',
-    url: 'https://freshdesk.com',
-    logo_url: 'https://www.freshworks.com/favicons/favicon.ico',
-    description: 'Cloud-based customer support software',
-    categories: ['Customer Support'],
-  },
-  {
-    name: 'Help Scout',
-    url: 'https://www.helpscout.com',
-    logo_url: 'https://www.helpscout.com/favicon.ico',
-    description: 'Help desk software for customer support teams',
-    categories: ['Customer Support'],
-  },
+    // Customer Support
+    popularApp(
+      'Zendesk',
+      'https://www.zendesk.com',
+      'https://www.zendesk.com/favicon.ico',
+      'Customer service software and support ticketing',
+      ['Customer Support']
+    ),
+    popularApp(
+      'Intercom',
+      'https://www.intercom.com',
+      'https://www.intercom.com/favicon.ico',
+      'Customer messaging platform',
+      ['Customer Support', 'Messaging & Social']
+    ),
+    popularApp(
+      'Freshdesk',
+      'https://freshdesk.com',
+      'https://www.freshworks.com/favicons/favicon.ico',
+      'Cloud-based customer support software',
+      ['Customer Support']
+    ),
+    popularApp(
+      'Help Scout',
+      'https://www.helpscout.com',
+      'https://www.helpscout.com/favicon.ico',
+      'Help desk software for customer support teams',
+      ['Customer Support']
+    ),
 
-  // Accounting & Finance
-  {
-    name: 'QuickBooks Online',
-    url: 'https://quickbooks.intuit.com',
-    logo_url: 'https://quickbooks.intuit.com/favicon.ico',
-    description: 'Accounting software for small businesses',
-    categories: ['Accounting & Finance'],
-  },
-  {
-    name: 'Xero',
-    url: 'https://www.xero.com',
-    logo_url: 'https://www.xero.com/favicon.ico',
-    description: 'Online accounting software',
-    categories: ['Accounting & Finance'],
-  },
-  {
-    name: 'Wave',
-    url: 'https://www.waveapps.com',
-    logo_url: 'https://www.waveapps.com/favicon.ico',
-    description: 'Free accounting and invoicing software',
-    categories: ['Accounting & Finance'],
-  },
-  {
-    name: 'FreshBooks',
-    url: 'https://www.freshbooks.com',
-    logo_url: 'https://www.freshbooks.com/favicon.ico',
-    description: 'Cloud-based accounting software',
-    categories: ['Accounting & Finance'],
-  },
-  {
-    name: 'Stripe',
-    url: 'https://dashboard.stripe.com',
-    logo_url: 'https://stripe.com/favicon.ico',
-    description: 'Online payment processing platform',
-    categories: ['Accounting & Finance', 'eCommerce'],
-  },
-  {
-    name: 'PayPal',
-    url: 'https://www.paypal.com',
-    logo_url: 'https://www.paypalobjects.com/webstatic/icon/favicon.ico',
-    description: 'Online payment system',
-    categories: ['Accounting & Finance', 'eCommerce'],
-  },
+    // Accounting & Finance
+    popularApp(
+      'QuickBooks Online',
+      'https://quickbooks.intuit.com',
+      'https://quickbooks.intuit.com/favicon.ico',
+      'Accounting software for small businesses',
+      ['Accounting & Finance']
+    ),
+    popularApp(
+      'Xero',
+      'https://www.xero.com',
+      'https://www.xero.com/favicon.ico',
+      'Online accounting software',
+      ['Accounting & Finance']
+    ),
+    popularApp(
+      'Wave',
+      'https://www.waveapps.com',
+      'https://www.waveapps.com/favicon.ico',
+      'Free accounting and invoicing software',
+      ['Accounting & Finance']
+    ),
+    popularApp(
+      'FreshBooks',
+      'https://www.freshbooks.com',
+      'https://www.freshbooks.com/favicon.ico',
+      'Cloud-based accounting software',
+      ['Accounting & Finance']
+    ),
+    popularApp(
+      'Stripe',
+      'https://dashboard.stripe.com',
+      'https://stripe.com/favicon.ico',
+      'Online payment processing platform',
+      ['Accounting & Finance', 'eCommerce']
+    ),
+    popularApp(
+      'PayPal',
+      'https://www.paypal.com',
+      'https://www.paypalobjects.com/webstatic/icon/favicon.ico',
+      'Online payment system',
+      ['Accounting & Finance', 'eCommerce']
+    ),
 
-  // eCommerce
-  {
-    name: 'Shopify',
-    url: 'https://www.shopify.com',
-    logo_url:
+    // eCommerce
+    popularApp(
+      'Shopify',
+      'https://www.shopify.com',
       'https://cdn.shopify.com/shopifycloud/brochure/assets/favicon-48d5e347d2e17e3b02b4e0e5c9bc8b1b.png',
-    description: 'E-commerce platform for online stores',
-    categories: ['eCommerce'],
-  },
-  {
-    name: 'WooCommerce',
-    url: 'https://woocommerce.com',
-    logo_url: 'https://woocommerce.com/wp-content/themes/woo/images/favicon.ico',
-    description: 'E-commerce plugin for WordPress',
-    categories: ['eCommerce'],
-  },
-  {
-    name: 'BigCommerce',
-    url: 'https://www.bigcommerce.com',
-    logo_url: 'https://dam.bigcommerce.com/m/569c5976323dd521/original/favicon-196x196.png',
-    description: 'E-commerce platform for growing businesses',
-    categories: ['eCommerce'],
-  },
-  {
-    name: 'Etsy',
-    url: 'https://www.etsy.com',
-    logo_url: 'https://www.etsy.com/images/favicon.ico',
-    description: 'Marketplace for handmade and vintage items',
-    categories: ['eCommerce'],
-  },
+      'E-commerce platform for online stores',
+      ['eCommerce']
+    ),
+    popularApp(
+      'WooCommerce',
+      'https://woocommerce.com',
+      'https://woocommerce.com/wp-content/themes/woo/images/favicon.ico',
+      'E-commerce plugin for WordPress',
+      ['eCommerce']
+    ),
+    popularApp(
+      'BigCommerce',
+      'https://www.bigcommerce.com',
+      'https://dam.bigcommerce.com/m/569c5976323dd521/original/favicon-196x196.png',
+      'E-commerce platform for growing businesses',
+      ['eCommerce']
+    ),
+    popularApp(
+      'Etsy',
+      'https://www.etsy.com',
+      'https://www.etsy.com/images/favicon.ico',
+      'Marketplace for handmade and vintage items',
+      ['eCommerce']
+    ),
 
-  // Marketing & Advertising
-  {
-    name: 'HubSpot',
-    url: 'https://www.hubspot.com',
-    logo_url: 'https://www.hubspot.com/hubfs/HubSpot_Logos/HubSpot-Inversed-Favicon.png',
-    description: 'Inbound marketing, sales, and service software',
-    categories: ['Advertising & Marketing', 'Customer Support'],
-  },
-  {
-    name: 'Mailchimp',
-    url: 'https://mailchimp.com',
-    logo_url: 'https://mailchimp.com/favicon.ico',
-    description: 'Email marketing and automation platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Buffer',
-    url: 'https://buffer.com',
-    logo_url: 'https://buffer.com/static/icons/favicon.ico',
-    description: 'Social media management platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Hootsuite',
-    url: 'https://hootsuite.com',
-    logo_url: 'https://hootsuite.com/favicon.ico',
-    description: 'Social media management dashboard',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Canva for Marketing',
-    url: 'https://www.canva.com',
-    logo_url: 'https://canva.com/favicon.ico',
-    description: 'Design platform for marketing materials',
-    categories: ['Advertising & Marketing', 'Design Suites'],
-  },
+    // Marketing & Advertising
+    popularApp(
+      'HubSpot',
+      'https://www.hubspot.com',
+      'https://www.hubspot.com/hubfs/HubSpot_Logos/HubSpot-Inversed-Favicon.png',
+      'Inbound marketing, sales, and service software',
+      ['Advertising & Marketing', 'Customer Support']
+    ),
+    popularApp(
+      'Mailchimp',
+      'https://mailchimp.com',
+      'https://mailchimp.com/favicon.ico',
+      'Email marketing and automation platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Buffer',
+      'https://buffer.com',
+      'https://buffer.com/static/icons/favicon.ico',
+      'Social media management platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Hootsuite',
+      'https://hootsuite.com',
+      'https://hootsuite.com/favicon.ico',
+      'Social media management dashboard',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Canva for Marketing',
+      'https://www.canva.com',
+      'https://canva.com/favicon.ico',
+      'Design platform for marketing materials',
+      ['Advertising & Marketing', 'Design Suites']
+    ),
 
-  // Blogging & Writing
-  {
-    name: 'Medium',
-    url: 'https://medium.com',
-    logo_url:
+    // Blogging & Writing
+    popularApp(
+      'Medium',
+      'https://medium.com',
       'https://cdn-static-1.medium.com/_/fp/icons/favicon-rebrand-medium.3Y6xpZ-0FSdWDnPM3hSBIA.ico',
-    description: 'Online publishing platform',
-    categories: ['Blogging & Writing'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
-  },
-  {
-    name: 'WordPress.com',
-    url: 'https://wordpress.com',
-    logo_url: 'https://s0.wp.com/i/favicon.ico',
-    description: 'Website and blog hosting platform',
-    categories: ['Blogging & Writing'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
-  },
-  {
-    name: 'Substack',
-    url: 'https://substack.com',
-    logo_url: 'https://substack.com/favicon.ico',
-    description: 'Newsletter publishing platform',
-    categories: ['Blogging & Writing'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
-  },
-  {
-    name: 'Ghost',
-    url: 'https://ghost.org',
-    logo_url: 'https://ghost.org/favicon.ico',
-    description: 'Professional publishing platform',
-    categories: ['Blogging & Writing'],
-  },
-  {
-    name: 'Grammarly',
-    url: 'https://app.grammarly.com',
-    logo_url: 'https://static-web.grammarly.com/cms/master/public/favicon.ico',
-    description: 'Writing assistant for grammar and spelling',
-    categories: ['Blogging & Writing'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
-  },
+      'Online publishing platform',
+      ['Blogging & Writing'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING]
+    ),
+    popularApp(
+      'WordPress.com',
+      'https://wordpress.com',
+      'https://s0.wp.com/i/favicon.ico',
+      'Website and blog hosting platform',
+      ['Blogging & Writing'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING]
+    ),
+    popularApp(
+      'Substack',
+      'https://substack.com',
+      'https://substack.com/favicon.ico',
+      'Newsletter publishing platform',
+      ['Blogging & Writing'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING]
+    ),
+    popularApp(
+      'Ghost',
+      'https://ghost.org',
+      'https://ghost.org/favicon.ico',
+      'Professional publishing platform',
+      ['Blogging & Writing']
+    ),
+    popularApp(
+      'Grammarly',
+      'https://app.grammarly.com',
+      'https://static-web.grammarly.com/cms/master/public/favicon.ico',
+      'Writing assistant for grammar and spelling',
+      ['Blogging & Writing'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING]
+    ),
 
-  // Music & Audio
-  {
-    name: 'Spotify',
-    url: 'https://open.spotify.com',
-    logo_url: 'https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png',
-    description: 'Music streaming service',
-    categories: ['Music', 'Streaming Platforms'],
-  },
-  {
-    name: 'Apple Music',
-    url: 'https://music.apple.com',
-    logo_url: 'https://music.apple.com/favicon.ico',
-    description: 'Music streaming service by Apple',
-    categories: ['Music', 'Streaming Platforms'],
-    suite: 'Apple',
-  },
-  {
-    name: 'SoundCloud',
-    url: 'https://soundcloud.com',
-    logo_url: 'https://soundcloud.com/favicon.ico',
-    description: 'Audio distribution platform and music sharing',
-    categories: ['Music', 'Streaming Platforms'],
-  },
-  {
-    name: 'Bandcamp',
-    url: 'https://bandcamp.com',
-    logo_url: 'https://bandcamp.com/favicon.ico', // Incorrect
-    description: 'Music commerce platform for artists',
-    categories: ['Music', 'eCommerce'],
-  },
+    // Music & Audio
+    popularApp(
+      'Spotify',
+      'https://open.spotify.com',
+      'https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png',
+      'Music streaming service',
+      ['Music', 'Streaming Platforms']
+    ),
+    appleApp(
+      'Apple Music',
+      'https://music.apple.com',
+      'https://music.apple.com/favicon.ico',
+      'Music streaming service by Apple',
+      ['Music', 'Streaming Platforms']
+    ),
+    popularApp(
+      'SoundCloud',
+      'https://soundcloud.com',
+      'https://soundcloud.com/favicon.ico',
+      'Audio distribution platform and music sharing',
+      ['Music', 'Streaming Platforms']
+    ),
+    popularApp(
+      'Bandcamp',
+      'https://bandcamp.com',
+      'https://bandcamp.com/favicon.ico',
+      'Music commerce platform for artists',
+      ['Music', 'eCommerce']
+    ),
 
-  // Streaming Platforms
-  {
-    name: 'Netflix',
-    url: 'https://www.netflix.com',
-    logo_url: 'https://assets.nflxext.com/us/ffe/siteui/common/icons/nficon2016.ico',
-    description: 'Streaming service for movies and TV shows',
-    categories: ['Streaming Platforms'],
-  },
-  {
-    name: 'Twitch',
-    url: 'https://www.twitch.tv',
-    logo_url: 'https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png',
-    description: 'Live streaming platform for gamers',
-    categories: ['Streaming Platforms'],
-  },
-  {
-    name: 'Disney+',
-    url: 'https://www.disneyplus.com',
-    logo_url: 'https://www.disneyplus.com/favicon.ico',
-    description: 'Streaming service for Disney content',
-    categories: ['Streaming Platforms'],
-  },
-  {
-    name: 'Vimeo',
-    url: 'https://vimeo.com',
-    logo_url: 'https://f.vimeocdn.com/images_v6/favicon.ico',
-    description: 'Video hosting and sharing platform',
-    categories: ['Streaming Platforms'],
-  },
+    // Streaming Platforms
+    popularApp(
+      'Netflix',
+      'https://www.netflix.com',
+      'https://assets.nflxext.com/us/ffe/siteui/common/icons/nficon2016.ico',
+      'Streaming service for movies and TV shows',
+      ['Streaming Platforms']
+    ),
+    popularApp(
+      'Twitch',
+      'https://www.twitch.tv',
+      'https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png',
+      'Live streaming platform for gamers',
+      ['Streaming Platforms']
+    ),
+    popularApp(
+      'Disney+',
+      'https://www.disneyplus.com',
+      'https://www.disneyplus.com/favicon.ico',
+      'Streaming service for Disney content',
+      ['Streaming Platforms']
+    ),
+    popularApp(
+      'Vimeo',
+      'https://vimeo.com',
+      'https://f.vimeocdn.com/images_v6/favicon.ico',
+      'Video hosting and sharing platform',
+      ['Streaming Platforms']
+    ),
 
-  // Educational
-  {
-    name: 'Coursera',
-    url: 'https://www.coursera.org',
-    logo_url: 'https://d3njjcbhbojbot.cloudfront.net/web/images/favicons/favicon-v2-32x32.png',
-    description: 'Online learning platform with courses from universities',
-    categories: ['Educational'],
-  },
-  {
-    name: 'Udemy',
-    url: 'https://www.udemy.com',
-    logo_url: 'https://www.udemy.com/staticx/udemy/images/v7/favicon-32x32.png',
-    description: 'Online learning and teaching marketplace',
-    categories: ['Educational'],
-  },
-  {
-    name: 'Khan Academy',
-    url: 'https://www.khanacademy.org',
-    logo_url: 'https://www.khanacademy.org/favicon.ico',
-    description: 'Free online education platform',
-    categories: ['Educational'],
-  },
-  {
-    name: 'edX',
-    url: 'https://www.edx.org',
-    logo_url: 'https://www.edx.org/favicon.ico',
-    description: 'Online courses from universities',
-    categories: ['Educational'],
-  },
-  {
-    name: 'Duolingo',
-    url: 'https://www.duolingo.com',
-    logo_url: 'https://d35aaqx5ub95lt.cloudfront.net/favicon.ico',
-    description: 'Language learning platform',
-    categories: ['Educational'],
-  },
-  {
-    name: 'Codecademy',
-    url: 'https://www.codecademy.com',
-    logo_url: 'https://www.codecademy.com/favicon.ico',
-    description: 'Interactive platform for learning coding',
-    categories: ['Educational', 'IDE & Coding Resources'],
-  },
+    // Educational
+    popularApp(
+      'Coursera',
+      'https://www.coursera.org',
+      'https://d3njjcbhbojbot.cloudfront.net/web/images/favicons/favicon-v2-32x32.png',
+      'Online learning platform with courses from universities',
+      ['Educational']
+    ),
+    popularApp(
+      'Udemy',
+      'https://www.udemy.com',
+      'https://www.udemy.com/staticx/udemy/images/v7/favicon-32x32.png',
+      'Online learning and teaching marketplace',
+      ['Educational']
+    ),
+    popularApp(
+      'Khan Academy',
+      'https://www.khanacademy.org',
+      'https://www.khanacademy.org/favicon.ico',
+      'Free online education platform',
+      ['Educational']
+    ),
+    popularApp(
+      'edX',
+      'https://www.edx.org',
+      'https://www.edx.org/favicon.ico',
+      'Online courses from universities',
+      ['Educational']
+    ),
+    popularApp(
+      'Duolingo',
+      'https://www.duolingo.com',
+      'https://d35aaqx5ub95lt.cloudfront.net/favicon.ico',
+      'Language learning platform',
+      ['Educational']
+    ),
+    popularApp(
+      'Codecademy',
+      'https://www.codecademy.com',
+      'https://www.codecademy.com/favicon.ico',
+      'Interactive platform for learning coding',
+      ['Educational', 'IDE & Coding Resources']
+    ),
 
-  // AI Tools
-  {
-    name: 'ChatGPT',
-    url: 'https://chatgpt.com',
-    logo_url: 'https://chatgpt.com/favicon.ico',
-    description: 'AI-powered conversational assistant',
-    categories: ['Artificial Intelligence'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
-  },
-  {
-    name: 'Claude',
-    url: 'https://claude.ai',
-    logo_url: 'https://claude.ai/favicon.ico',
-    description: 'AI assistant by Anthropic',
-    categories: ['Artificial Intelligence'],
-  },
-  {
-    name: 'Midjourney',
-    url: 'https://www.midjourney.com',
-    logo_url: 'https://www.midjourney.com/favicon.ico',
-    description: 'AI-powered image generation',
-    categories: ['Artificial Intelligence', 'Design Suites'],
-  },
-  {
-    name: 'Perplexity',
-    url: 'https://www.perplexity.ai',
-    logo_url: 'https://www.perplexity.ai/favicon.ico',
-    description: 'AI-powered search and answer engine',
-    categories: ['Artificial Intelligence'],
-  },
-  {
-    name: 'Notion AI',
-    url: 'https://www.notion.so/product/ai',
-    logo_url: 'https://www.notion.so/images/favicon.ico',
-    description: 'AI-powered writing and productivity assistant',
-    categories: ['Artificial Intelligence', 'Focus & Productivity'],
-  },
-  {
-    name: 'Sora',
-    url: 'https://sora.chatgpt.com',
-    logo_url: 'https://sora.chatgpt.com/favicon.ico',
-    description: 'AI assistant for creative generations',
-    categories: ['Artificial Intelligence', 'Design Suites'],
-  },
+    // AI Tools
+    popularApp(
+      'ChatGPT',
+      'https://chatgpt.com',
+      'https://chatgpt.com/favicon.ico',
+      'AI-powered conversational assistant',
+      ['Artificial Intelligence'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING]
+    ),
+    popularApp(
+      'Claude',
+      'https://claude.ai',
+      'https://claude.ai/favicon.ico',
+      'AI assistant by Anthropic',
+      ['Artificial Intelligence']
+    ),
+    popularApp(
+      'Midjourney',
+      'https://www.midjourney.com',
+      'https://www.midjourney.com/favicon.ico',
+      'AI-powered image generation',
+      ['Artificial Intelligence', 'Design Suites']
+    ),
+    popularApp(
+      'Perplexity',
+      'https://www.perplexity.ai',
+      'https://www.perplexity.ai/favicon.ico',
+      'AI-powered search and answer engine',
+      ['Artificial Intelligence']
+    ),
+    popularApp(
+      'Notion AI',
+      'https://www.notion.so/product/ai',
+      'https://www.notion.so/images/favicon.ico',
+      'AI-powered writing and productivity assistant',
+      ['Artificial Intelligence', 'Focus & Productivity']
+    ),
+    popularApp(
+      'Sora',
+      'https://sora.chatgpt.com',
+      'https://sora.chatgpt.com/favicon.ico',
+      'AI assistant for creative generations',
+      ['Artificial Intelligence', 'Design Suites']
+    ),
 
-  // Calendar & Scheduling
-  {
-    name: 'Calendly',
-    url: 'https://calendly.com',
-    logo_url:
+    // Calendar & Scheduling
+    popularApp(
+      'Calendly',
+      'https://calendly.com',
       'https://assets.calendly.com/packs/frontend/media/icon-32x32-9c3218e8faf0ae6e8e90.png',
-    description: 'Meeting scheduling automation',
-    categories: ['Calendar & Scheduling'],
-  },
-  {
-    name: 'Cal.com',
-    url: 'https://cal.com',
-    logo_url: 'https://cal.com/favicon.ico',
-    description: 'Open-source scheduling infrastructure',
-    categories: ['Calendar & Scheduling'],
-  },
-  {
-    name: 'Doodle',
-    url: 'https://doodle.com',
-    logo_url: 'https://marketing-cdn.doodle.com/branding/2022/favicon/favicon.ico',
-    description: 'Meeting scheduling and polling',
-    categories: ['Calendar & Scheduling'],
-  },
+      'Meeting scheduling automation',
+      ['Calendar & Scheduling']
+    ),
+    popularApp(
+      'Cal.com',
+      'https://cal.com',
+      'https://cal.com/favicon.ico',
+      'Open-source scheduling infrastructure',
+      ['Calendar & Scheduling']
+    ),
+    popularApp(
+      'Doodle',
+      'https://doodle.com',
+      'https://marketing-cdn.doodle.com/branding/2022/favicon/favicon.ico',
+      'Meeting scheduling and polling',
+      ['Calendar & Scheduling']
+    ),
 
-  // Administration
-  {
-    name: 'Dropbox',
-    url: 'https://www.dropbox.com',
-    logo_url: 'https://cfl.dropboxstatic.com/static/images/favicon-vflUeLeeY.ico',
-    description: 'Cloud storage and file synchronization',
-    categories: ['Cloud Storage', 'Administration'],
-  },
-  {
-    name: 'Box',
-    url: 'https://www.box.com',
-    logo_url: 'https://www.box.com/favicon.ico',
-    description: 'Cloud content management and file sharing',
-    categories: ['Cloud Storage', 'Administration'],
-  },
-  {
-    name: 'Notion Team',
-    url: 'https://www.notion.so',
-    logo_url: 'https://www.notion.so/images/favicon.ico',
-    description: 'Team workspace and knowledge management',
-    categories: ['Administration', 'Focus & Productivity'],
-    collections: [APP_COLLECTIONS.TEAM_PRODUCTIVITY],
-  },
+    // Administration
+    popularApp(
+      'Dropbox',
+      'https://www.dropbox.com',
+      'https://cfl.dropboxstatic.com/static/images/favicon-vflUeLeeY.ico',
+      'Cloud storage and file synchronization',
+      ['Cloud Storage', 'Administration']
+    ),
+    popularApp(
+      'Box',
+      'https://www.box.com',
+      'https://www.box.com/favicon.ico',
+      'Cloud content management and file sharing',
+      ['Cloud Storage', 'Administration']
+    ),
+    popularApp(
+      'Notion Team',
+      'https://www.notion.so',
+      'https://www.notion.so/images/favicon.ico',
+      'Team workspace and knowledge management',
+      ['Administration', 'Focus & Productivity'],
+      [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+    ),
 
-  // Miscellaneous
-  {
-    name: 'Wikipedia',
-    url: 'https://www.wikipedia.org',
-    logo_url: 'https://www.wikipedia.org/static/favicon/wikipedia.ico',
-    description: 'Free online encyclopedia',
-    categories: ['Misc'],
-    collections: [APP_COLLECTIONS.ARTICLE_PUBLISHING],
-  },
-  {
-    name: 'Google Keep',
-    url: 'https://keep.google.com',
-    logo_url: 'https://ssl.gstatic.com/keep/icon_2020q4v2_128.png',
-    description: 'Note-taking service by Google',
-    categories: ['Notes & Whiteboards'],
-    suite: 'Google',
-  },
-  {
-    name: 'Pocket',
-    url: 'https://getpocket.com',
-    logo_url: 'https://getpocket.com/favicon.ico',
-    description: 'Save articles and videos for later',
-    categories: ['Focus & Productivity', 'Misc'],
-  },
-  {
-    name: 'Feedly',
-    url: 'https://feedly.com',
-    logo_url: 'https://feedly.com/favicon.ico',
-    description: 'RSS feed reader and news aggregator',
-    categories: ['Misc'],
-  },
+    // Miscellaneous
+    popularApp(
+      'Wikipedia',
+      'https://www.wikipedia.org',
+      'https://www.wikipedia.org/static/favicon/wikipedia.ico',
+      'Free online encyclopedia',
+      ['Misc'],
+      [APP_COLLECTIONS.ARTICLE_PUBLISHING]
+    ),
+    googleApp(
+      'Google Keep',
+      'https://keep.google.com',
+      'https://ssl.gstatic.com/keep/icon_2020q4v2_128.png',
+      'Note-taking service by Google',
+      ['Notes & Whiteboards']
+    ),
+    popularApp(
+      'Pocket',
+      'https://getpocket.com',
+      'https://getpocket.com/favicon.ico',
+      'Save articles and videos for later',
+      ['Focus & Productivity', 'Misc']
+    ),
+    popularApp(
+      'Feedly',
+      'https://feedly.com',
+      'https://feedly.com/favicon.ico',
+      'RSS feed reader and news aggregator',
+      ['Misc']
+    ),
 
-  // Marketing, Analytics & CRM Tools
-  {
-    name: 'AB Tasty',
-    url: 'https://www.abtasty.com',
-    logo_url: 'https://www.abtasty.com/favicon.ico',
-    description: 'A/B testing and personalization platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Acquire',
-    url: 'https://acquire.io',
-    logo_url: 'https://acquire.io/favicon.ico',
-    description: 'Customer engagement and support platform',
-    categories: ['Customer Support'],
-  },
-  {
-    name: 'Active Campaign',
-    url: 'https://www.activecampaign.com',
-    logo_url: 'https://www.activecampaign.com/favicon.ico',
-    description: 'Email marketing and automation platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Adobe Analytics',
-    url: 'https://experience.adobe.com',
-    logo_url: 'https://www.adobe.com/favicon.ico',
-    description: 'Web analytics and marketing optimization',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Agile CRM',
-    url: 'https://www.agilecrm.com',
-    logo_url: 'https://www.agilecrm.com/favicon.ico',
-    description: 'All-in-one CRM for small businesses',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'AHRefs',
-    url: 'https://ahrefs.com',
-    logo_url: 'https://ahrefs.com/favicon.ico',
-    description: 'SEO tools and resources',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'AmoCRM',
-    url: 'https://www.amocrm.com',
-    logo_url: 'https://www.amocrm.com/favicon.ico',
-    description: 'Sales management and CRM platform',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'Amplitude',
-    url: 'https://amplitude.com',
-    logo_url: 'https://amplitude.com/favicon.ico',
-    description: 'Product analytics platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Anyleads',
-    url: 'https://anyleads.com',
-    logo_url: 'https://anyleads.com/favicon.ico',
-    description: 'Lead generation and prospecting tool',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'AppNexus',
-    url: 'https://www.appnexus.com',
-    logo_url: 'https://www.appnexus.com/favicon.ico',
-    description: 'Digital advertising technology platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Attribution',
-    url: 'https://attributionapp.com',
-    logo_url: 'https://attributionapp.com/favicon.ico',
-    description: 'Marketing attribution and analytics',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Autopilot',
-    url: 'https://www.autopilothq.com',
-    logo_url: 'https://www.autopilothq.com/favicon.ico',
-    description: 'Marketing automation platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Avora',
-    url: 'https://www.avora.com',
-    logo_url: 'https://www.avora.com/favicon.ico',
-    description: 'AI-powered business intelligence platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Awario',
-    url: 'https://awario.com',
-    logo_url: 'https://awario.com/favicon.ico',
-    description: 'Social media monitoring tool',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Bime',
-    url: 'https://www.bime.io',
-    logo_url: 'https://www.bime.io/favicon.ico',
-    description: 'Business intelligence and data visualization',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Bitly',
-    url: 'https://bitly.com',
-    logo_url: 'https://bitly.com/favicon.ico',
-    description: 'URL shortening and link management',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'BuzzStream',
-    url: 'https://www.buzzstream.com',
-    logo_url: 'https://www.buzzstream.com/favicon.ico',
-    description: 'Digital PR and link building software',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Campaign Monitor',
-    url: 'https://www.campaignmonitor.com',
-    logo_url: 'https://www.campaignmonitor.com/favicon.ico',
-    description: 'Email marketing platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Capsule CRM',
-    url: 'https://capsulecrm.com',
-    logo_url: 'https://capsulecrm.com/favicon.ico',
-    description: 'Simple online CRM for small businesses',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'ChartBeat',
-    url: 'https://chartbeat.com',
-    logo_url: 'https://chartbeat.com/favicon.ico',
-    description: 'Real-time web analytics',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'ChartIO',
-    url: 'https://chartio.com',
-    logo_url: 'https://chartio.com/favicon.ico',
-    description: 'Cloud-based business intelligence tool',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'ChartMogul',
-    url: 'https://chartmogul.com',
-    logo_url: 'https://chartmogul.com/favicon.ico',
-    description: 'Subscription analytics platform',
-    categories: ['Advertising & Marketing', 'Accounting & Finance'],
-  },
-  {
-    name: 'ChatFuel',
-    url: 'https://chatfuel.com',
-    logo_url: 'https://chatfuel.com/favicon.ico',
-    description: 'Chatbot platform for social media',
-    categories: ['Advertising & Marketing', 'Customer Support'],
-  },
-  {
-    name: 'Close',
-    url: 'https://close.com',
-    logo_url: 'https://close.com/favicon.ico',
-    description: 'CRM built for inside sales teams',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'Cluvio',
-    url: 'https://www.cluvio.com',
-    logo_url: 'https://www.cluvio.com/favicon.ico',
-    description: 'Cloud-based analytics platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Communicator',
-    url: 'https://www.communicatorapp.com',
-    logo_url: 'https://www.communicatorapp.com/favicon.ico',
-    description: 'Business communication platform',
-    categories: ['Messaging & Social'],
-  },
-  {
-    name: 'Constant Contact',
-    url: 'https://www.constantcontact.com',
-    logo_url: 'https://www.constantcontact.com/favicon.ico',
-    description: 'Email marketing and automation',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'ConvertKit',
-    url: 'https://convertkit.com',
-    logo_url: 'https://convertkit.com/favicon.ico',
-    description: 'Email marketing for creators',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Copper',
-    url: 'https://www.copper.com',
-    logo_url: 'https://www.copper.com/favicon.ico',
-    description: 'CRM for Google Workspace',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'CoSchedule',
-    url: 'https://coschedule.com',
-    logo_url: 'https://coschedule.com/favicon.ico',
-    description: 'Marketing calendar and project management',
-    categories: ['Advertising & Marketing', 'Product Management'],
-  },
-  {
-    name: 'Customer.io',
-    url: 'https://customer.io',
-    logo_url: 'https://customer.io/favicon.ico',
-    description: 'Automated messaging platform',
-    categories: ['Advertising & Marketing', 'Customer Support'],
-  },
-  {
-    name: 'Cyfe',
-    url: 'https://www.cyfe.com',
-    logo_url: 'https://www.cyfe.com/favicon.ico',
-    description: 'All-in-one business dashboard',
-    categories: ['Advertising & Marketing', 'Administration'],
-  },
-  {
-    name: 'Databox',
-    url: 'https://databox.com',
-    logo_url: 'https://databox.com/favicon.ico',
-    description: 'Business analytics and KPI dashboard',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Databricks',
-    url: 'https://databricks.com',
-    logo_url: 'https://databricks.com/favicon.ico',
-    description: 'Unified analytics platform',
-    categories: ['Advertising & Marketing', 'IDE & Coding Resources'],
-  },
-  {
-    name: 'Domo',
-    url: 'https://www.domo.com',
-    logo_url: 'https://www.domo.com/favicon.ico',
-    description: 'Cloud-based business intelligence platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Easymailing',
-    url: 'https://www.easymailing.com',
-    logo_url: 'https://www.easymailing.com/favicon.ico',
-    description: 'Email marketing solution',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Fanbooster',
-    url: 'https://www.fanbooster.com',
-    logo_url: 'https://www.fanbooster.com/favicon.ico',
-    description: 'Social media marketing automation',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'FindThatLead',
-    url: 'https://findthatlead.com',
-    logo_url: 'https://findthatlead.com/favicon.ico',
-    description: 'Lead generation and prospecting tool',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Foleon',
-    url: 'https://www.foleon.com',
-    logo_url: 'https://www.foleon.com/favicon.ico',
-    description: 'Content creation platform',
-    categories: ['Advertising & Marketing', 'Blogging & Writing'],
-  },
-  {
-    name: 'Freshsales',
-    url: 'https://www.freshworks.com/crm',
-    logo_url: 'https://www.freshworks.com/favicon.ico',
-    description: 'Sales CRM software',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'Fullstory',
-    url: 'https://www.fullstory.com',
-    logo_url: 'https://www.fullstory.com/favicon.ico',
-    description: 'Digital experience analytics',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'GainSight',
-    url: 'https://www.gainsight.com',
-    logo_url: 'https://www.gainsight.com/favicon.ico',
-    description: 'Customer success platform',
-    categories: ['Customer Support'],
-  },
-  {
-    name: 'Gist',
-    url: 'https://getgist.com',
-    logo_url: 'https://getgist.com/favicon.ico',
-    description: 'All-in-one marketing automation',
-    categories: ['Advertising & Marketing', 'Customer Support'],
-  },
-  {
-    name: 'Gleam',
-    url: 'https://gleam.io',
-    logo_url: 'https://gleam.io/favicon.ico',
-    description: 'Competitions and marketing apps',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Google Ads',
-    url: 'https://ads.google.com',
-    logo_url: 'https://www.gstatic.com/images/branding/product/2x/google_ads_32dp.png',
-    description: 'Online advertising platform',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Adsense',
-    url: 'https://www.google.com/adsense',
-    logo_url: 'https://www.gstatic.com/adsense/common/adsense_300x50.png',
-    description: 'Ad monetization platform',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Analytics',
-    url: 'https://analytics.google.com',
-    logo_url: 'https://www.google.com/analytics/static/3e3b88e/img/favicon.ico',
-    description: 'Web analytics service',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Data Studio',
-    url: 'https://datastudio.google.com',
-    logo_url: 'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_data_studio_32dp.png',
-    description: 'Data visualization and reporting',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Optimize',
-    url: 'https://optimize.google.com',
-    logo_url: 'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_optimize_32dp.png',
-    description: 'Website optimization and A/B testing',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'Google Tag Manager',
-    url: 'https://tagmanager.google.com',
-    logo_url: 'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_tag_manager_32dp.png',
-    description: 'Tag management system',
-    categories: ['Advertising & Marketing'],
-    suite: 'Google',
-  },
-  {
-    name: 'GoSquared',
-    url: 'https://www.gosquared.com',
-    logo_url: 'https://www.gosquared.com/favicon.ico',
-    description: 'Analytics and live chat platform',
-    categories: ['Advertising & Marketing', 'Customer Support'],
-  },
-  {
-    name: 'Groove',
-    url: 'https://www.groovehq.com',
-    logo_url: 'https://www.groovehq.com/favicon.ico',
-    description: 'Help desk and customer support software',
-    categories: ['Customer Support'],
-  },
-  {
-    name: 'Growbots',
-    url: 'https://www.growbots.com',
-    logo_url: 'https://www.growbots.com/favicon.ico',
-    description: 'Sales automation platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Heap',
-    url: 'https://heap.io',
-    logo_url: 'https://heap.io/favicon.ico',
-    description: 'Digital analytics platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Hotjar',
-    url: 'https://www.hotjar.com',
-    logo_url: 'https://www.hotjar.com/favicon.ico',
-    description: 'Behavior analytics and user feedback',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'InfusionSoft',
-    url: 'https://keap.com',
-    logo_url: 'https://keap.com/favicon.ico',
-    description: 'Sales and marketing automation',
-    categories: ['Advertising & Marketing', 'Customer Support'],
-  },
-  {
-    name: 'Instapage',
-    url: 'https://instapage.com',
-    logo_url: 'https://instapage.com/favicon.ico',
-    description: 'Landing page platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'KissMetrics',
-    url: 'https://www.kissmetrics.io',
-    logo_url: 'https://www.kissmetrics.io/favicon.ico',
-    description: 'Customer engagement automation',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Klipfolio',
-    url: 'https://www.klipfolio.com',
-    logo_url: 'https://www.klipfolio.com/favicon.ico',
-    description: 'Business dashboard and reporting',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Later',
-    url: 'https://later.com',
-    logo_url: 'https://later.com/favicon.ico',
-    description: 'Social media scheduling platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Leadberry',
-    url: 'https://www.leadberry.com',
-    logo_url: 'https://www.leadberry.com/favicon.ico',
-    description: 'B2B lead generation software',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'LinkTree',
-    url: 'https://linktr.ee',
-    logo_url: 'https://linktr.ee/favicon.ico',
-    description: 'Link-in-bio tool',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Litmus',
-    url: 'https://www.litmus.com',
-    logo_url: 'https://www.litmus.com/favicon.ico',
-    description: 'Email testing and analytics',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Looker',
-    url: 'https://looker.com',
-    logo_url: 'https://looker.com/favicon.ico',
-    description: 'Business intelligence and analytics',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Mailerlite',
-    url: 'https://www.mailerlite.com',
-    logo_url: 'https://www.mailerlite.com/favicon.ico',
-    description: 'Email marketing automation',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Mailjet',
-    url: 'https://www.mailjet.com',
-    logo_url: 'https://www.mailjet.com/favicon.ico',
-    description: 'Email delivery service',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Mailshake',
-    url: 'https://mailshake.com',
-    logo_url: 'https://mailshake.com/favicon.ico',
-    description: 'Cold email outreach platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Mandrill',
-    url: 'https://mandrillapp.com',
-    logo_url: 'https://mandrillapp.com/favicon.ico',
-    description: 'Transactional email API',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'ManyChat',
-    url: 'https://manychat.com',
-    logo_url: 'https://manychat.com/favicon.ico',
-    description: 'Chatbot marketing platform',
-    categories: ['Advertising & Marketing', 'Customer Support'],
-  },
-  {
-    name: 'Marketo',
-    url: 'https://www.marketo.com',
-    logo_url: 'https://www.marketo.com/favicon.ico',
-    description: 'Marketing automation software',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Mention',
-    url: 'https://mention.com',
-    logo_url: 'https://mention.com/favicon.ico',
-    description: 'Social media monitoring tool',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'MixPanel',
-    url: 'https://mixpanel.com',
-    logo_url: 'https://mixpanel.com/favicon.ico',
-    description: 'Product analytics platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Mode',
-    url: 'https://mode.com',
-    logo_url: 'https://mode.com/favicon.ico',
-    description: 'Analytics platform for data teams',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'OnePageCRM',
-    url: 'https://www.onepagecrm.com',
-    logo_url: 'https://www.onepagecrm.com/favicon.ico',
-    description: 'Simple action-focused CRM',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'Opteo',
-    url: 'https://opteo.com',
-    logo_url: 'https://opteo.com/favicon.ico',
-    description: 'Google Ads optimization tool',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Optimizely',
-    url: 'https://www.optimizely.com',
-    logo_url: 'https://www.optimizely.com/favicon.ico',
-    description: 'Experimentation and personalization platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Paddle',
-    url: 'https://www.paddle.com',
-    logo_url: 'https://www.paddle.com/favicon.ico',
-    description: 'Payment infrastructure for SaaS',
-    categories: ['Accounting & Finance', 'eCommerce'],
-  },
-  {
-    name: 'PandaDoc',
-    url: 'https://www.pandadoc.com',
-    logo_url: 'https://www.pandadoc.com/favicon.ico',
-    description: 'Document automation software',
-    categories: ['Administration'],
-  },
-  {
-    name: 'Pardo',
-    url: 'https://www.pardot.com',
-    logo_url: 'https://www.pardot.com/favicon.ico',
-    description: 'B2B marketing automation',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Periscope Data',
-    url: 'https://www.periscopedata.com',
-    logo_url: 'https://www.periscopedata.com/favicon.ico',
-    description: 'Data analysis platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Pipedrive',
-    url: 'https://www.pipedrive.com',
-    logo_url: 'https://www.pipedrive.com/favicon.ico',
-    description: 'Sales CRM and pipeline management',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'Planoly',
-    url: 'https://www.planoly.com',
-    logo_url: 'https://www.planoly.com/favicon.ico',
-    description: 'Instagram planning and scheduling',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Postmark',
-    url: 'https://postmarkapp.com',
-    logo_url: 'https://postmarkapp.com/favicon.ico',
-    description: 'Transactional email delivery',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Power BI',
-    url: 'https://powerbi.microsoft.com',
-    logo_url: 'https://powerbi.microsoft.com/favicon.ico',
-    description: 'Business analytics service',
-    categories: ['Advertising & Marketing'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'PromoRepublic',
-    url: 'https://promorepublic.com',
-    logo_url: 'https://promorepublic.com/favicon.ico',
-    description: 'Social media management platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Prospect.io',
-    url: 'https://prospect.io',
-    logo_url: 'https://prospect.io/favicon.ico',
-    description: 'Sales automation and prospecting',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'RocketLink',
-    url: 'https://rocketlink.io',
-    logo_url: 'https://rocketlink.io/favicon.ico',
-    description: 'Link retargeting platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Salesflare',
-    url: 'https://salesflare.com',
-    logo_url: 'https://salesflare.com/favicon.ico',
-    description: 'Intelligent CRM for small businesses',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'Salesforce',
-    url: 'https://www.salesforce.com',
-    logo_url: 'https://www.salesforce.com/favicon.ico',
-    description: 'Customer relationship management platform',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'SalesMachine',
-    url: 'https://salesmachine.io',
-    logo_url: 'https://salesmachine.io/favicon.ico',
-    description: 'Customer success automation',
-    categories: ['Customer Support'],
-  },
-  {
-    name: 'Satismeter',
-    url: 'https://www.satismeter.com',
-    logo_url: 'https://www.satismeter.com/favicon.ico',
-    description: 'Customer satisfaction surveys',
-    categories: ['Customer Support'],
-  },
-  {
-    name: 'Segment',
-    url: 'https://segment.com',
-    logo_url: 'https://segment.com/favicon.ico',
-    description: 'Customer data platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Seller Legend',
-    url: 'https://sellerlegend.com',
-    logo_url: 'https://sellerlegend.com/favicon.ico',
-    description: 'Amazon seller analytics',
-    categories: ['eCommerce', 'Accounting & Finance'],
-  },
-  {
-    name: 'Sellsy',
-    url: 'https://www.sellsy.com',
-    logo_url: 'https://www.sellsy.com/favicon.ico',
-    description: 'CRM and business management',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'SEMRush',
-    url: 'https://www.semrush.com',
-    logo_url: 'https://www.semrush.com/favicon.ico',
-    description: 'SEO and marketing toolkit',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'SendGrid',
-    url: 'https://sendgrid.com',
-    logo_url: 'https://sendgrid.com/favicon.ico',
-    description: 'Email delivery service',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Brevo',
-    url: 'https://www.brevo.com',
-    logo_url: 'https://www.brevo.com/favicon.ico',
-    description: 'Email marketing and automation platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'SociallyMap',
-    url: 'https://sociallymap.com',
-    logo_url: 'https://sociallymap.com/favicon.ico',
-    description: 'Social media management tool',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'SociallyUp',
-    url: 'https://sociallyup.com',
-    logo_url: 'https://sociallyup.com/favicon.ico',
-    description: 'Social media growth platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'SparkPost',
-    url: 'https://www.sparkpost.com',
-    logo_url: 'https://www.sparkpost.com/favicon.ico',
-    description: 'Email delivery service',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Sprout Social',
-    url: 'https://sproutsocial.com',
-    logo_url: 'https://sproutsocial.com/favicon.ico',
-    description: 'Social media management platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Stripo',
-    url: 'https://stripo.email',
-    logo_url: 'https://stripo.email/favicon.ico',
-    description: 'Email template builder',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Sumo',
-    url: 'https://sumo.com',
-    logo_url: 'https://sumo.com/favicon.ico',
-    description: 'Marketing automation tools',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Tableau',
-    url: 'https://www.tableau.com',
-    logo_url: 'https://www.tableau.com/favicon.ico',
-    description: 'Visual analytics platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Teamwork CRM',
-    url: 'https://www.teamwork.com/crm',
-    logo_url: 'https://www.teamwork.com/favicon.ico',
-    description: 'Sales CRM software',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'Unbounce',
-    url: 'https://unbounce.com',
-    logo_url: 'https://unbounce.com/favicon.ico',
-    description: 'Landing page builder',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'User.com',
-    url: 'https://user.com',
-    logo_url: 'https://user.com/favicon.ico',
-    description: 'Marketing automation platform',
-    categories: ['Advertising & Marketing', 'Customer Support'],
-  },
-  {
-    name: 'Viral Loops',
-    url: 'https://viral-loops.com',
-    logo_url: 'https://viral-loops.com/favicon.ico',
-    description: 'Viral marketing platform',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Vtiger',
-    url: 'https://www.vtiger.com',
-    logo_url: 'https://www.vtiger.com/favicon.ico',
-    description: 'Open source CRM',
-    categories: ['Customer Support', 'Administration'],
-  },
-  {
-    name: 'Wishpond',
-    url: 'https://www.wishpond.com',
-    logo_url: 'https://www.wishpond.com/favicon.ico',
-    description: 'Marketing platform for small businesses',
-    categories: ['Advertising & Marketing'],
-  },
-  {
-    name: 'Yandex Direct',
-    url: 'https://direct.yandex.com',
-    logo_url: 'https://yastatic.net/s3/home/logos/favicon/favicon-16x16.png',
-    description: 'Advertising platform by Yandex',
-    categories: ['Advertising & Marketing'],
-    suite: 'Yandex',
-  },
+    // Marketing, Analytics & CRM Tools
+    popularApp(
+      'AB Tasty',
+      'https://www.abtasty.com',
+      'https://www.abtasty.com/favicon.ico',
+      'A/B testing and personalization platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Acquire',
+      'https://acquire.io',
+      'https://acquire.io/favicon.ico',
+      'Customer engagement and support platform',
+      ['Customer Support']
+    ),
+    popularApp(
+      'Active Campaign',
+      'https://www.activecampaign.com',
+      'https://www.activecampaign.com/favicon.ico',
+      'Email marketing and automation platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Adobe Analytics',
+      'https://experience.adobe.com',
+      'https://www.adobe.com/favicon.ico',
+      'Web analytics and marketing optimization',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Agile CRM',
+      'https://www.agilecrm.com',
+      'https://www.agilecrm.com/favicon.ico',
+      'All-in-one CRM for small businesses',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'AHRefs',
+      'https://ahrefs.com',
+      'https://ahrefs.com/favicon.ico',
+      'SEO tools and resources',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'AmoCRM',
+      'https://www.amocrm.com',
+      'https://www.amocrm.com/favicon.ico',
+      'Sales management and CRM platform',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'Amplitude',
+      'https://amplitude.com',
+      'https://amplitude.com/favicon.ico',
+      'Product analytics platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Anyleads',
+      'https://anyleads.com',
+      'https://anyleads.com/favicon.ico',
+      'Lead generation and prospecting tool',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'AppNexus',
+      'https://www.appnexus.com',
+      'https://www.appnexus.com/favicon.ico',
+      'Digital advertising technology platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Attribution',
+      'https://attributionapp.com',
+      'https://attributionapp.com/favicon.ico',
+      'Marketing attribution and analytics',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Autopilot',
+      'https://www.autopilothq.com',
+      'https://www.autopilothq.com/favicon.ico',
+      'Marketing automation platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Avora',
+      'https://www.avora.com',
+      'https://www.avora.com/favicon.ico',
+      'AI-powered business intelligence platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Awario',
+      'https://awario.com',
+      'https://awario.com/favicon.ico',
+      'Social media monitoring tool',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Bime',
+      'https://www.bime.io',
+      'https://www.bime.io/favicon.ico',
+      'Business intelligence and data visualization',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Bitly',
+      'https://bitly.com',
+      'https://bitly.com/favicon.ico',
+      'URL shortening and link management',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'BuzzStream',
+      'https://www.buzzstream.com',
+      'https://www.buzzstream.com/favicon.ico',
+      'Digital PR and link building software',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Campaign Monitor',
+      'https://www.campaignmonitor.com',
+      'https://www.campaignmonitor.com/favicon.ico',
+      'Email marketing platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Capsule CRM',
+      'https://capsulecrm.com',
+      'https://capsulecrm.com/favicon.ico',
+      'Simple online CRM for small businesses',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'ChartBeat',
+      'https://chartbeat.com',
+      'https://chartbeat.com/favicon.ico',
+      'Real-time web analytics',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'ChartIO',
+      'https://chartio.com',
+      'https://chartio.com/favicon.ico',
+      'Cloud-based business intelligence tool',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'ChartMogul',
+      'https://chartmogul.com',
+      'https://chartmogul.com/favicon.ico',
+      'Subscription analytics platform',
+      ['Advertising & Marketing', 'Accounting & Finance']
+    ),
+    popularApp(
+      'ChatFuel',
+      'https://chatfuel.com',
+      'https://chatfuel.com/favicon.ico',
+      'Chatbot platform for social media',
+      ['Advertising & Marketing', 'Customer Support']
+    ),
+    popularApp(
+      'Close',
+      'https://close.com',
+      'https://close.com/favicon.ico',
+      'CRM built for inside sales teams',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'Cluvio',
+      'https://www.cluvio.com',
+      'https://www.cluvio.com/favicon.ico',
+      'Cloud-based analytics platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Communicator',
+      'https://www.communicatorapp.com',
+      'https://www.communicatorapp.com/favicon.ico',
+      'Business communication platform',
+      ['Messaging & Social']
+    ),
+    popularApp(
+      'Constant Contact',
+      'https://www.constantcontact.com',
+      'https://www.constantcontact.com/favicon.ico',
+      'Email marketing and automation',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'ConvertKit',
+      'https://convertkit.com',
+      'https://convertkit.com/favicon.ico',
+      'Email marketing for creators',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Copper',
+      'https://www.copper.com',
+      'https://www.copper.com/favicon.ico',
+      'CRM for Google Workspace',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'CoSchedule',
+      'https://coschedule.com',
+      'https://coschedule.com/favicon.ico',
+      'Marketing calendar and project management',
+      ['Advertising & Marketing', 'Product Management']
+    ),
+    popularApp(
+      'Customer.io',
+      'https://customer.io',
+      'https://customer.io/favicon.ico',
+      'Automated messaging platform',
+      ['Advertising & Marketing', 'Customer Support']
+    ),
+    popularApp(
+      'Cyfe',
+      'https://www.cyfe.com',
+      'https://www.cyfe.com/favicon.ico',
+      'All-in-one business dashboard',
+      ['Advertising & Marketing', 'Administration']
+    ),
+    popularApp(
+      'Databox',
+      'https://databox.com',
+      'https://databox.com/favicon.ico',
+      'Business analytics and KPI dashboard',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Databricks',
+      'https://databricks.com',
+      'https://databricks.com/favicon.ico',
+      'Unified analytics platform',
+      ['Advertising & Marketing', 'IDE & Coding Resources']
+    ),
+    popularApp(
+      'Domo',
+      'https://www.domo.com',
+      'https://www.domo.com/favicon.ico',
+      'Cloud-based business intelligence platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Easymailing',
+      'https://www.easymailing.com',
+      'https://www.easymailing.com/favicon.ico',
+      'Email marketing solution',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Fanbooster',
+      'https://www.fanbooster.com',
+      'https://www.fanbooster.com/favicon.ico',
+      'Social media marketing automation',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'FindThatLead',
+      'https://findthatlead.com',
+      'https://findthatlead.com/favicon.ico',
+      'Lead generation and prospecting tool',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Foleon',
+      'https://www.foleon.com',
+      'https://www.foleon.com/favicon.ico',
+      'Content creation platform',
+      ['Advertising & Marketing', 'Blogging & Writing']
+    ),
+    popularApp(
+      'Freshsales',
+      'https://www.freshworks.com/crm',
+      'https://www.freshworks.com/favicon.ico',
+      'Sales CRM software',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'Fullstory',
+      'https://www.fullstory.com',
+      'https://www.fullstory.com/favicon.ico',
+      'Digital experience analytics',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'GainSight',
+      'https://www.gainsight.com',
+      'https://www.gainsight.com/favicon.ico',
+      'Customer success platform',
+      ['Customer Support']
+    ),
+    popularApp(
+      'Gist',
+      'https://getgist.com',
+      'https://getgist.com/favicon.ico',
+      'All-in-one marketing automation',
+      ['Advertising & Marketing', 'Customer Support']
+    ),
+    popularApp(
+      'Gleam',
+      'https://gleam.io',
+      'https://gleam.io/favicon.ico',
+      'Competitions and marketing apps',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google Ads',
+      'https://ads.google.com',
+      'https://www.gstatic.com/images/branding/product/2x/google_ads_32dp.png',
+      'Online advertising platform',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google Adsense',
+      'https://www.google.com/adsense',
+      'https://www.gstatic.com/adsense/common/adsense_300x50.png',
+      'Ad monetization platform',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google Analytics',
+      'https://analytics.google.com',
+      'https://www.google.com/analytics/static/3e3b88e/img/favicon.ico',
+      'Web analytics service',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google Data Studio',
+      'https://datastudio.google.com',
+      'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_data_studio_32dp.png',
+      'Data visualization and reporting',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google Optimize',
+      'https://optimize.google.com',
+      'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_optimize_32dp.png',
+      'Website optimization and A/B testing',
+      ['Advertising & Marketing']
+    ),
+    googleApp(
+      'Google Tag Manager',
+      'https://tagmanager.google.com',
+      'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_tag_manager_32dp.png',
+      'Tag management system',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'GoSquared',
+      'https://www.gosquared.com',
+      'https://www.gosquared.com/favicon.ico',
+      'Analytics and live chat platform',
+      ['Advertising & Marketing', 'Customer Support']
+    ),
+    popularApp(
+      'Groove',
+      'https://www.groovehq.com',
+      'https://www.groovehq.com/favicon.ico',
+      'Help desk and customer support software',
+      ['Customer Support']
+    ),
+    popularApp(
+      'Growbots',
+      'https://www.growbots.com',
+      'https://www.growbots.com/favicon.ico',
+      'Sales automation platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Heap',
+      'https://heap.io',
+      'https://heap.io/favicon.ico',
+      'Digital analytics platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Hotjar',
+      'https://www.hotjar.com',
+      'https://www.hotjar.com/favicon.ico',
+      'Behavior analytics and user feedback',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'InfusionSoft',
+      'https://keap.com',
+      'https://keap.com/favicon.ico',
+      'Sales and marketing automation',
+      ['Advertising & Marketing', 'Customer Support']
+    ),
+    popularApp(
+      'Instapage',
+      'https://instapage.com',
+      'https://instapage.com/favicon.ico',
+      'Landing page platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'KissMetrics',
+      'https://www.kissmetrics.io',
+      'https://www.kissmetrics.io/favicon.ico',
+      'Customer engagement automation',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Klipfolio',
+      'https://www.klipfolio.com',
+      'https://www.klipfolio.com/favicon.ico',
+      'Business dashboard and reporting',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Later',
+      'https://later.com',
+      'https://later.com/favicon.ico',
+      'Social media scheduling platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Leadberry',
+      'https://www.leadberry.com',
+      'https://www.leadberry.com/favicon.ico',
+      'B2B lead generation software',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'LinkTree',
+      'https://linktr.ee',
+      'https://linktr.ee/favicon.ico',
+      'Link-in-bio tool',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Litmus',
+      'https://www.litmus.com',
+      'https://www.litmus.com/favicon.ico',
+      'Email testing and analytics',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Looker',
+      'https://looker.com',
+      'https://looker.com/favicon.ico',
+      'Business intelligence and analytics',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Mailerlite',
+      'https://www.mailerlite.com',
+      'https://www.mailerlite.com/favicon.ico',
+      'Email marketing automation',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Mailjet',
+      'https://www.mailjet.com',
+      'https://www.mailjet.com/favicon.ico',
+      'Email delivery service',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Mailshake',
+      'https://mailshake.com',
+      'https://mailshake.com/favicon.ico',
+      'Cold email outreach platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Mandrill',
+      'https://mandrillapp.com',
+      'https://mandrillapp.com/favicon.ico',
+      'Transactional email API',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'ManyChat',
+      'https://manychat.com',
+      'https://manychat.com/favicon.ico',
+      'Chatbot marketing platform',
+      ['Advertising & Marketing', 'Customer Support']
+    ),
+    popularApp(
+      'Marketo',
+      'https://www.marketo.com',
+      'https://www.marketo.com/favicon.ico',
+      'Marketing automation software',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Mention',
+      'https://mention.com',
+      'https://mention.com/favicon.ico',
+      'Social media monitoring tool',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'MixPanel',
+      'https://mixpanel.com',
+      'https://mixpanel.com/favicon.ico',
+      'Product analytics platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Mode',
+      'https://mode.com',
+      'https://mode.com/favicon.ico',
+      'Analytics platform for data teams',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'OnePageCRM',
+      'https://www.onepagecrm.com',
+      'https://www.onepagecrm.com/favicon.ico',
+      'Simple action-focused CRM',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'Opteo',
+      'https://opteo.com',
+      'https://opteo.com/favicon.ico',
+      'Google Ads optimization tool',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Optimizely',
+      'https://www.optimizely.com',
+      'https://www.optimizely.com/favicon.ico',
+      'Experimentation and personalization platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Paddle',
+      'https://www.paddle.com',
+      'https://www.paddle.com/favicon.ico',
+      'Payment infrastructure for SaaS',
+      ['Accounting & Finance', 'eCommerce']
+    ),
+    popularApp(
+      'PandaDoc',
+      'https://www.pandadoc.com',
+      'https://www.pandadoc.com/favicon.ico',
+      'Document automation software',
+      ['Administration']
+    ),
+    popularApp(
+      'Pardo',
+      'https://www.pardot.com',
+      'https://www.pardot.com/favicon.ico',
+      'B2B marketing automation',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Periscope Data',
+      'https://www.periscopedata.com',
+      'https://www.periscopedata.com/favicon.ico',
+      'Data analysis platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Pipedrive',
+      'https://www.pipedrive.com',
+      'https://www.pipedrive.com/favicon.ico',
+      'Sales CRM and pipeline management',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'Planoly',
+      'https://www.planoly.com',
+      'https://www.planoly.com/favicon.ico',
+      'Instagram planning and scheduling',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Postmark',
+      'https://postmarkapp.com',
+      'https://postmarkapp.com/favicon.ico',
+      'Transactional email delivery',
+      ['Advertising & Marketing']
+    ),
+    msApp(
+      'Power BI',
+      'https://powerbi.microsoft.com',
+      'https://powerbi.microsoft.com/favicon.ico',
+      'Business analytics service',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'PromoRepublic',
+      'https://promorepublic.com',
+      'https://promorepublic.com/favicon.ico',
+      'Social media management platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Prospect.io',
+      'https://prospect.io',
+      'https://prospect.io/favicon.ico',
+      'Sales automation and prospecting',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'RocketLink',
+      'https://rocketlink.io',
+      'https://rocketlink.io/favicon.ico',
+      'Link retargeting platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Salesflare',
+      'https://salesflare.com',
+      'https://salesflare.com/favicon.ico',
+      'Intelligent CRM for small businesses',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'Salesforce',
+      'https://www.salesforce.com',
+      'https://www.salesforce.com/favicon.ico',
+      'Customer relationship management platform',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'SalesMachine',
+      'https://salesmachine.io',
+      'https://salesmachine.io/favicon.ico',
+      'Customer success automation',
+      ['Customer Support']
+    ),
+    popularApp(
+      'Satismeter',
+      'https://www.satismeter.com',
+      'https://www.satismeter.com/favicon.ico',
+      'Customer satisfaction surveys',
+      ['Customer Support']
+    ),
+    popularApp(
+      'Segment',
+      'https://segment.com',
+      'https://segment.com/favicon.ico',
+      'Customer data platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Seller Legend',
+      'https://sellerlegend.com',
+      'https://sellerlegend.com/favicon.ico',
+      'Amazon seller analytics',
+      ['eCommerce', 'Accounting & Finance']
+    ),
+    popularApp(
+      'Sellsy',
+      'https://www.sellsy.com',
+      'https://www.sellsy.com/favicon.ico',
+      'CRM and business management',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'SEMRush',
+      'https://www.semrush.com',
+      'https://www.semrush.com/favicon.ico',
+      'SEO and marketing toolkit',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'SendGrid',
+      'https://sendgrid.com',
+      'https://sendgrid.com/favicon.ico',
+      'Email delivery service',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Brevo',
+      'https://www.brevo.com',
+      'https://www.brevo.com/favicon.ico',
+      'Email marketing and automation platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'SociallyMap',
+      'https://sociallymap.com',
+      'https://sociallymap.com/favicon.ico',
+      'Social media management tool',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'SociallyUp',
+      'https://sociallyup.com',
+      'https://sociallyup.com/favicon.ico',
+      'Social media growth platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'SparkPost',
+      'https://www.sparkpost.com',
+      'https://www.sparkpost.com/favicon.ico',
+      'Email delivery service',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Sprout Social',
+      'https://sproutsocial.com',
+      'https://sproutsocial.com/favicon.ico',
+      'Social media management platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Stripo',
+      'https://stripo.email',
+      'https://stripo.email/favicon.ico',
+      'Email template builder',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Sumo',
+      'https://sumo.com',
+      'https://sumo.com/favicon.ico',
+      'Marketing automation tools',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Tableau',
+      'https://www.tableau.com',
+      'https://www.tableau.com/favicon.ico',
+      'Visual analytics platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Teamwork CRM',
+      'https://www.teamwork.com/crm',
+      'https://www.teamwork.com/favicon.ico',
+      'Sales CRM software',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'Unbounce',
+      'https://unbounce.com',
+      'https://unbounce.com/favicon.ico',
+      'Landing page builder',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'User.com',
+      'https://user.com',
+      'https://user.com/favicon.ico',
+      'Marketing automation platform',
+      ['Advertising & Marketing', 'Customer Support']
+    ),
+    popularApp(
+      'Viral Loops',
+      'https://viral-loops.com',
+      'https://viral-loops.com/favicon.ico',
+      'Viral marketing platform',
+      ['Advertising & Marketing']
+    ),
+    popularApp(
+      'Vtiger',
+      'https://www.vtiger.com',
+      'https://www.vtiger.com/favicon.ico',
+      'Open source CRM',
+      ['Customer Support', 'Administration']
+    ),
+    popularApp(
+      'Wishpond',
+      'https://www.wishpond.com',
+      'https://www.wishpond.com/favicon.ico',
+      'Marketing platform for small businesses',
+      ['Advertising & Marketing']
+    ),
+    yandexApp(
+      'Yandex Direct',
+      'https://direct.yandex.com',
+      'https://yastatic.net/s3/home/logos/favicon/favicon-16x16.png',
+      'Advertising platform by Yandex',
+      ['Advertising & Marketing']
+    ),
 
-  // Administration & Infrastructure
-  {
-    name: 'Amazon Seller Central',
-    url: 'https://sellercentral.amazon.com',
-    logo_url: 'https://www.amazon.com/favicon.ico',
-    description: 'Amazon marketplace management',
-    categories: ['eCommerce', 'Administration'],
-  },
-  {
-    name: 'Azure Portal',
-    url: 'https://portal.azure.com',
-    logo_url: 'https://portal.azure.com/favicon.ico',
-    description: 'Microsoft cloud platform',
-    categories: ['Administration', 'IDE & Coding Resources'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Bitrix24',
-    url: 'https://www.bitrix24.com',
-    logo_url: 'https://www.bitrix24.com/favicon.ico',
-    description: 'Business management platform',
-    categories: ['Administration', 'Customer Support'],
-  },
-  {
-    name: 'JivoChat',
-    url: 'https://www.jivochat.com',
-    logo_url: 'https://www.jivochat.com/favicon.ico',
-    description: 'Live chat and customer messaging',
-    categories: ['Customer Support'],
-  },
-  {
-    name: 'ManageWP',
-    url: 'https://managewp.com',
-    logo_url: 'https://managewp.com/favicon.ico',
-    description: 'WordPress management platform',
-    categories: ['Administration'],
-  },
-  {
-    name: 'New Relic',
-    url: 'https://newrelic.com',
-    logo_url: 'https://newrelic.com/favicon.ico',
-    description: 'Application performance monitoring',
-    categories: ['Administration', 'IDE & Coding Resources'],
-  },
-  {
-    name: 'Pingdom',
-    url: 'https://www.pingdom.com',
-    logo_url: 'https://www.pingdom.com/favicon.ico',
-    description: 'Website monitoring service',
-    categories: ['Administration'],
-  },
-  {
-    name: 'Status.io',
-    url: 'https://status.io',
-    logo_url: 'https://status.io/favicon.ico',
-    description: 'Status page and incident management',
-    categories: ['Administration'],
-  },
-  {
-    name: 'StatusPage.io',
-    url: 'https://www.statuspage.io',
-    logo_url: 'https://www.statuspage.io/favicon.ico',
-    description: 'Status and incident communication',
-    categories: ['Administration'],
-  },
-  {
-    name: 'Yandex Metrika',
-    url: 'https://metrika.yandex.com',
-    logo_url: 'https://yastatic.net/s3/home/logos/favicon/favicon-16x16.png',
-    description: 'Web analytics service by Yandex',
-    categories: ['Advertising & Marketing', 'Administration'],
-    suite: 'Yandex',
-  },
-  {
-    name: 'Yandex Webmaster',
-    url: 'https://webmaster.yandex.com',
-    logo_url: 'https://yastatic.net/s3/home/logos/favicon/favicon-16x16.png',
-    description: 'Webmaster tools by Yandex',
-    categories: ['Administration'],
-    suite: 'Yandex',
-  },
+    // Administration & Infrastructure
+    popularApp(
+      'Amazon Seller Central',
+      'https://sellercentral.amazon.com',
+      'https://www.amazon.com/favicon.ico',
+      'Amazon marketplace management',
+      ['eCommerce', 'Administration']
+    ),
+    msApp(
+      'Azure Portal',
+      'https://portal.azure.com',
+      'https://portal.azure.com/favicon.ico',
+      'Microsoft cloud platform',
+      ['Administration', 'IDE & Coding Resources']
+    ),
+    popularApp(
+      'Bitrix24',
+      'https://www.bitrix24.com',
+      'https://www.bitrix24.com/favicon.ico',
+      'Business management platform',
+      ['Administration', 'Customer Support']
+    ),
+    popularApp(
+      'JivoChat',
+      'https://www.jivochat.com',
+      'https://www.jivochat.com/favicon.ico',
+      'Live chat and customer messaging',
+      ['Customer Support']
+    ),
+    popularApp(
+      'ManageWP',
+      'https://managewp.com',
+      'https://managewp.com/favicon.ico',
+      'WordPress management platform',
+      ['Administration']
+    ),
+    popularApp(
+      'New Relic',
+      'https://newrelic.com',
+      'https://newrelic.com/favicon.ico',
+      'Application performance monitoring',
+      ['Administration', 'IDE & Coding Resources']
+    ),
+    popularApp(
+      'Pingdom',
+      'https://www.pingdom.com',
+      'https://www.pingdom.com/favicon.ico',
+      'Website monitoring service',
+      ['Administration']
+    ),
+    popularApp(
+      'Status.io',
+      'https://status.io',
+      'https://status.io/favicon.ico',
+      'Status page and incident management',
+      ['Administration']
+    ),
+    popularApp(
+      'StatusPage.io',
+      'https://www.statuspage.io',
+      'https://www.statuspage.io/favicon.ico',
+      'Status and incident communication',
+      ['Administration']
+    ),
+    yandexApp(
+      'Yandex Metrika',
+      'https://metrika.yandex.com',
+      'https://yastatic.net/s3/home/logos/favicon/favicon-16x16.png',
+      'Web analytics service by Yandex',
+      ['Advertising & Marketing', 'Administration']
+    ),
+    yandexApp(
+      'Yandex Webmaster',
+      'https://webmaster.yandex.com',
+      'https://yastatic.net/s3/home/logos/favicon/favicon-16x16.png',
+      'Webmaster tools by Yandex',
+      ['Administration']
+    ),
 
-  // AI Tools (Additional)
-  {
-    name: 'Gemini',
-    url: 'https://gemini.google.com',
-    logo_url: 'https://www.gstatic.com/lamda/images/favicon_v1_150160cddff7f294ce30.svg',
-    description: 'AI assistant by Google',
-    categories: ['Artificial Intelligence'],
-    suite: 'Google',
-  },
-  {
-    name: 'Microsoft Copilot',
-    url: 'https://copilot.microsoft.com',
-    logo_url: 'https://copilot.microsoft.com/favicon.ico',
-    description: 'AI companion by Microsoft',
-    categories: ['Artificial Intelligence'],
-    suite: 'Microsoft',
-  },
-  {
-    name: 'Deepseek',
-    url: 'https://www.deepseek.com',
-    logo_url: 'https://www.deepseek.com/favicon.ico',
-    description: 'AI search and research assistant',
-    categories: ['Artificial Intelligence'],
-  },
-  {
-    name: 'Felo',
-    url: 'https://felo.ai',
-    logo_url: 'https://felo.ai/favicon.ico',
-    description: 'AI-powered search engine',
-    categories: ['Artificial Intelligence'],
-  },
-  {
-    name: 'Le Chat',
-    url: 'https://chat.mistral.ai',
-    logo_url: 'https://chat.mistral.ai/favicon.ico',
-    description: 'AI assistant by Mistral',
-    categories: ['Artificial Intelligence'],
-  },
-  {
-    name: 'Liner',
-    url: 'https://getliner.com',
-    logo_url: 'https://getliner.com/favicon.ico',
-    description: 'AI-powered research assistant',
-    categories: ['Artificial Intelligence'],
-  },
-  {
-    name: 'Lumo',
-    url: 'https://lumo.ai',
-    logo_url: 'https://lumo.ai/favicon.ico',
-    description: 'AI productivity assistant',
-    categories: ['Artificial Intelligence', 'Focus & Productivity'],
-  },
-  {
-    name: 'Merlin',
-    url: 'https://www.getmerlin.in',
-    logo_url: 'https://www.getmerlin.in/favicon.ico',
-    description: 'AI assistant browser extension',
-    categories: ['Artificial Intelligence'],
-  },
-  {
-    name: 'NotebookLM',
-    url: 'https://notebooklm.google',
-    logo_url: 'https://www.gstatic.com/lamda/images/favicon_v1_150160cddff7f294ce30.svg',
-    description: 'AI-powered note-taking by Google',
-    categories: ['Artificial Intelligence', 'Notes & Whiteboards'],
-    suite: 'Google',
-  },
-  {
-    name: 'Poe',
-    url: 'https://poe.com',
-    logo_url: 'https://poe.com/favicon.ico',
-    description: 'Platform for AI chatbots',
-    categories: ['Artificial Intelligence'],
-  },
-  {
-    name: 'Soundraw',
-    url: 'https://soundraw.io',
-    logo_url: 'https://soundraw.io/favicon.ico',
-    description: 'AI music generator',
-    categories: ['Artificial Intelligence', 'Music'],
-  },
-  {
-    name: 'Suno',
-    url: 'https://suno.ai',
-    logo_url: 'https://suno.ai/favicon.ico',
-    description: 'AI music creation platform',
-    categories: ['Artificial Intelligence', 'Music'],
-  },
-  {
-    name: 'ThinkBuddy',
-    url: 'https://thinkbuddy.ai',
-    logo_url: 'https://thinkbuddy.ai/favicon.ico',
-    description: 'AI thinking partner',
-    categories: ['Artificial Intelligence'],
-  },
+    // AI Tools (Additional)
+    googleApp(
+      'Gemini',
+      'https://gemini.google.com',
+      'https://www.gstatic.com/lamda/images/favicon_v1_150160cddff7f294ce30.svg',
+      'AI assistant by Google',
+      ['Artificial Intelligence']
+    ),
+    msApp(
+      'Microsoft Copilot',
+      'https://copilot.microsoft.com',
+      'https://copilot.microsoft.com/favicon.ico',
+      'AI companion by Microsoft',
+      ['Artificial Intelligence']
+    ),
+    popularApp(
+      'Deepseek',
+      'https://www.deepseek.com',
+      'https://www.deepseek.com/favicon.ico',
+      'AI search and research assistant',
+      ['Artificial Intelligence']
+    ),
+    popularApp(
+      'Felo',
+      'https://felo.ai',
+      'https://felo.ai/favicon.ico',
+      'AI-powered search engine',
+      ['Artificial Intelligence']
+    ),
+    popularApp(
+      'Le Chat',
+      'https://chat.mistral.ai',
+      'https://chat.mistral.ai/favicon.ico',
+      'AI assistant by Mistral',
+      ['Artificial Intelligence']
+    ),
+    popularApp(
+      'Liner',
+      'https://getliner.com',
+      'https://getliner.com/favicon.ico',
+      'AI-powered research assistant',
+      ['Artificial Intelligence']
+    ),
+    popularApp(
+      'Lumo',
+      'https://lumo.ai',
+      'https://lumo.ai/favicon.ico',
+      'AI productivity assistant',
+      ['Artificial Intelligence', 'Focus & Productivity']
+    ),
+    popularApp(
+      'Merlin',
+      'https://www.getmerlin.in',
+      'https://www.getmerlin.in/favicon.ico',
+      'AI assistant browser extension',
+      ['Artificial Intelligence']
+    ),
+    googleApp(
+      'NotebookLM',
+      'https://notebooklm.google',
+      'https://www.gstatic.com/lamda/images/favicon_v1_150160cddff7f294ce30.svg',
+      'AI-powered note-taking by Google',
+      ['Artificial Intelligence', 'Notes & Whiteboards']
+    ),
+    popularApp(
+      'Poe',
+      'https://poe.com',
+      'https://poe.com/favicon.ico',
+      'Platform for AI chatbots',
+      ['Artificial Intelligence']
+    ),
+    popularApp(
+      'Soundraw',
+      'https://soundraw.io',
+      'https://soundraw.io/favicon.ico',
+      'AI music generator',
+      ['Artificial Intelligence', 'Music']
+    ),
+    popularApp(
+      'Suno',
+      'https://suno.ai',
+      'https://suno.ai/favicon.ico',
+      'AI music creation platform',
+      ['Artificial Intelligence', 'Music']
+    ),
+    popularApp(
+      'ThinkBuddy',
+      'https://thinkbuddy.ai',
+      'https://thinkbuddy.ai/favicon.ico',
+      'AI thinking partner',
+      ['Artificial Intelligence']
+    ),
 
-  // Educational & Reading
-  {
-    name: 'Canvas',
-    url: 'https://www.instructure.com/canvas',
-    logo_url: 'https://www.instructure.com/favicon.ico',
-    description: 'Learning management system',
-    categories: ['Educational'],
-  },
-  {
-    name: 'ClassDojo',
-    url: 'https://www.classdojo.com',
-    logo_url: 'https://www.classdojo.com/favicon.ico',
-    description: 'Classroom communication app',
-    categories: ['Educational'],
-  },
-  {
-    name: 'Deepl',
-    url: 'https://www.deepl.com',
-    logo_url: 'https://www.deepl.com/favicon.ico',
-    description: 'AI-powered translation service',
-    categories: ['Educational', 'Artificial Intelligence'],
-  },
-  {
-    name: 'Inoreader',
-    url: 'https://www.inoreader.com',
-    logo_url: 'https://www.inoreader.com/favicon.ico',
-    description: 'RSS feed reader',
-    categories: ['Misc'],
-  },
-  {
-    name: 'Instapaper',
-    url: 'https://www.instapaper.com',
-    logo_url: 'https://www.instapaper.com/favicon.ico',
-    description: 'Read-it-later service',
-    categories: ['Focus & Productivity', 'Misc'],
-  },
-  {
-    name: 'Kaggle',
-    url: 'https://www.kaggle.com',
-    logo_url: 'https://www.kaggle.com/favicon.ico',
-    description: 'Data science and machine learning platform',
-    categories: ['Educational', 'IDE & Coding Resources'],
-  },
-  {
-    name: 'myHomework',
-    url: 'https://myhomeworkapp.com',
-    logo_url: 'https://myhomeworkapp.com/favicon.ico',
-    description: 'Student planner and homework tracker',
-    categories: ['Educational', 'Task Management'],
-  },
-  {
-    name: 'Newsify',
-    url: 'https://newsify.co',
-    logo_url: 'https://newsify.co/favicon.ico',
-    description: 'RSS news reader',
-    categories: ['Misc'],
-  },
-  {
-    name: 'Product Hunt',
-    url: 'https://www.producthunt.com',
-    logo_url: 'https://www.producthunt.com/favicon.ico',
-    description: 'Discover new products and startups',
-    categories: ['Misc'],
-  },
-  {
-    name: 'Quora',
-    url: 'https://www.quora.com',
-    logo_url: 'https://www.quora.com/favicon.ico',
-    description: 'Q&A community platform',
-    categories: ['Misc'],
-  },
-  {
-    name: 'Rfind',
-    url: 'https://rfind.io',
-    logo_url: 'https://rfind.io/favicon.ico',
-    description: 'Research and discovery tool',
-    categories: ['Educational'],
-  },
-  {
-    name: 'Teachable',
-    url: 'https://teachable.com',
-    logo_url: 'https://teachable.com/favicon.ico',
-    description: 'Online course creation platform',
-    categories: ['Educational'],
-  },
-  {
-    name: 'TeachBase',
-    url: 'https://teachbase.ru',
-    logo_url: 'https://teachbase.ru/favicon.ico',
-    description: 'Learning management system',
-    categories: ['Educational'],
-  },
+    // Educational & Reading
+    popularApp(
+      'Canvas',
+      'https://www.instructure.com/canvas',
+      'https://www.instructure.com/favicon.ico',
+      'Learning management system',
+      ['Educational']
+    ),
+    popularApp(
+      'ClassDojo',
+      'https://www.classdojo.com',
+      'https://www.classdojo.com/favicon.ico',
+      'Classroom communication app',
+      ['Educational']
+    ),
+    popularApp(
+      'Deepl',
+      'https://www.deepl.com',
+      'https://www.deepl.com/favicon.ico',
+      'AI-powered translation service',
+      ['Educational', 'Artificial Intelligence']
+    ),
+    popularApp(
+      'Inoreader',
+      'https://www.inoreader.com',
+      'https://www.inoreader.com/favicon.ico',
+      'RSS feed reader',
+      ['Misc']
+    ),
+    popularApp(
+      'Instapaper',
+      'https://www.instapaper.com',
+      'https://www.instapaper.com/favicon.ico',
+      'Read-it-later service',
+      ['Focus & Productivity', 'Misc']
+    ),
+    popularApp(
+      'Kaggle',
+      'https://www.kaggle.com',
+      'https://www.kaggle.com/favicon.ico',
+      'Data science and machine learning platform',
+      ['Educational', 'IDE & Coding Resources']
+    ),
+    popularApp(
+      'myHomework',
+      'https://myhomeworkapp.com',
+      'https://myhomeworkapp.com/favicon.ico',
+      'Student planner and homework tracker',
+      ['Educational', 'Task Management']
+    ),
+    popularApp(
+      'Newsify',
+      'https://newsify.co',
+      'https://newsify.co/favicon.ico',
+      'RSS news reader',
+      ['Misc']
+    ),
+    popularApp(
+      'Product Hunt',
+      'https://www.producthunt.com',
+      'https://www.producthunt.com/favicon.ico',
+      'Discover new products and startups',
+      ['Misc']
+    ),
+    popularApp(
+      'Quora',
+      'https://www.quora.com',
+      'https://www.quora.com/favicon.ico',
+      'Q&A community platform',
+      ['Misc']
+    ),
+    popularApp(
+      'Rfind',
+      'https://rfind.io',
+      'https://rfind.io/favicon.ico',
+      'Research and discovery tool',
+      ['Educational']
+    ),
+    popularApp(
+      'Teachable',
+      'https://teachable.com',
+      'https://teachable.com/favicon.ico',
+      'Online course creation platform',
+      ['Educational']
+    ),
+    popularApp(
+      'TeachBase',
+      'https://teachbase.ru',
+      'https://teachbase.ru/favicon.ico',
+      'Learning management system',
+      ['Educational']
+    ),
 
-  // Email Services (Additional)
-  {
-    name: 'AOL',
-    url: 'https://mail.aol.com',
-    logo_url: 'https://mail.aol.com/favicon.ico',
-    description: 'Email service by AOL',
-    categories: ['Email'],
-  },
-  {
-    name: 'CloudHQ',
-    url: 'https://www.cloudhq.net',
-    logo_url: 'https://www.cloudhq.net/favicon.ico',
-    description: 'Cloud synchronization and productivity',
-    categories: ['Email', 'Cloud Storage'],
-  },
-  {
-    name: 'FastMail',
-    url: 'https://www.fastmail.com',
-    logo_url: 'https://www.fastmail.com/favicon.ico',
-    description: 'Email hosting service',
-    categories: ['Email'],
-  },
-  {
-    name: 'Hushmail',
-    url: 'https://www.hushmail.com',
-    logo_url: 'https://www.hushmail.com/favicon.ico',
-    description: 'Encrypted email service',
-    categories: ['Email'],
-  },
-  {
-    name: 'Mailbox.org',
-    url: 'https://mailbox.org',
-    logo_url: 'https://mailbox.org/favicon.ico',
-    description: 'Secure email hosting',
-    categories: ['Email'],
-  },
-  {
-    name: 'Mailo',
-    url: 'https://www.mailo.com',
-    logo_url: 'https://www.mailo.com/favicon.ico',
-    description: 'Privacy-focused email service',
-    categories: ['Email'],
-  },
-  {
-    name: 'Mailpile',
-    url: 'https://www.mailpile.is',
-    logo_url: 'https://www.mailpile.is/favicon.ico',
-    description: 'Open-source email client',
-    categories: ['Email'],
-  },
-  {
-    name: 'Mail.ru',
-    url: 'https://mail.ru',
-    logo_url: 'https://mail.ru/favicon.ico',
-    description: 'Email service by Mail.ru',
-    categories: ['Email'],
-  },
-  {
-    name: 'Mixmax',
-    url: 'https://www.mixmax.com',
-    logo_url: 'https://www.mixmax.com/favicon.ico',
-    description: 'Email productivity platform',
-    categories: ['Email', 'Focus & Productivity'],
-  },
-  {
-    name: 'Polymail',
-    url: 'https://polymail.io',
-    logo_url: 'https://polymail.io/favicon.ico',
-    description: 'Email platform for teams',
-    categories: ['Email'],
-  },
-  {
-    name: 'ProtonMail',
-    url: 'https://protonmail.com',
-    logo_url: 'https://protonmail.com/favicon.ico',
-    description: 'Secure encrypted email',
-    categories: ['Email'],
-  },
-  {
-    name: 'RainLoop',
-    url: 'https://www.rainloop.net',
-    logo_url: 'https://www.rainloop.net/favicon.ico',
-    description: 'Web-based email client',
-    categories: ['Email'],
-  },
-  {
-    name: 'RoundCube',
-    url: 'https://roundcube.net',
-    logo_url: 'https://roundcube.net/favicon.ico',
-    description: 'Web-based IMAP email client',
-    categories: ['Email'],
-  },
-  {
-    name: 'SquirrelMail',
-    url: 'https://squirrelmail.org',
-    logo_url: 'https://squirrelmail.org/favicon.ico',
-    description: 'Web-based email client',
-    categories: ['Email'],
-  },
-  {
-    name: 'TwoBird',
-    url: 'https://www.twobird.com',
-    logo_url: 'https://www.twobird.com/favicon.ico',
-    description: 'Email and tasks in one app',
-    categories: ['Email', 'Task Management'],
-  },
-  {
-    name: 'Yahoo Mail',
-    url: 'https://mail.yahoo.com',
-    logo_url: 'https://mail.yahoo.com/favicon.ico',
-    description: 'Email service by Yahoo',
-    categories: ['Email'],
-  },
-  {
-    name: 'Yandex Mail',
-    url: 'https://mail.yandex.com',
-    logo_url: 'https://yastatic.net/s3/home/logos/favicon/favicon-16x16.png',
-    description: 'Email service by Yandex',
-    categories: ['Email'],
-    suite: 'Yandex',
-  },
-  {
-    name: 'Zimbra',
-    url: 'https://www.zimbra.com',
-    logo_url: 'https://www.zimbra.com/favicon.ico',
-    description: 'Email and collaboration suite',
-    categories: ['Email'],
-  },
-  {
-    name: 'Zoho Email',
-    url: 'https://www.zoho.com/mail',
-    logo_url: 'https://www.zoho.com/favicon.ico',
-    description: 'Business email hosting',
-    categories: ['Email'],
-    suite: 'Zoho',
-  },
+    // Email Services (Additional)
+    popularApp(
+      'AOL',
+      'https://mail.aol.com',
+      'https://mail.aol.com/favicon.ico',
+      'Email service by AOL',
+      ['Email']
+    ),
+    popularApp(
+      'CloudHQ',
+      'https://www.cloudhq.net',
+      'https://www.cloudhq.net/favicon.ico',
+      'Cloud synchronization and productivity',
+      ['Email', 'Cloud Storage']
+    ),
+    popularApp(
+      'FastMail',
+      'https://www.fastmail.com',
+      'https://www.fastmail.com/favicon.ico',
+      'Email hosting service',
+      ['Email']
+    ),
+    popularApp(
+      'Hushmail',
+      'https://www.hushmail.com',
+      'https://www.hushmail.com/favicon.ico',
+      'Encrypted email service',
+      ['Email']
+    ),
+    popularApp(
+      'Mailbox.org',
+      'https://mailbox.org',
+      'https://mailbox.org/favicon.ico',
+      'Secure email hosting',
+      ['Email']
+    ),
+    popularApp(
+      'Mailo',
+      'https://www.mailo.com',
+      'https://www.mailo.com/favicon.ico',
+      'Privacy-focused email service',
+      ['Email']
+    ),
+    popularApp(
+      'Mailpile',
+      'https://www.mailpile.is',
+      'https://www.mailpile.is/favicon.ico',
+      'Open-source email client',
+      ['Email']
+    ),
+    popularApp(
+      'Mail.ru',
+      'https://mail.ru',
+      'https://mail.ru/favicon.ico',
+      'Email service by Mail.ru',
+      ['Email']
+    ),
+    popularApp(
+      'Mixmax',
+      'https://www.mixmax.com',
+      'https://www.mixmax.com/favicon.ico',
+      'Email productivity platform',
+      ['Email', 'Focus & Productivity']
+    ),
+    popularApp(
+      'Polymail',
+      'https://polymail.io',
+      'https://polymail.io/favicon.ico',
+      'Email platform for teams',
+      ['Email']
+    ),
+    popularApp(
+      'ProtonMail',
+      'https://protonmail.com',
+      'https://protonmail.com/favicon.ico',
+      'Secure encrypted email',
+      ['Email']
+    ),
+    popularApp(
+      'RainLoop',
+      'https://www.rainloop.net',
+      'https://www.rainloop.net/favicon.ico',
+      'Web-based email client',
+      ['Email']
+    ),
+    popularApp(
+      'RoundCube',
+      'https://roundcube.net',
+      'https://roundcube.net/favicon.ico',
+      'Web-based IMAP email client',
+      ['Email']
+    ),
+    popularApp(
+      'SquirrelMail',
+      'https://squirrelmail.org',
+      'https://squirrelmail.org/favicon.ico',
+      'Web-based email client',
+      ['Email']
+    ),
+    popularApp(
+      'TwoBird',
+      'https://www.twobird.com',
+      'https://www.twobird.com/favicon.ico',
+      'Email and tasks in one app',
+      ['Email', 'Task Management']
+    ),
+    popularApp(
+      'Yahoo Mail',
+      'https://mail.yahoo.com',
+      'https://mail.yahoo.com/favicon.ico',
+      'Email service by Yahoo',
+      ['Email']
+    ),
+    yandexApp(
+      'Yandex Mail',
+      'https://mail.yandex.com',
+      'https://yastatic.net/s3/home/logos/favicon/favicon-16x16.png',
+      'Email service by Yandex',
+      ['Email']
+    ),
+    popularApp(
+      'Zimbra',
+      'https://www.zimbra.com',
+      'https://www.zimbra.com/favicon.ico',
+      'Email and collaboration suite',
+      ['Email']
+    ),
+    zohoApp(
+      'Zoho Email',
+      'https://www.zoho.com/mail',
+      'https://www.zoho.com/favicon.ico',
+      'Business email hosting',
+      ['Email']
+    ),
 
-  // Developer Tools (Additional)
-  {
-    name: 'Apple Developer',
-    url: 'https://developer.apple.com',
-    logo_url: 'https://developer.apple.com/favicon.ico',
-    description: 'Apple development platform',
-    categories: ['IDE & Coding Resources'],
-    suite: 'Apple',
-  },
-  {
-    name: 'BrowserStack',
-    url: 'https://www.browserstack.com',
-    logo_url: 'https://www.browserstack.com/favicon.ico',
-    description: 'Cross-browser testing platform',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Bubble',
-    url: 'https://bubble.io',
-    logo_url: 'https://bubble.io/favicon.ico',
-    description: 'No-code app development platform',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'CircleCI',
-    url: 'https://circleci.com',
-    logo_url: 'https://circleci.com/favicon.ico',
-    description: 'Continuous integration and delivery',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'CodeAnywhere',
-    url: 'https://codeanywhere.com',
-    logo_url: 'https://codeanywhere.com/favicon.ico',
-    description: 'Cloud-based IDE',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'CodeCov',
-    url: 'https://codecov.io',
-    logo_url: 'https://codecov.io/favicon.ico',
-    description: 'Code coverage reporting',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'CodeGiant',
-    url: 'https://codegiant.io',
-    logo_url: 'https://codegiant.io/favicon.ico',
-    description: 'Project management for developers',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'CodeEnvy',
-    url: 'https://codenvy.com',
-    logo_url: 'https://codenvy.com/favicon.ico',
-    description: 'Cloud development workspace',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'CodeSandBox',
-    url: 'https://codesandbox.io',
-    logo_url: 'https://codesandbox.io/favicon.ico',
-    description: 'Online code editor and sandbox',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'CodeShip',
-    url: 'https://codeship.com',
-    logo_url: 'https://codeship.com/favicon.ico',
-    description: 'Continuous integration platform',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'DevDocs',
-    url: 'https://devdocs.io',
-    logo_url: 'https://devdocs.io/favicon.ico',
-    description: 'API documentation browser',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'DigitalOcean',
-    url: 'https://www.digitalocean.com',
-    logo_url: 'https://www.digitalocean.com/favicon.ico',
-    description: 'Cloud infrastructure provider',
-    categories: ['IDE & Coding Resources', 'Administration'],
-  },
-  {
-    name: 'Eclipse Che',
-    url: 'https://www.eclipse.org/che',
-    logo_url: 'https://www.eclipse.org/favicon.ico',
-    description: 'Cloud-based IDE',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Fabric',
-    url: 'https://get.fabric.io',
-    logo_url: 'https://get.fabric.io/favicon.ico',
-    description: 'Mobile app development platform',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Firebase',
-    url: 'https://firebase.google.com',
-    logo_url: 'https://firebase.google.com/favicon.ico',
-    description: 'App development platform',
-    categories: ['IDE & Coding Resources'],
-    suite: 'Google',
-  },
-  {
-    name: 'Gitscrum',
-    url: 'https://www.gitscrum.com',
-    logo_url: 'https://www.gitscrum.com/favicon.ico',
-    description: 'Agile project management',
-    categories: ['IDE & Coding Resources', 'Product Management'],
-  },
-  {
-    name: 'GraphCool',
-    url: 'https://www.graph.cool',
-    logo_url: 'https://www.graph.cool/favicon.ico',
-    description: 'GraphQL backend platform',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'HackerOne',
-    url: 'https://www.hackerone.com',
-    logo_url: 'https://www.hackerone.com/favicon.ico',
-    description: 'Bug bounty and security platform',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Heroku',
-    url: 'https://www.heroku.com',
-    logo_url: 'https://www.heroku.com/favicon.ico',
-    description: 'Cloud platform as a service',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Hostwinds',
-    url: 'https://www.hostwinds.com',
-    logo_url: 'https://www.hostwinds.com/favicon.ico',
-    description: 'Web hosting services',
-    categories: ['IDE & Coding Resources', 'Administration'],
-  },
-  {
-    name: 'IT Tools',
-    url: 'https://it-tools.tech',
-    logo_url: 'https://it-tools.tech/favicon.ico',
-    description: 'Collection of handy tools for developers',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Kamatera',
-    url: 'https://www.kamatera.com',
-    logo_url: 'https://www.kamatera.com/favicon.ico',
-    description: 'Cloud infrastructure services',
-    categories: ['IDE & Coding Resources', 'Administration'],
-  },
-  {
-    name: 'Koding',
-    url: 'https://www.koding.com',
-    logo_url: 'https://www.koding.com/favicon.ico',
-    description: 'Cloud-based development environment',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Linode',
-    url: 'https://www.linode.com',
-    logo_url: 'https://www.linode.com/favicon.ico',
-    description: 'Cloud computing platform',
-    categories: ['IDE & Coding Resources', 'Administration'],
-  },
-  {
-    name: 'OneSignal',
-    url: 'https://onesignal.com',
-    logo_url: 'https://onesignal.com/favicon.ico',
-    description: 'Push notification service',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'PagerDuty',
-    url: 'https://www.pagerduty.com',
-    logo_url: 'https://www.pagerduty.com/favicon.ico',
-    description: 'Incident response platform',
-    categories: ['IDE & Coding Resources', 'Administration'],
-  },
-  {
-    name: 'PaperTrail',
-    url: 'https://www.papertrail.com',
-    logo_url: 'https://www.papertrail.com/favicon.ico',
-    description: 'Cloud-hosted log management',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Sentry',
-    url: 'https://sentry.io',
-    logo_url: 'https://sentry.io/favicon.ico',
-    description: 'Application monitoring and error tracking',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'travisCI',
-    url: 'https://travis-ci.com',
-    logo_url: 'https://travis-ci.com/favicon.ico',
-    description: 'Continuous integration service',
-    categories: ['IDE & Coding Resources'],
-  },
-  {
-    name: 'Zenhub',
-    url: 'https://www.zenhub.com',
-    logo_url: 'https://www.zenhub.com/favicon.ico',
-    description: 'Project management for GitHub',
-    categories: ['IDE & Coding Resources', 'Product Management'],
-  },
-];
-
-export const POPULAR_APPS: PopularApp[] = sortApps(dedupeApps(RAW_POPULAR_APPS.map(toPopularApp)));
+    // Developer Tools (Additional)
+    appleApp(
+      'Apple Developer',
+      'https://developer.apple.com',
+      'https://developer.apple.com/favicon.ico',
+      'Apple development platform',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'BrowserStack',
+      'https://www.browserstack.com',
+      'https://www.browserstack.com/favicon.ico',
+      'Cross-browser testing platform',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Bubble',
+      'https://bubble.io',
+      'https://bubble.io/favicon.ico',
+      'No-code app development platform',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'CircleCI',
+      'https://circleci.com',
+      'https://circleci.com/favicon.ico',
+      'Continuous integration and delivery',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'CodeAnywhere',
+      'https://codeanywhere.com',
+      'https://codeanywhere.com/favicon.ico',
+      'Cloud-based IDE',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'CodeCov',
+      'https://codecov.io',
+      'https://codecov.io/favicon.ico',
+      'Code coverage reporting',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'CodeGiant',
+      'https://codegiant.io',
+      'https://codegiant.io/favicon.ico',
+      'Project management for developers',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'CodeEnvy',
+      'https://codenvy.com',
+      'https://codenvy.com/favicon.ico',
+      'Cloud development workspace',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'CodeSandBox',
+      'https://codesandbox.io',
+      'https://codesandbox.io/favicon.ico',
+      'Online code editor and sandbox',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'CodeShip',
+      'https://codeship.com',
+      'https://codeship.com/favicon.ico',
+      'Continuous integration platform',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'DevDocs',
+      'https://devdocs.io',
+      'https://devdocs.io/favicon.ico',
+      'API documentation browser',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'DigitalOcean',
+      'https://www.digitalocean.com',
+      'https://www.digitalocean.com/favicon.ico',
+      'Cloud infrastructure provider',
+      ['IDE & Coding Resources', 'Administration']
+    ),
+    popularApp(
+      'Eclipse Che',
+      'https://www.eclipse.org/che',
+      'https://www.eclipse.org/favicon.ico',
+      'Cloud-based IDE',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Fabric',
+      'https://get.fabric.io',
+      'https://get.fabric.io/favicon.ico',
+      'Mobile app development platform',
+      ['IDE & Coding Resources']
+    ),
+    googleApp(
+      'Firebase',
+      'https://firebase.google.com',
+      'https://firebase.google.com/favicon.ico',
+      'App development platform',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Gitscrum',
+      'https://www.gitscrum.com',
+      'https://www.gitscrum.com/favicon.ico',
+      'Agile project management',
+      ['IDE & Coding Resources', 'Product Management']
+    ),
+    popularApp(
+      'GraphCool',
+      'https://www.graph.cool',
+      'https://www.graph.cool/favicon.ico',
+      'GraphQL backend platform',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'HackerOne',
+      'https://www.hackerone.com',
+      'https://www.hackerone.com/favicon.ico',
+      'Bug bounty and security platform',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Heroku',
+      'https://www.heroku.com',
+      'https://www.heroku.com/favicon.ico',
+      'Cloud platform as a service',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Hostwinds',
+      'https://www.hostwinds.com',
+      'https://www.hostwinds.com/favicon.ico',
+      'Web hosting services',
+      ['IDE & Coding Resources', 'Administration']
+    ),
+    popularApp(
+      'IT Tools',
+      'https://it-tools.tech',
+      'https://it-tools.tech/favicon.ico',
+      'Collection of handy tools for developers',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Kamatera',
+      'https://www.kamatera.com',
+      'https://www.kamatera.com/favicon.ico',
+      'Cloud infrastructure services',
+      ['IDE & Coding Resources', 'Administration']
+    ),
+    popularApp(
+      'Koding',
+      'https://www.koding.com',
+      'https://www.koding.com/favicon.ico',
+      'Cloud-based development environment',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Linode',
+      'https://www.linode.com',
+      'https://www.linode.com/favicon.ico',
+      'Cloud computing platform',
+      ['IDE & Coding Resources', 'Administration']
+    ),
+    popularApp(
+      'OneSignal',
+      'https://onesignal.com',
+      'https://onesignal.com/favicon.ico',
+      'Push notification service',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'PagerDuty',
+      'https://www.pagerduty.com',
+      'https://www.pagerduty.com/favicon.ico',
+      'Incident response platform',
+      ['IDE & Coding Resources', 'Administration']
+    ),
+    popularApp(
+      'PaperTrail',
+      'https://www.papertrail.com',
+      'https://www.papertrail.com/favicon.ico',
+      'Cloud-hosted log management',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Sentry',
+      'https://sentry.io',
+      'https://sentry.io/favicon.ico',
+      'Application monitoring and error tracking',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'travisCI',
+      'https://travis-ci.com',
+      'https://travis-ci.com/favicon.ico',
+      'Continuous integration service',
+      ['IDE & Coding Resources']
+    ),
+    popularApp(
+      'Zenhub',
+      'https://www.zenhub.com',
+      'https://www.zenhub.com/favicon.ico',
+      'Project management for GitHub',
+      ['IDE & Coding Resources', 'Product Management']
+    ),
+  ])
+);
 
 export const APP_CATEGORIES: AppCategory[] = [
   'Accounting & Finance',
