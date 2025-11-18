@@ -436,13 +436,19 @@ function App() {
     });
   };
 
-  const handleAddApp = async (appData: { name: string; url: string; icon?: string }) => {
+  const handleAddApp = async (appData: {
+    name: string;
+    url: string;
+    icon?: string;
+    description?: string;
+  }) => {
     if (!activeWorkspaceId || !activeWorkspace) return;
 
     const newApp = await createApp({
       name: appData.name,
       url: appData.url,
       icon: appData.icon,
+      description: appData.description,
       workspaceId: activeWorkspaceId,
     });
 
