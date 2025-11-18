@@ -25,10 +25,12 @@ import { AppCustomizationModal } from './components/Modals/AppCustomizationModal
 import { AppContextMenu } from './components/ContextMenu/AppContextMenu';
 import { WorkspaceContextMenu } from './components/ContextMenu/WorkspaceContextMenu';
 import { WorkspaceSwitcherModal } from './components/Modals/WorkspaceSwitcherModal';
+import { SplitWithModal } from './components/Modals/SplitWithModal';
 import { PerformanceDashboard } from './components/DevTools/PerformanceDashboard';
 import { SessionManager } from './components/DevTools/SessionManager';
 import { WorkspaceSettingsModal } from './components/Modals/WorkspaceSettingsModal';
 import { App as AppType } from '../../shared/types/app';
+import { LayoutMode } from '../../shared/types/workspace';
 import { IPC_EVENTS } from '../../shared/constants';
 import type { AppShortcutSignal, AppShortcutSignalType } from './types/shortcuts';
 
@@ -61,6 +63,8 @@ function App() {
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [isWorkspaceSwitcherOpen, setIsWorkspaceSwitcherOpen] = useState(false);
+  const [isSplitWithModalOpen, setIsSplitWithModalOpen] = useState(false);
+  const [splitWithAppId, setSplitWithAppId] = useState<string | null>(null);
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const selectedApp = useMemo(() => {
     if (!selectedAppId) {
@@ -72,6 +76,10 @@ function App() {
   const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
   const [activeInstances, setActiveInstances] = useState<Record<string, string>>({});
   const [shortcutSignal, setShortcutSignal] = useState<AppShortcutSignal | null>(null);
+  
+  // Split layout state
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
+  const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
 
   const activeAppIdRef = useRef<string | null>(null);
   const awakeAppsRef = useRef<Record<string, boolean>>({});
@@ -126,6 +134,7 @@ function App() {
       isPerformanceDashboardOpen ||
       isSessionManagerOpen ||
       isWorkspaceSwitcherOpen ||
+      isSplitWithModalOpen ||
       contextMenu !== null ||
       workspaceContextMenu !== null,
     [
@@ -138,6 +147,7 @@ function App() {
       isPerformanceDashboardOpen,
       isSessionManagerOpen,
       isWorkspaceSwitcherOpen,
+      isSplitWithModalOpen,
       contextMenu,
       workspaceContextMenu,
     ]
@@ -582,6 +592,44 @@ function App() {
     });
   };
 
+  const handleSplitWith = (appId: string) => {
+    setSplitWithAppId(appId);
+    setIsSplitWithModalOpen(true);
+  };
+
+  const handleConfirmSplit = (appIds: string[], mode: LayoutMode) => {
+    setActiveAppIds(appIds);
+    setLayoutMode(mode);
+    setActiveAppId(appIds[0]); // Set first app as active
+  };
+
+  const handleUnsplitAll = () => {
+    setLayoutMode('single');
+    setActiveAppIds([]);
+    // Keep current active app
+  };
+
+  const handleLayoutChange = (mode: LayoutMode, panels: { appId: string; size?: number }[]) => {
+    setLayoutMode(mode);
+    if (panels && panels.length > 0) {
+      setActiveAppIds(panels.map((p) => p.appId));
+    } else {
+      setActiveAppIds([]);
+    }
+  };
+
+  const handleSelectApp = useCallback(
+    (appId: string) => {
+      setActiveAppId(appId);
+
+      if (layoutMode !== 'single' && !activeAppIds.includes(appId)) {
+        setLayoutMode('single');
+        setActiveAppIds([]);
+      }
+    },
+    [layoutMode, activeAppIds]
+  );
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-950">
@@ -706,7 +754,7 @@ function App() {
               size={dockSize}
               activeAppId={activeAppId}
               awakeApps={awakeApps}
-              onAppClick={setActiveAppId}
+              onAppClick={handleSelectApp}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();
                 const app = workspaceApps.find((a) => a.id === appId);
@@ -729,7 +777,7 @@ function App() {
           <WorkspaceCanvas
             apps={workspaceApps}
             activeAppId={activeAppId}
-            onAppSelect={setActiveAppId}
+            onAppSelect={handleSelectApp}
             awakeApps={awakeApps}
             onWakeApp={handleWakeAppRequest}
             onAddSampleApps={handleAddSampleApps}
@@ -745,6 +793,9 @@ function App() {
             activeInstances={activeInstances}
             shortcutSignal={shortcutSignal}
             onToggleMute={handleToggleMute}
+            layoutMode={layoutMode}
+            activeAppIds={activeAppIds}
+            onLayoutChange={handleLayoutChange}
           />
 
           {/* Dock - right or bottom position */}
@@ -755,7 +806,7 @@ function App() {
               size={dockSize}
               activeAppId={activeAppId}
               awakeApps={awakeApps}
-              onAppClick={setActiveAppId}
+              onAppClick={handleSelectApp}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();
                 const app = workspaceApps.find((a) => a.id === appId);
@@ -830,6 +881,16 @@ function App() {
           setIsThemeSettingsModalOpen(false);
         }}
       />
+      <SplitWithModal
+        isOpen={isSplitWithModalOpen}
+        onClose={() => {
+          setIsSplitWithModalOpen(false);
+          setSplitWithAppId(null);
+        }}
+        apps={workspaceApps}
+        currentAppId={splitWithAppId || ''}
+        onConfirm={handleConfirmSplit}
+      />
 
       {/* Context Menus */}
       {contextMenu && (
@@ -858,6 +919,9 @@ function App() {
           }}
           isMuted={contextMenu.isMuted}
           onToggleMute={(muted) => handleToggleMute(contextMenu.appId, muted)}
+          onSplitWith={() => handleSplitWith(contextMenu.appId)}
+          onUnsplitAll={handleUnsplitAll}
+          isInSplitMode={layoutMode !== 'single' && activeAppIds.length > 1}
         />
       )}
 

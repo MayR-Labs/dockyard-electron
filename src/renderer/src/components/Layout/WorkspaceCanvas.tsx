@@ -7,7 +7,6 @@
 import { useState, useEffect } from 'react';
 import { App } from '../../../../shared/types/app';
 import { LayoutMode } from '../../../../shared/types/workspace';
-import { LayoutControls } from './LayoutControls';
 import { SplitLayout } from './SplitLayout';
 import { QuickStartGuide } from './QuickStartGuide';
 import { AppTile } from '../App/AppTile';
@@ -27,6 +26,9 @@ interface WorkspaceCanvasProps {
   activeInstances?: Record<string, string>;
   shortcutSignal?: AppShortcutSignal | null;
   onToggleMute?: (appId: string, muted: boolean, instanceId?: string) => void;
+  layoutMode?: LayoutMode;
+  activeAppIds?: string[];
+  onLayoutChange?: (mode: LayoutMode, panels: { appId: string; size?: number }[]) => void;
 }
 
 export function WorkspaceCanvas({
@@ -42,9 +44,16 @@ export function WorkspaceCanvas({
   activeInstances,
   shortcutSignal,
   onToggleMute,
+  layoutMode: externalLayoutMode,
+  activeAppIds: externalActiveAppIds,
+  onLayoutChange: externalOnLayoutChange,
 }: WorkspaceCanvasProps) {
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
-  const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
+  // Use external state if provided, otherwise use internal state
+  const [internalLayoutMode, setInternalLayoutMode] = useState<LayoutMode>('single');
+  const [internalActiveAppIds, setInternalActiveAppIds] = useState<string[]>([]);
+  
+  const layoutMode = externalLayoutMode !== undefined ? externalLayoutMode : internalLayoutMode;
+  const activeAppIds = externalActiveAppIds !== undefined ? externalActiveAppIds : internalActiveAppIds;
 
   // Ensure there is always a selected app when apps exist
   useEffect(() => {
@@ -63,20 +72,12 @@ export function WorkspaceCanvas({
   }
 
   const handleLayoutChange = (mode: LayoutMode, panels?: { appId: string; size?: number }[]) => {
-    setLayoutMode(mode);
-    if (panels && panels.length > 0) {
-      setActiveAppIds(panels.map((p) => p.appId));
-    }
-  };
-
-  const handleAddToLayout = (appId: string) => {
-    if (!activeAppIds.includes(appId)) {
-      const newIds = [...activeAppIds, appId];
-      setActiveAppIds(newIds);
-
-      // Auto-switch to split layout if adding second app
-      if (newIds.length === 2 && layoutMode === 'single') {
-        setLayoutMode('split-horizontal');
+    if (externalOnLayoutChange) {
+      externalOnLayoutChange(mode, panels || []);
+    } else {
+      setInternalLayoutMode(mode);
+      if (panels && panels.length > 0) {
+        setInternalActiveAppIds(panels.map((p) => p.appId));
       }
     }
   };
@@ -85,15 +86,6 @@ export function WorkspaceCanvas({
   if (layoutMode !== 'single' && activeAppIds.length > 1) {
     return (
       <div className="flex-1 bg-gray-950 flex flex-col">
-        {/* Layout Toolbar */}
-        <div className="h-12 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4">
-          <LayoutControls currentMode={layoutMode} onModeChange={(mode) => setLayoutMode(mode)} />
-
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <span>{activeAppIds.length} apps displayed</span>
-          </div>
-        </div>
-
         <SplitLayout
           apps={apps}
           activeAppIds={activeAppIds}
@@ -110,44 +102,6 @@ export function WorkspaceCanvas({
 
   return (
     <div className="flex-1 bg-gray-950 relative flex flex-col">
-      {/* Layout Controls Bar */}
-      {apps.length > 1 && (
-        <div className="h-10 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4">
-          <LayoutControls
-            currentMode={layoutMode}
-            onModeChange={(mode) => {
-              if (mode !== 'single' && activeAppId) {
-                // Start with current active app
-                setActiveAppIds([activeAppId]);
-                setLayoutMode(mode);
-              }
-            }}
-          />
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500">Add to layout:</span>
-            <select
-              onChange={(e) => {
-                if (e.target.value) {
-                  handleAddToLayout(e.target.value);
-                }
-              }}
-              value=""
-              className="text-xs bg-gray-800 text-gray-300 rounded px-2 py-1 border border-gray-700"
-            >
-              <option value="">Select app...</option>
-              {apps
-                .filter((app) => !activeAppIds.includes(app.id))
-                .map((app) => (
-                  <option key={app.id} value={app.id}>
-                    {app.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-        </div>
-      )}
-
       <div className="flex-1 relative">
         {apps.map((app) => {
           const persistedAwake = app.instances.some((instance) => !instance.hibernated);
