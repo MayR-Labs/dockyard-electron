@@ -618,6 +618,18 @@ function App() {
     }
   };
 
+  const handleSelectApp = useCallback(
+    (appId: string) => {
+      setActiveAppId(appId);
+
+      if (layoutMode !== 'single' && !activeAppIds.includes(appId)) {
+        setLayoutMode('single');
+        setActiveAppIds([]);
+      }
+    },
+    [layoutMode, activeAppIds]
+  );
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-950">
@@ -742,7 +754,7 @@ function App() {
               size={dockSize}
               activeAppId={activeAppId}
               awakeApps={awakeApps}
-              onAppClick={setActiveAppId}
+              onAppClick={handleSelectApp}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();
                 const app = workspaceApps.find((a) => a.id === appId);
@@ -765,7 +777,7 @@ function App() {
           <WorkspaceCanvas
             apps={workspaceApps}
             activeAppId={activeAppId}
-            onAppSelect={setActiveAppId}
+            onAppSelect={handleSelectApp}
             awakeApps={awakeApps}
             onWakeApp={handleWakeAppRequest}
             onAddSampleApps={handleAddSampleApps}
@@ -794,7 +806,7 @@ function App() {
               size={dockSize}
               activeAppId={activeAppId}
               awakeApps={awakeApps}
-              onAppClick={setActiveAppId}
+              onAppClick={handleSelectApp}
               onAppContextMenu={(appId, e) => {
                 e.preventDefault();
                 const app = workspaceApps.find((a) => a.id === appId);
