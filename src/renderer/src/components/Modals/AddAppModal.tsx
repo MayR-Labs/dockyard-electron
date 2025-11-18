@@ -1,6 +1,13 @@
 import React, { useState, useMemo } from 'react';
-import { POPULAR_APPS, APP_CATEGORIES, APP_SUITES, AppCategory, AppSuite } from '../../constants/popularApps';
+import {
+  POPULAR_APPS,
+  APP_CATEGORIES,
+  APP_SUITES,
+  AppCategory,
+  AppSuite,
+} from '../../constants/popularApps';
 import type { PopularApp } from '../../constants/popularApps';
+import { getFaviconUrl } from '../../utils/favicon';
 
 interface AddAppModalProps {
   isOpen: boolean;
@@ -25,7 +32,7 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  
+
   // Filtering state for popular apps
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<AppCategory | 'All'>('All');
@@ -40,8 +47,7 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (app) =>
-          app.name.toLowerCase().includes(query) ||
-          app.description.toLowerCase().includes(query)
+          app.name.toLowerCase().includes(query) || app.description.toLowerCase().includes(query)
       );
     }
 
@@ -60,7 +66,16 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
 
   if (!isOpen) {
     // Reset state when modal is closed
-    if (mode !== 'select' || isSubmitting || error || name || url || icon || description || searchQuery) {
+    if (
+      mode !== 'select' ||
+      isSubmitting ||
+      error ||
+      name ||
+      url ||
+      icon ||
+      description ||
+      searchQuery
+    ) {
       setTimeout(() => {
         setMode('select');
         setIsSubmitting(false);
@@ -115,7 +130,7 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
       // Use provided icon or try to fetch favicon automatically
       let finalIcon = icon;
       if (!finalIcon) {
-        const { getFaviconUrl } = await import('../../utils/favicon');
+        // const { getFaviconUrl } = await import('../../utils/favicon.js');
         finalIcon = getFaviconUrl(normalizedUrl);
       }
 
@@ -180,16 +195,36 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                    />
                   </svg>
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-white mb-1">Popular Apps</h3>
                   <p className="text-sm text-white/70">Choose from 200+ pre-configured apps</p>
                 </div>
-                <svg className="w-5 h-5 text-white/50 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-5 h-5 text-white/50 group-hover:text-white transition"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </div>
             </button>
@@ -200,16 +235,36 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
             >
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <svg
+                    className="w-6 h-6 text-gray-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
                   </svg>
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-white mb-1">Custom App</h3>
                   <p className="text-sm text-gray-400">Add any web app with custom details</p>
                 </div>
-                <svg className="w-5 h-5 text-gray-500 group-hover:text-gray-300 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-5 h-5 text-gray-500 group-hover:text-gray-300 transition"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </div>
             </button>
@@ -234,15 +289,35 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
                 onClick={() => setMode('select')}
                 className="p-2 hover:bg-gray-800 rounded-lg transition"
               >
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <svg
+                  className="w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
               <h2 className="text-2xl font-bold text-white">Popular Apps</h2>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-lg transition">
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -251,8 +326,18 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
           <div className="p-6 border-b border-gray-800 space-y-4">
             {/* Search */}
             <div className="relative">
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
               <input
                 type="text"
@@ -277,9 +362,9 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
                   </option>
                 ))}
               </select>
-              
+
               <select
-                value={selectedSuite}
+                value={selectedSuite as string}
                 onChange={(e) => setSelectedSuite(e.target.value as AppSuite | 'All')}
                 className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
@@ -379,8 +464,18 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
               }}
               className="p-2 hover:bg-gray-800 rounded-lg transition"
             >
-              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
             <h2 className="text-2xl font-bold text-white">
@@ -388,8 +483,18 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
             </h2>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-lg transition">
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -430,7 +535,9 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Logo URL (Optional)</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Logo URL (Optional)
+            </label>
             <input
               type="text"
               value={icon}
@@ -445,7 +552,9 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Description (Optional)</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Description (Optional)
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}

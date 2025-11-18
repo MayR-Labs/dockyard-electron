@@ -92,7 +92,8 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Google Meet',
     url: 'https://meet.google.com',
-    logo_url: 'https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png',
+    logo_url:
+      'https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png',
     description: 'Video conferencing and online meetings',
     categories: ['Voice & Video Calls'],
     suite: 'Google',
@@ -108,7 +109,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'YouTube',
     url: 'https://youtube.com',
-    logo_url: 'https://www.youtube.com/s/desktop/favicon.ico',
+    logo_url: 'https://www.youtube.com/favicon.ico',
     description: 'Video sharing and streaming platform',
     categories: ['Streaming Platforms'],
     suite: 'Google',
@@ -333,7 +334,8 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Monday.com',
     url: 'https://monday.com',
-    logo_url: 'https://dapulse-res.cloudinary.com/image/upload/f_auto,q_auto/remote_mondaycom_static/img/favicon/apple-icon-76x76.png',
+    logo_url:
+      'https://dapulse-res.cloudinary.com/image/upload/f_auto,q_auto/remote_mondaycom_static/img/favicon/apple-icon-76x76.png',
     description: 'Work operating system for team collaboration',
     categories: ['Product Management', 'Task Management'],
   },
@@ -361,7 +363,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Basecamp',
     url: 'https://basecamp.com',
-    logo_url: 'https://basecamp.com/assets/favicon-aec3b9e37e2d26ed3cb5a7bf17597b4b.ico',
+    logo_url: 'https://basecamp.com/favicon.ico',
     description: 'Project management and team collaboration',
     categories: ['Product Management', 'Task Management'],
   },
@@ -414,7 +416,8 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'GitLab',
     url: 'https://gitlab.com',
-    logo_url: 'https://gitlab.com/assets/favicon-72a2cad5025aa931d6ea56c3201d1f18e68a8cd39788c7c80d5b2b82aa5143ef.png',
+    logo_url:
+      'https://gitlab.com/assets/favicon-72a2cad5025aa931d6ea56c3201d1f18e68a8cd39788c7c80d5b2b82aa5143ef.png',
     description: 'DevOps platform with Git repository management',
     categories: ['IDE & Coding Resources'],
   },
@@ -435,7 +438,8 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'CodePen',
     url: 'https://codepen.io',
-    logo_url: 'https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico',
+    logo_url:
+      'https://cpwebassets.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico',
     description: 'Online code editor and development environment',
     categories: ['IDE & Coding Resources'],
   },
@@ -627,7 +631,8 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Shopify',
     url: 'https://www.shopify.com',
-    logo_url: 'https://cdn.shopify.com/shopifycloud/brochure/assets/favicon-48d5e347d2e17e3b02b4e0e5c9bc8b1b.png',
+    logo_url:
+      'https://cdn.shopify.com/shopifycloud/brochure/assets/favicon-48d5e347d2e17e3b02b4e0e5c9bc8b1b.png',
     description: 'E-commerce platform for online stores',
     categories: ['eCommerce'],
   },
@@ -694,7 +699,8 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Medium',
     url: 'https://medium.com',
-    logo_url: 'https://cdn-static-1.medium.com/_/fp/icons/favicon-rebrand-medium.3Y6xpZ-0FSdWDnPM3hSBIA.ico',
+    logo_url:
+      'https://cdn-static-1.medium.com/_/fp/icons/favicon-rebrand-medium.3Y6xpZ-0FSdWDnPM3hSBIA.ico',
     description: 'Online publishing platform',
     categories: ['Blogging & Writing'],
   },
@@ -722,7 +728,8 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Grammarly',
     url: 'https://app.grammarly.com',
-    logo_url: 'https://static.grammarly.com/assets/files/efe57d016d9efff36da7884c193b646b/favicon.svg',
+    logo_url:
+      'https://static.grammarly.com/assets/files/efe57d016d9efff36da7884c193b646b/favicon.svg',
     description: 'Writing assistant for grammar and spelling',
     categories: ['Blogging & Writing'],
   },
@@ -873,7 +880,8 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Calendly',
     url: 'https://calendly.com',
-    logo_url: 'https://assets.calendly.com/packs/frontend/media/icon-32x32-9c3218e8faf0ae6e8e90.png',
+    logo_url:
+      'https://assets.calendly.com/packs/frontend/media/icon-32x32-9c3218e8faf0ae6e8e90.png',
     description: 'Meeting scheduling automation',
     categories: ['Calendar & Scheduling'],
   },
