@@ -7,6 +7,16 @@ import { BrowserViewManager } from './browser-view-manager';
 import { WebViewManager } from './webview-manager';
 import { ProfileMetadata } from '../shared/types';
 
+app.setName('Dockyard');
+
+app.setAboutPanelOptions({
+  applicationName: 'Dockyard',
+  applicationVersion: app.getVersion(),
+  authors: ['MayR Labs (https://mayrlabs.com)', 'Aghogho Meyoron (https://founder.mayrlabs.com)'],
+  website: 'https://dockyard.mayrlabs.com',
+  credits: 'Developed with ❤️ by MayR Labs',
+});
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling
 if (electronSquirrelStartup) {
   app.quit();

@@ -76,7 +76,7 @@ function App() {
   const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
   const [activeInstances, setActiveInstances] = useState<Record<string, string>>({});
   const [shortcutSignal, setShortcutSignal] = useState<AppShortcutSignal | null>(null);
-  
+
   // Split layout state
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
