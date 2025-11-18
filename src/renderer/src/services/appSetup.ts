@@ -1,5 +1,6 @@
 import type { AppSetupData, AppSetupApiResponse } from '../../../shared/types';
 import { getApiBaseUrl } from '../utils/environment';
+import { clearPopularFaviconCache, hydratePopularAppIcons } from './popularFaviconCache';
 
 const CACHE_KEY = 'dockyard:app-setup';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -91,8 +92,14 @@ export const fetchAppSetup = async (options: FetchOptions = {}): Promise<AppSetu
     throw new Error(payload.message || 'Unable to load app catalog');
   }
 
-  writeCache(payload.data);
-  return payload.data;
+  const hydratedApps = await hydratePopularAppIcons(payload.data.apps);
+  const decoratedPayload: AppSetupData = {
+    ...payload.data,
+    apps: hydratedApps,
+  };
+
+  writeCache(decoratedPayload);
+  return decoratedPayload;
 };
 
 export const invalidateAppSetupCache = (): void => {
@@ -100,4 +107,5 @@ export const invalidateAppSetupCache = (): void => {
     return;
   }
   window.localStorage.removeItem(CACHE_KEY);
+  clearPopularFaviconCache();
 };
