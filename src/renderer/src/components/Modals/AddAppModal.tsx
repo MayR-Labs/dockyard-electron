@@ -14,6 +14,7 @@ interface AddAppModalProps {
     customCSS?: string;
     customJS?: string;
   }) => Promise<void>;
+  initialCollection?: string;
 }
 
 type AddAppMode = 'select' | 'popular' | 'custom';
@@ -24,8 +25,8 @@ const INDEPENDENT_SUITE_VALUE = '__suite-independent__';
 const normalizeSuiteFilterValue = (suite: string | null): string => suite ?? INDEPENDENT_SUITE_VALUE;
 const getSuiteLabel = (suite: string | null): string => suite ?? 'Independent';
 
-export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
-  const [mode, setMode] = useState<AddAppMode>('select');
+export function AddAppModal({ isOpen, onClose, onAddApp, initialCollection }: AddAppModalProps) {
+  const [mode, setMode] = useState<AddAppMode>(() => (initialCollection ? 'popular' : 'select'));
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [icon, setIcon] = useState('');
@@ -37,6 +38,9 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>(ALL_FILTER_VALUE);
   const [selectedSuite, setSelectedSuite] = useState<string>(ALL_FILTER_VALUE);
+  const [selectedCollection, setSelectedCollection] = useState<string>(
+    initialCollection ?? ALL_FILTER_VALUE
+  );
 
   const {
     data: appSetup,
@@ -73,6 +77,23 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [appSetup?.suites, apps]);
 
+  const collectionOptions = useMemo(() => {
+    const optionSet = new Set<string>();
+    apps.forEach((app) => {
+      (app.collections ?? []).forEach((collection) => {
+        if (collection) {
+          optionSet.add(collection);
+        }
+      });
+    });
+    (appSetup?.collections ?? []).forEach((collection) => {
+      if (collection) {
+        optionSet.add(collection);
+      }
+    });
+    return Array.from(optionSet).sort((a, b) => a.localeCompare(b));
+  }, [appSetup?.collections, apps]);
+
   // Filtered popular apps
   const filteredApps = useMemo(() => {
     let filtered = [...apps];
@@ -99,8 +120,13 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
       );
     }
 
+    // Filter by collection
+    if (selectedCollection !== ALL_FILTER_VALUE) {
+      filtered = filtered.filter((app) => (app.collections ?? []).includes(selectedCollection));
+    }
+
     return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [apps, searchQuery, selectedCategory, selectedSuite]);
+  }, [apps, searchQuery, selectedCategory, selectedSuite, selectedCollection]);
 
   const totalApps = apps.length;
   const showLoadingState = isAppSetupLoading && totalApps === 0;
@@ -130,6 +156,7 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
         setSearchQuery('');
         setSelectedCategory(ALL_FILTER_VALUE);
         setSelectedSuite(ALL_FILTER_VALUE);
+        setSelectedCollection(ALL_FILTER_VALUE);
       }, 0);
     }
     return null;
@@ -391,8 +418,8 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
               />
             </div>
 
-            {/* Category and Suite filters */}
-            <div className="flex gap-3">
+            {/* Category, Suite, and Collection filters */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
@@ -415,6 +442,19 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
                 {suiteSelectOptions.map((suite) => (
                   <option key={suite.value} value={suite.value}>
                     {suite.label}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={selectedCollection}
+                onChange={(e) => setSelectedCollection(e.target.value)}
+                className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value={ALL_FILTER_VALUE}>All Collections</option>
+                {collectionOptions.map((collection) => (
+                  <option key={collection} value={collection}>
+                    {collection}
                   </option>
                 ))}
               </select>

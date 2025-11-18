@@ -19,7 +19,7 @@ interface WorkspaceCanvasProps {
   onAppSelect: (appId: string) => void;
   awakeApps: Record<string, boolean>;
   onWakeApp: (appId: string) => void;
-  onAddSampleApps?: () => void;
+  onCollectionSelect?: (collection: string) => void;
   onAddCustomApp?: () => void;
   onUpdateApp?: (id: string, data: Partial<App>) => void;
   onOpenOptions?: (appId: string) => void;
@@ -37,7 +37,7 @@ export function WorkspaceCanvas({
   onAppSelect,
   awakeApps,
   onWakeApp,
-  onAddSampleApps,
+  onCollectionSelect,
   onAddCustomApp,
   onUpdateApp,
   onOpenOptions,
@@ -66,7 +66,7 @@ export function WorkspaceCanvas({
   if (apps.length === 0) {
     return (
       <QuickStartGuide
-        onAddSampleApps={onAddSampleApps || (() => {})}
+        onCollectionSelect={onCollectionSelect}
         onAddCustomApp={onAddCustomApp || (() => {})}
       />
     );

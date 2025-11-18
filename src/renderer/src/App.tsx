@@ -54,6 +54,7 @@ function App() {
 
   // Modal state
   const [isAddAppModalOpen, setIsAddAppModalOpen] = useState(false);
+  const [addAppInitialCollection, setAddAppInitialCollection] = useState<string | null>(null);
   const [isEditAppModalOpen, setIsEditAppModalOpen] = useState(false);
   const [isCreateWorkspaceModalOpen, setIsCreateWorkspaceModalOpen] = useState(false);
   const [isAppOptionsModalOpen, setIsAppOptionsModalOpen] = useState(false);
@@ -460,55 +461,10 @@ function App() {
     }
   };
 
-  const handleAddSampleApps = async () => {
-    if (!activeWorkspaceId || !activeWorkspace) return;
-
-    const sampleApps = [
-      {
-        name: 'Gmail',
-        url: 'https://mail.google.com',
-        icon: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico',
-      },
-      {
-        name: 'GitHub',
-        url: 'https://github.com',
-        icon: 'https://github.githubassets.com/favicons/favicon.svg',
-      },
-      {
-        name: 'Notion',
-        url: 'https://notion.so',
-        icon: 'https://www.notion.so/images/favicon.ico',
-      },
-      {
-        name: 'Slack',
-        url: 'https://slack.com/signin',
-        icon: 'https://a.slack-edge.com/80588/marketing/img/meta/favicon-32.png',
-      },
-    ];
-
-    // Add all sample apps
-    const newAppIds: string[] = [];
-    for (const appData of sampleApps) {
-      const newApp = await createApp({
-        name: appData.name,
-        url: appData.url,
-        icon: appData.icon,
-        workspaceId: activeWorkspaceId,
-      });
-      if (newApp) {
-        newAppIds.push(newApp.id);
-      }
-    }
-
-    // Update workspace with all new app IDs
-    if (newAppIds.length > 0) {
-      await updateWorkspace(activeWorkspaceId, {
-        apps: [...activeWorkspace.apps, ...newAppIds],
-      });
-
-      // Select the first app
-      setActiveAppId(newAppIds[0]);
-    }
+  const handleCollectionSelect = (collection: string) => {
+    if (!collection) return;
+    setAddAppInitialCollection(collection);
+    setIsAddAppModalOpen(true);
   };
 
   const handleSaveWorkspaceSettings = async (settings: {
@@ -786,7 +742,7 @@ function App() {
             onAppSelect={handleSelectApp}
             awakeApps={awakeApps}
             onWakeApp={handleWakeAppRequest}
-            onAddSampleApps={handleAddSampleApps}
+            onCollectionSelect={handleCollectionSelect}
             onAddCustomApp={() => setIsAddAppModalOpen(true)}
             onUpdateApp={handleUpdateApp}
             onOpenOptions={(appId) => {
@@ -848,8 +804,13 @@ function App() {
 
       {/* Modals */}
       <AddAppModal
+        key={addAppInitialCollection ? `collection-${addAppInitialCollection}` : 'default'}
         isOpen={isAddAppModalOpen}
-        onClose={() => setIsAddAppModalOpen(false)}
+        initialCollection={addAppInitialCollection || undefined}
+        onClose={() => {
+          setIsAddAppModalOpen(false);
+          setAddAppInitialCollection(null);
+        }}
         onAddApp={handleAddApp}
       />
       <EditAppModal
