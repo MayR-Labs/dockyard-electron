@@ -1,12 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import {
-  POPULAR_APPS,
-  APP_CATEGORIES,
-  APP_SUITES,
-  AppCategory,
-  AppSuite,
-} from '../../constants/popularApps';
-import type { PopularApp } from '../../constants/popularApps';
+import type { PopularApp } from '../../../../shared/types';
+import { useAppSetup } from '../../hooks/useAppSetup';
 import { getFaviconUrl } from '../../utils/favicon';
 
 interface AddAppModalProps {
@@ -24,6 +18,12 @@ interface AddAppModalProps {
 
 type AddAppMode = 'select' | 'popular' | 'custom';
 
+const ALL_FILTER_VALUE = 'All';
+const INDEPENDENT_SUITE_VALUE = '__suite-independent__';
+
+const normalizeSuiteFilterValue = (suite: string | null): string => suite ?? INDEPENDENT_SUITE_VALUE;
+const getSuiteLabel = (suite: string | null): string => suite ?? 'Independent';
+
 export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
   const [mode, setMode] = useState<AddAppMode>('select');
   const [name, setName] = useState('');
@@ -35,34 +35,77 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
 
   // Filtering state for popular apps
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<AppCategory | 'All'>('All');
-  const [selectedSuite, setSelectedSuite] = useState<AppSuite | 'All'>('All');
+  const [selectedCategory, setSelectedCategory] = useState<string>(ALL_FILTER_VALUE);
+  const [selectedSuite, setSelectedSuite] = useState<string>(ALL_FILTER_VALUE);
+
+  const {
+    data: appSetup,
+    loading: isAppSetupLoading,
+    refreshing: isRefreshingAppSetup,
+    error: appSetupError,
+    refresh: refreshAppSetup,
+  } = useAppSetup();
+
+  const apps = useMemo<PopularApp[]>(() => appSetup?.apps ?? [], [appSetup?.apps]);
+
+  const categories = useMemo(() => {
+    const categorySet = new Set<string>();
+    apps.forEach((app) => {
+      app.categories.forEach((category) => categorySet.add(category));
+    });
+    (appSetup?.categories ?? []).forEach((category) => {
+      if (category) {
+        categorySet.add(category);
+      }
+    });
+    return Array.from(categorySet).sort((a, b) => a.localeCompare(b));
+  }, [appSetup?.categories, apps]);
+
+  const suiteSelectOptions = useMemo(() => {
+    const suiteSet = new Set<string | null>();
+    apps.forEach((app) => suiteSet.add(app.suite ?? null));
+    (appSetup?.suites ?? []).forEach((suite) => suiteSet.add(suite ?? null));
+    return Array.from(suiteSet)
+      .map((suite) => ({
+        value: normalizeSuiteFilterValue(suite),
+        label: getSuiteLabel(suite),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [appSetup?.suites, apps]);
 
   // Filtered popular apps
   const filteredApps = useMemo(() => {
-    let filtered = POPULAR_APPS;
+    let filtered = [...apps];
 
     // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (app) =>
-          app.name.toLowerCase().includes(query) || app.description.toLowerCase().includes(query)
+          app.name.toLowerCase().includes(query) ||
+          (app.description?.toLowerCase() ?? '').includes(query)
       );
     }
 
     // Filter by category
-    if (selectedCategory !== 'All') {
+    if (selectedCategory !== ALL_FILTER_VALUE) {
       filtered = filtered.filter((app) => app.categories.includes(selectedCategory));
     }
 
     // Filter by suite
-    if (selectedSuite !== 'All') {
-      filtered = filtered.filter((app) => app.suite === selectedSuite);
+    if (selectedSuite !== ALL_FILTER_VALUE) {
+      filtered = filtered.filter(
+        (app) => normalizeSuiteFilterValue(app.suite ?? null) === selectedSuite
+      );
     }
 
     return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [searchQuery, selectedCategory, selectedSuite]);
+  }, [apps, searchQuery, selectedCategory, selectedSuite]);
+
+  const totalApps = apps.length;
+  const showLoadingState = isAppSetupLoading && totalApps === 0;
+  const showErrorState = Boolean(appSetupError) && totalApps === 0 && !isAppSetupLoading;
+  const catalogErrorMessage = appSetupError ?? 'Unable to load popular apps';
 
   if (!isOpen) {
     // Reset state when modal is closed
@@ -85,8 +128,8 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
         setIcon('');
         setDescription('');
         setSearchQuery('');
-        setSelectedCategory('All');
-        setSelectedSuite('All');
+        setSelectedCategory(ALL_FILTER_VALUE);
+        setSelectedSuite(ALL_FILTER_VALUE);
       }, 0);
     }
     return null;
@@ -95,8 +138,8 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
   const handlePopularAppSelect = (app: PopularApp) => {
     setName(app.name);
     setUrl(app.url);
-    setIcon(app.logo_url);
-    setDescription(app.description);
+    setIcon(app.logo_url || '');
+    setDescription(app.description || '');
     setMode('custom'); // Show the form with pre-filled data
   };
 
@@ -352,11 +395,11 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
             <div className="flex gap-3">
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value as AppCategory | 'All')}
+                onChange={(e) => setSelectedCategory(e.target.value)}
                 className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="All">All Categories</option>
-                {APP_CATEGORIES.map((category) => (
+                <option value={ALL_FILTER_VALUE}>All Categories</option>
+                {categories.map((category) => (
                   <option key={category} value={category}>
                     {category}
                   </option>
@@ -364,81 +407,124 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
               </select>
 
               <select
-                value={selectedSuite as string}
-                onChange={(e) => setSelectedSuite(e.target.value as AppSuite | 'All')}
+                value={selectedSuite}
+                onChange={(e) => setSelectedSuite(e.target.value)}
                 className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                {APP_SUITES.map((suite) => (
-                  <option key={suite || 'null'} value={suite || 'All'}>
-                    {suite === 'All' ? 'All Suites' : suite || 'Independent'}
+                <option value={ALL_FILTER_VALUE}>All Suites</option>
+                {suiteSelectOptions.map((suite) => (
+                  <option key={suite.value} value={suite.value}>
+                    {suite.label}
                   </option>
                 ))}
               </select>
             </div>
+
+            {isRefreshingAppSetup && (
+              <p className="text-xs text-indigo-300">Refreshing catalog…</p>
+            )}
           </div>
 
           {/* App list */}
           <div className="flex-1 overflow-y-auto p-6">
-            {filteredApps.length === 0 ? (
+            {showLoadingState && (
               <div className="text-center py-12">
-                <p className="text-gray-400">No apps found matching your filters</p>
+                <p className="text-gray-400">Loading popular apps…</p>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {filteredApps.map((app, index) => (
-                  <button
-                    id={app.id}
-                    key={`#${index}-${app.id}`}
-                    onClick={() => handlePopularAppSelect(app)}
-                    className="p-4 bg-gray-800 hover:bg-gray-750 rounded-xl transition text-left group border border-gray-700 hover:border-indigo-500"
-                  >
-                    <div className="flex items-start gap-3">
-                      <img
-                        src={app.logo_url}
-                        alt={app.name}
-                        className="w-10 h-10 rounded-lg flex-shrink-0"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <h3 className="font-semibold text-white group-hover:text-indigo-400 transition">
-                            {app.name}
-                          </h3>
-                          {app.suite && (
-                            <span className="text-xs px-2 py-0.5 bg-indigo-500/20 text-indigo-400 rounded">
-                              {app.suite}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">{app.description}</p>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {app.categories.slice(0, 2).map((category) => (
-                            <span
-                              key={category}
-                              className="text-xs px-2 py-0.5 bg-gray-700 text-gray-300 rounded"
-                            >
-                              {category}
-                            </span>
-                          ))}
-                          {app.categories.length > 2 && (
-                            <span className="text-xs px-2 py-0.5 bg-gray-700 text-gray-300 rounded">
-                              +{app.categories.length - 2}
-                            </span>
-                          )}
+            )}
+
+            {showErrorState && (
+              <div className="text-center py-12 space-y-4">
+                <p className="text-gray-400">{catalogErrorMessage}</p>
+                <button
+                  onClick={() => refreshAppSetup()}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+
+            {!showLoadingState && !showErrorState && (
+              filteredApps.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-400">
+                    {totalApps === 0
+                      ? 'No apps are available yet. Please try again later.'
+                      : 'No apps found matching your filters'}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {filteredApps.map((app) => (
+                    <button
+                      id={app.id}
+                      key={app.id}
+                      onClick={() => handlePopularAppSelect(app)}
+                      className="p-4 bg-gray-800 hover:bg-gray-750 rounded-xl transition text-left group border border-gray-700 hover:border-indigo-500"
+                    >
+                      <div className="flex items-start gap-3">
+                        <img
+                          src={app.logo_url}
+                          alt={app.name}
+                          className="w-10 h-10 rounded-lg flex-shrink-0"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="font-semibold text-white group-hover:text-indigo-400 transition">
+                              {app.name}
+                            </h3>
+                            {app.suite && (
+                              <span className="text-xs px-2 py-0.5 bg-indigo-500/20 text-indigo-400 rounded">
+                                {app.suite}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                            {app.description || 'No description provided'}
+                          </p>
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {app.categories.slice(0, 2).map((category) => (
+                              <span
+                                key={category}
+                                className="text-xs px-2 py-0.5 bg-gray-700 text-gray-300 rounded"
+                              >
+                                {category}
+                              </span>
+                            ))}
+                            {app.categories.length > 2 && (
+                              <span className="text-xs px-2 py-0.5 bg-gray-700 text-gray-300 rounded">
+                                +{app.categories.length - 2}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  ))}
+                </div>
+              )
+            )}
+
+            {appSetupError && !showErrorState && (
+              <div className="mt-6 text-xs text-red-400 bg-red-900/20 border border-red-800 rounded-lg p-3 text-center">
+                Failed to refresh the catalog. Showing cached data.
+                <button
+                  onClick={() => refreshAppSetup()}
+                  className="ml-2 text-red-200 underline hover:text-red-100"
+                >
+                  Retry
+                </button>
               </div>
             )}
           </div>
 
           {/* Footer */}
           <div className="p-4 border-t border-gray-800 text-center text-sm text-gray-400">
-            Showing {filteredApps.length} of {POPULAR_APPS.length} apps
+            Showing {filteredApps.length} of {totalApps} apps
           </div>
         </div>
       </div>

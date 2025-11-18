@@ -26,3 +26,22 @@ export const getEnvironment = (): 'electron' | 'browser-dev' | 'browser-prod' =>
   }
   return import.meta.env.DEV ? 'browser-dev' : 'browser-prod';
 };
+
+const DEFAULT_API_BASE_URL = 'https://dockyard.mayrlabs.com';
+
+const trimTrailingSlashes = (url: string): string => url.replace(/\/+$/, '');
+
+export const getApiBaseUrl = (): string => {
+  const configured = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (!configured) {
+    return DEFAULT_API_BASE_URL;
+  }
+
+  try {
+    // Allow values with or without trailing slash; fallback if invalid
+    const normalized = new URL(configured);
+    return trimTrailingSlashes(normalized.toString());
+  } catch {
+    return DEFAULT_API_BASE_URL;
+  }
+};

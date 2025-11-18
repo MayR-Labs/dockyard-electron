@@ -119,6 +119,14 @@ npm run make
 
 ---
 
+## 🔧 **Configuration**
+
+Dockyard reads a small set of environment variables during development/build:
+
+- `VITE_API_BASE_URL` – Base URL for the Dockyard API (defaults to `https://dockyard.mayrlabs.com`). Override this if you host the catalog elsewhere or need a staging endpoint. Add it to a `.env` file or export it before running `npm run dev`/`npm run build`.
+
+---
+
 ## 💡 **Project Status & Planning**
 
 Dockyard is actively being developed with a phased approach. For detailed development plans and current progress:
