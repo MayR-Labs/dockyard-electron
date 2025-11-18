@@ -26,9 +26,22 @@ export type AppCategory =
   | 'Product Management'
   | 'Cloud Storage'
   | 'Streaming Platforms'
-  | 'Task Management';
+  | 'Task Management'
+  | 'Payments'
+  | 'Cloud'
+  | 'Hosting'
+  | 'Docs';
 
-export type AppSuite = 'Apple' | 'Google' | 'MayR Labs' | 'Microsoft' | 'Yandex' | 'Zoho' | null;
+export type AppSuite =
+  | 'Apple'
+  | 'Google'
+  | 'MayR Labs'
+  | 'Microsoft'
+  | 'Yandex'
+  | 'Zoho'
+  | 'Atlassian'
+  | 'Laravel'
+  | null;
 
 export const APP_COLLECTIONS = {
   ARTICLE_PUBLISHING: 'Article Publishing Stack',
@@ -100,6 +113,8 @@ export const googleApp = createSuiteHelper('Google');
 export const msApp = createSuiteHelper('Microsoft');
 export const yandexApp = createSuiteHelper('Yandex');
 export const zohoApp = createSuiteHelper('Zoho');
+export const atlassianApp = createSuiteHelper('Atlassian');
+export const laravelApp = createSuiteHelper('Laravel');
 
 export const POPULAR_APPS: PopularApp[] = [
   // MayR Labs Suite
@@ -404,14 +419,6 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://optimize.google.com',
     'https://optimize.google.com/favicon.ico',
     'Run experiments and personalize websites with Google Optimize.',
-    ['Advertising & Marketing']
-  ),
-
-  googleApp(
-    'Google Optimize',
-    'https://optimize.google.com',
-    'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_optimize_32dp.png',
-    'Website optimization and A/B testing',
     ['Advertising & Marketing']
   ),
 
@@ -746,7 +753,455 @@ export const POPULAR_APPS: PopularApp[] = [
     ['Blogging & Writing', 'Focus & Productivity']
   ),
 
+  // Atlassian Suite
+  atlassianApp(
+    'Confluence',
+    'https://www.atlassian.com/software/confluence',
+    'https://wac-cdn.atlassian.com/assets/img/favicons/atlassian/favicon.png',
+    'Team workspace for organizing specs, notes, and internal docs.',
+    ['Docs', 'Focus & Productivity']
+  ),
+
+  atlassianApp(
+    'Jira Software',
+    'https://www.atlassian.com/software/jira',
+    'https://wac-cdn.atlassian.com/assets/img/favicons/atlassian/favicon.png',
+    'Plan, track, and ship software with agile boards and reports.',
+    ['Product Management', 'Task Management']
+  ),
+
+  atlassianApp(
+    'Bitbucket',
+    'https://bitbucket.org',
+    'https://bitbucket.org/favicon.ico',
+    'Git-based source control with built-in CI and code reviews.',
+    ['IDE & Coding Resources']
+  ),
+
+  atlassianApp(
+    'Trello',
+    'https://trello.com',
+    'https://trello.com/favicon.ico',
+    'Visual kanban boards for managing tasks and roadmaps.',
+    ['Task Management', 'Product Management'],
+    [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+  ),
+
+  atlassianApp(
+    'Opsgenie',
+    'https://www.atlassian.com/software/opsgenie',
+    'https://wac-cdn.atlassian.com/assets/img/favicons/atlassian/favicon.png',
+    'On-call management and incident response coordination.',
+    ['Administration', 'Cloud']
+  ),
+
+  atlassianApp(
+    'Statuspage',
+    'https://www.atlassian.com/software/statuspage',
+    'https://wac-cdn.atlassian.com/assets/img/favicons/atlassian/favicon.png',
+    'Hosted status pages to keep customers informed about uptime.',
+    ['Customer Support', 'Administration']
+  ),
+
+  // Laravel Suite
+  laravelApp(
+    'Laravel',
+    'https://laravel.com',
+    'https://laravel.com/img/favicon/favicon.ico',
+    'Full-stack PHP framework with expressive syntax and tooling.',
+    ['IDE & Coding Resources', 'Docs']
+  ),
+
+  laravelApp(
+    'Laravel Forge',
+    'https://forge.laravel.com',
+    'https://forge.laravel.com/favicon.ico',
+    'Server provisioning and deployment platform tailored for Laravel.',
+    ['Hosting', 'Cloud']
+  ),
+
+  laravelApp(
+    'Laravel Vapor',
+    'https://vapor.laravel.com',
+    'https://vapor.laravel.com/favicon.ico',
+    'Serverless deployment platform powered by AWS for Laravel apps.',
+    ['Cloud']
+  ),
+
+  laravelApp(
+    'Laravel Cloud',
+    'https://cloud.laravel.com',
+    'https://cloud.laravel.com/favicon.ico',
+    'Managed cloud hosting platform for Laravel teams.',
+    ['Cloud', 'Hosting']
+  ),
+
+  laravelApp(
+    'Laravel Nova',
+    'https://nova.laravel.com',
+    'https://nova.laravel.com/favicon.ico',
+    'Beautiful administration panel for Laravel applications.',
+    ['Administration', 'Docs']
+  ),
+
+  laravelApp(
+    'Nightwatch',
+    'https://nightwatch.laravel.com',
+    'https://nightwatch.laravel.com/favicon.ico',
+    'Server monitoring and alerting tailored to Laravel workloads.',
+    ['Administration', 'Docs']
+  ),
+
+  laravelApp(
+    'Larajobs',
+    'https://larajobs.com',
+    'https://larajobs.com/favicon.ico',
+    'Job board dedicated to Laravel developers and teams.',
+    ['Misc']
+  ),
+
+  laravelApp(
+    'Laravel News',
+    'https://laravel-news.com',
+    'https://laravel-news.com/favicon.ico',
+    'Community-driven publication for Laravel tutorials and news.',
+    ['Blogging & Writing']
+  ),
+
   // General Apps
+  // Cloud & Hosting
+  popularApp(
+    'Amazon Web Services',
+    'https://aws.amazon.com',
+    'https://a0.awsstatic.com/libra-css/images/site/fav/favicon.ico',
+    'Comprehensive cloud platform for compute, storage, AI, and DevOps.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'Cloudflare',
+    'https://www.cloudflare.com',
+    'https://www.cloudflare.com/favicon.ico',
+    'Security, performance, and developer platform for the modern web.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'Cloudinary',
+    'https://cloudinary.com',
+    'https://cloudinary.com/favicon.ico',
+    'Media pipeline for storing, optimizing, and delivering images and video.',
+    ['Cloud', 'Design Suites']
+  ),
+
+  popularApp(
+    'Cloudways',
+    'https://www.cloudways.com',
+    'https://www.cloudways.com/favicon.ico',
+    'Managed cloud hosting for PHP, WordPress, and modern stacks.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'Fly.io',
+    'https://fly.io',
+    'https://fly.io/favicon.ico',
+    'Run full-stack apps close to users with global containers.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'Go54',
+    'https://go54.com',
+    'https://go54.com/favicon.ico',
+    'African cloud platform for app hosting, databases, and dev tools.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'GoDaddy',
+    'https://www.godaddy.com',
+    'https://www.godaddy.com/favicon.ico',
+    'Domains, DNS, and hosting for small businesses.',
+    ['Hosting']
+  ),
+
+  popularApp(
+    'Hetzner',
+    'https://www.hetzner.com',
+    'https://www.hetzner.com/favicon.ico',
+    'European data centers delivering dedicated and cloud servers.',
+    ['Hosting', 'Cloud']
+  ),
+
+  popularApp(
+    'Hostinger',
+    'https://www.hostinger.com',
+    'https://www.hostinger.com/favicon.ico',
+    'Affordable shared, VPS, and cloud hosting for global teams.',
+    ['Hosting']
+  ),
+
+  popularApp(
+    'Namecheap',
+    'https://www.namecheap.com',
+    'https://www.namecheap.com/favicon.ico',
+    'Domain registrar with managed WordPress and VPS hosting.',
+    ['Hosting']
+  ),
+
+  popularApp(
+    'Railway',
+    'https://railway.app',
+    'https://railway.app/favicon.ico',
+    'Deploy containers, databases, and workers with instant previews.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'Render',
+    'https://render.com',
+    'https://render.com/favicon.ico',
+    'Unified cloud to host web services, cron jobs, and static sites.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'Scaleway',
+    'https://www.scaleway.com',
+    'https://www.scaleway.com/favicon.ico',
+    'European cloud provider for VMs, Kubernetes, and storage.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'Surge',
+    'https://surge.sh',
+    'https://surge.sh/favicon.ico',
+    'Static web publishing with a single command.',
+    ['Hosting']
+  ),
+
+  popularApp(
+    'n8n',
+    'https://n8n.io',
+    'https://n8n.io/favicon.ico',
+    'Workflow automation platform that runs self-hosted or in the cloud.',
+    ['Cloud', 'Focus & Productivity']
+  ),
+
+  // Payments
+  popularApp(
+    'Paystack',
+    'https://paystack.com',
+    'https://paystack.com/favicon.ico',
+    'Modern payments infrastructure for African businesses.',
+    ['Payments']
+  ),
+
+  popularApp(
+    'Flutterwave',
+    'https://flutterwave.com',
+    'https://flutterwave.com/favicon.ico',
+    'Collect payments globally via cards, transfers, and wallets.',
+    ['Payments']
+  ),
+
+  popularApp(
+    'Monnify',
+    'https://monnify.com',
+    'https://monnify.com/favicon.ico',
+    'Unified APIs for accepting and reconciling payments in Africa.',
+    ['Payments']
+  ),
+
+  // Design & Creative Utilities
+  popularApp(
+    'Checklist Design',
+    'https://www.checklist.design',
+    'https://www.checklist.design/favicon.ico',
+    'Practical UX checklists covering flows, content, and visuals.',
+    ['Design Suites', 'Docs']
+  ),
+
+  popularApp(
+    'Coolors',
+    'https://coolors.co',
+    'https://coolors.co/assets/img/favicon.png',
+    'Generate, refine, and save color palettes collaboratively.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Designstripe',
+    'https://designstripe.com',
+    'https://designstripe.com/favicon.ico',
+    'Customizable illustrations and scenes for marketing assets.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Getwaves',
+    'https://getwaves.io',
+    'https://getwaves.io/static/favicon.png',
+    'Generate organic SVG wave backgrounds for hero sections.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Haikei',
+    'https://haikei.app',
+    'https://haikei.app/favicon.ico',
+    'Procedural SVG generators for blobs, waves, and gradients.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Icons8',
+    'https://icons8.com',
+    'https://icons8.com/favicon.ico',
+    'Curated icon, illustration, and photo packs.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Iconfinder',
+    'https://www.iconfinder.com',
+    'https://www.iconfinder.com/favicon.ico',
+    'Marketplace for millions of vector icons.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'ICO Convert',
+    'https://icoconvert.com',
+    'https://icoconvert.com/favicon.ico',
+    'Convert images into multi-size ICO sets for apps.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Lorem Picsum',
+    'https://picsum.photos',
+    'https://picsum.photos/favicon.ico',
+    'Random placeholder photos for mockups and prototypes.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'MakeTintsAndShades',
+    'https://maketintsandshades.com',
+    'https://maketintsandshades.com/favicon.ico',
+    'Quickly derive tint and shade scales from a single color.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'MockuuPhone',
+    'https://mockuuphone.com',
+    'https://mockuuphone.com/favicon.ico',
+    'Device mockups for showcasing mobile interfaces.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Picular',
+    'https://picular.co',
+    'https://picular.co/favicon.ico',
+    'Search engine that returns colors inspired by keywords.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Pixmiller',
+    'https://pixmiller.com',
+    'https://pixmiller.com/favicon.ico',
+    'Palette and inspiration explorer for designers.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Realtime Colors',
+    'https://www.realtimecolors.com',
+    'https://www.realtimecolors.com/favicon.ico',
+    'Preview color palettes on live UI templates instantly.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Scrollbar.app',
+    'https://scrollbar.app',
+    'https://scrollbar.app/favicon.ico',
+    'Interactive generator for custom CSS scrollbars.',
+    ['Design Suites', 'IDE & Coding Resources']
+  ),
+
+  // Developer Docs & Registries
+  popularApp(
+    'Dev.to',
+    'https://dev.to',
+    'https://dev.to/favicon.ico',
+    'Developer blogging community for sharing tutorials and tips.',
+    ['Blogging & Writing', 'Docs']
+  ),
+
+  popularApp(
+    'HTML-CSS-JS',
+    'https://html-css-js.com',
+    'https://html-css-js.com/favicon.ico',
+    'Reference snippets for core web technologies and generators.',
+    ['Docs', 'IDE & Coding Resources']
+  ),
+
+  popularApp(
+    'Regex101',
+    'https://regex101.com',
+    'https://regex101.com/favicon.ico',
+    'Real-time regex debugger with explanations and libraries.',
+    ['IDE & Coding Resources', 'Docs']
+  ),
+
+  popularApp(
+    'Composer',
+    'https://getcomposer.org',
+    'https://getcomposer.org/favicon.ico',
+    'Dependency manager for PHP with searchable package docs.',
+    ['IDE & Coding Resources', 'Docs']
+  ),
+
+  popularApp(
+    'npm',
+    'https://www.npmjs.com',
+    'https://www.npmjs.com/favicon.ico',
+    'JavaScript package registry and documentation hub.',
+    ['IDE & Coding Resources']
+  ),
+
+  popularApp(
+    'pub.dev',
+    'https://pub.dev',
+    'https://pub.dev/favicon.ico',
+    'Dart and Flutter package index with API docs.',
+    ['IDE & Coding Resources', 'Docs']
+  ),
+
+  popularApp(
+    'W3Schools',
+    'https://www.w3schools.com',
+    'https://www.w3schools.com/favicon.ico',
+    'Interactive tutorials covering core web standards.',
+    ['Docs', 'Educational']
+  ),
+
+  // Communities & Media
+  popularApp(
+    'TikTok',
+    'https://www.tiktok.com',
+    'https://www.tiktok.com/favicon.ico',
+    'Short-form video platform for discovery and marketing.',
+    ['Messaging & Social', 'Streaming Platforms']
+  ),
+
   popularApp(
     'AB Tasty',
     'https://www.abtasty.com',
@@ -930,14 +1385,6 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://www.bime.io/favicon.ico',
     'Business intelligence and data visualization',
     ['Advertising & Marketing']
-  ),
-
-  popularApp(
-    'Bitbucket',
-    'https://bitbucket.org',
-    'https://bitbucket.org/favicon.ico',
-    'Git-based source code repository hosting service',
-    ['IDE & Coding Resources']
   ),
 
   popularApp(
@@ -2686,15 +3133,6 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
-    'Trello',
-    'https://trello.com',
-    'https://trello.com/favicon.ico',
-    'Visual project management with boards and cards',
-    ['Task Management', 'Product Management'],
-    [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
-  ),
-
-  popularApp(
     'Twitch',
     'https://www.twitch.tv',
     'https://static.twitchcdn.net/assets/favicon-32-e29e246c157142c94346.png',
@@ -2897,6 +3335,10 @@ export const APP_CATEGORIES: AppCategory[] = [
   'Cloud Storage',
   'Streaming Platforms',
   'Task Management',
+  'Payments',
+  'Cloud',
+  'Hosting',
+  'Docs',
 ];
 
 export const APP_SUITES: (AppSuite | 'All')[] = [
@@ -2907,4 +3349,6 @@ export const APP_SUITES: (AppSuite | 'All')[] = [
   'Microsoft',
   'Yandex',
   'Zoho',
+  'Atlassian',
+  'Laravel',
 ];
