@@ -657,15 +657,14 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Monday.com',
     url: 'https://monday.com',
-    logo_url:
-      'https://dapulse-res.cloudinary.com/image/upload/f_auto,q_auto/remote_mondaycom_static/img/favicon/apple-icon-76x76.png',
+    logo_url: 'https://monday.com/static/img/favicons/favicon.ico',
     description: 'Work operating system for team collaboration',
     categories: ['Product Management', 'Task Management'],
   },
   {
     name: 'ClickUp',
     url: 'https://app.clickup.com',
-    logo_url: 'https://app.clickup.com/assets/images/brand/favicon.png',
+    logo_url: 'https://clickup.com/favicon.ico',
     description: 'All-in-one productivity platform',
     categories: ['Task Management', 'Product Management', 'Focus & Productivity'],
   },
@@ -716,7 +715,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Mural',
     url: 'https://www.mural.co',
-    logo_url: 'https://www.mural.co/favicon.ico',
+    logo_url: 'https://cdn.prod.website-files.com/62e11362da2667ac3d0e6ed5/63f8b1b0585b45a64baf52da_Mural_Favicon_32x32.png',
     description: 'Digital workspace for visual collaboration',
     categories: ['Notes & Whiteboards'],
   },
@@ -776,7 +775,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'JSFiddle',
     url: 'https://jsfiddle.net',
-    logo_url: 'https://jsfiddle.net/favicon.png',
+    logo_url: 'https://jsfiddle.net/favicon.ico',
     description: 'Online JavaScript, CSS, and HTML playground',
     categories: ['IDE & Coding Resources'],
   },
@@ -806,7 +805,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Canva',
     url: 'https://www.canva.com',
-    logo_url: 'https://static.canva.com/web/images/favicon.ico',
+    logo_url: 'https://canva.com/favicon.ico',
     description: 'Graphic design platform for creating visual content',
     categories: ['Design Suites'],
   },
@@ -817,13 +816,13 @@ export const POPULAR_APPS: PopularApp[] = [
     description: 'Suite of creative applications and services',
     categories: ['Design Suites'],
   },
-  {
-    name: 'InVision',
-    url: 'https://www.invisionapp.com',
-    logo_url: 'https://www.invisionapp.com/favicon.ico',
-    description: 'Digital product design platform',
-    categories: ['Design Suites'],
-  },
+  // {
+  //   name: 'InVision',
+  //   url: 'https://www.invisionapp.com',
+  //   logo_url: 'https://www.invisionapp.com/favicon.ico',
+  //   description: 'Digital product design platform',
+  //   categories: ['Design Suites'],
+  // },
   {
     name: 'Sketch Cloud',
     url: 'https://www.sketch.com',
@@ -850,7 +849,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Facebook',
     url: 'https://www.facebook.com',
-    logo_url: 'https://static.xx.fbcdn.net/rsrc.php/yD/r/d4ZIVX-5C-b.ico',
+    logo_url: 'https://web.facebook.com/favicon.ico',
     description: 'Social networking service',
     categories: ['Messaging & Social'],
   },
@@ -871,7 +870,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Mastodon',
     url: 'https://joinmastodon.org',
-    logo_url: 'https://joinmastodon.org/favicon.ico',
+    logo_url: 'https://joinmastodon.org/_next/static/media/favicon-32x32.3a702fe9.png',
     description: 'Decentralized social network',
     categories: ['Messaging & Social'],
   },
@@ -894,7 +893,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Freshdesk',
     url: 'https://freshdesk.com',
-    logo_url: 'https://www.freshworks.com/favicon.ico',
+    logo_url: 'https://www.freshworks.com/favicons/favicon.ico',
     description: 'Cloud-based customer support software',
     categories: ['Customer Support'],
   },
@@ -969,7 +968,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'BigCommerce',
     url: 'https://www.bigcommerce.com',
-    logo_url: 'https://www.bigcommerce.com/favicon.ico',
+    logo_url: 'https://dam.bigcommerce.com/m/569c5976323dd521/original/favicon-196x196.png',
     description: 'E-commerce platform for growing businesses',
     categories: ['eCommerce'],
   },
@@ -985,14 +984,14 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'HubSpot',
     url: 'https://www.hubspot.com',
-    logo_url: 'https://www.hubspot.com/hubfs/HubSpot_Logos/favicon.ico',
+    logo_url: 'https://www.hubspot.com/hubfs/HubSpot_Logos/HubSpot-Inversed-Favicon.png',
     description: 'Inbound marketing, sales, and service software',
     categories: ['Advertising & Marketing', 'Customer Support'],
   },
   {
     name: 'Mailchimp',
     url: 'https://mailchimp.com',
-    logo_url: 'https://mailchimp.com/release/plums/cxp/images/apple-touch-icon-192.ce8f3e6d.png',
+    logo_url: 'https://mailchimp.com/favicon.ico',
     description: 'Email marketing and automation platform',
     categories: ['Advertising & Marketing'],
   },
@@ -1013,7 +1012,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Canva for Marketing',
     url: 'https://www.canva.com',
-    logo_url: 'https://static.canva.com/web/images/favicon.ico',
+    logo_url: 'https://canva.com/favicon.ico',
     description: 'Design platform for marketing materials',
     categories: ['Advertising & Marketing', 'Design Suites'],
   },
@@ -1051,8 +1050,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Grammarly',
     url: 'https://app.grammarly.com',
-    logo_url:
-      'https://static.grammarly.com/assets/files/efe57d016d9efff36da7884c193b646b/favicon.svg',
+    logo_url: 'https://static-web.grammarly.com/cms/master/public/favicon.ico',
     description: 'Writing assistant for grammar and spelling',
     categories: ['Blogging & Writing'],
   },
@@ -1083,7 +1081,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Bandcamp',
     url: 'https://bandcamp.com',
-    logo_url: 'https://bandcamp.com/favicon.ico',
+    logo_url: 'https://bandcamp.com/favicon.ico', // Incorrect
     description: 'Music commerce platform for artists',
     categories: ['Music', 'eCommerce'],
   },
@@ -1165,8 +1163,8 @@ export const POPULAR_APPS: PopularApp[] = [
   // AI Tools
   {
     name: 'ChatGPT',
-    url: 'https://chat.openai.com',
-    logo_url: 'https://chat.openai.com/favicon.ico',
+    url: 'https://chatgpt.com',
+    logo_url: 'https://chatgpt.com/favicon.ico',
     description: 'AI-powered conversational assistant',
     categories: ['Artificial Intelligence'],
   },
@@ -1198,6 +1196,13 @@ export const POPULAR_APPS: PopularApp[] = [
     description: 'AI-powered writing and productivity assistant',
     categories: ['Artificial Intelligence', 'Focus & Productivity'],
   },
+  {
+    name: 'Sora',
+    url: 'https://sora.chatgpt.com',
+    logo_url: 'https://sora.chatgpt.com/favicon.ico',
+    description: 'AI assistant for creative generations',
+    categories: ['Artificial Intelligence', 'Design Suites'],
+  },
 
   // Calendar & Scheduling
   {
@@ -1218,7 +1223,7 @@ export const POPULAR_APPS: PopularApp[] = [
   {
     name: 'Doodle',
     url: 'https://doodle.com',
-    logo_url: 'https://doodle.com/favicon.ico',
+    logo_url: 'https://marketing-cdn.doodle.com/branding/2022/favicon/favicon.ico',
     description: 'Meeting scheduling and polling',
     categories: ['Calendar & Scheduling'],
   },
