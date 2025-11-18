@@ -51,9 +51,10 @@ export function WorkspaceCanvas({
   // Use external state if provided, otherwise use internal state
   const [internalLayoutMode, setInternalLayoutMode] = useState<LayoutMode>('single');
   const [internalActiveAppIds, setInternalActiveAppIds] = useState<string[]>([]);
-  
+
   const layoutMode = externalLayoutMode !== undefined ? externalLayoutMode : internalLayoutMode;
-  const activeAppIds = externalActiveAppIds !== undefined ? externalActiveAppIds : internalActiveAppIds;
+  const activeAppIds =
+    externalActiveAppIds !== undefined ? externalActiveAppIds : internalActiveAppIds;
 
   // Ensure there is always a selected app when apps exist
   useEffect(() => {

@@ -128,7 +128,9 @@ export function SplitWithModal({
 
   // Auto-select first available layout when number of apps changes
   const currentLayoutValid = availableLayouts.find((l) => l.mode === layoutMode);
-  const effectiveLayoutMode = currentLayoutValid ? layoutMode : availableLayouts[0]?.mode || 'split-horizontal';
+  const effectiveLayoutMode = currentLayoutValid
+    ? layoutMode
+    : availableLayouts[0]?.mode || 'split-horizontal';
 
   return (
     <AnimatePresence>
@@ -188,9 +190,7 @@ export function SplitWithModal({
                       <button
                         key={app.id}
                         onClick={() => toggleAppSelection(app.id)}
-                        disabled={
-                          !selectedAppIds.includes(app.id) && selectedAppIds.length >= 3
-                        }
+                        disabled={!selectedAppIds.includes(app.id) && selectedAppIds.length >= 3}
                         className={`
                           flex items-center gap-3 p-3 rounded-lg border transition-all
                           ${
