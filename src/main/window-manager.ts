@@ -28,6 +28,7 @@ export class WindowManager {
       minHeight: 600,
       webPreferences: {
         preload: preloadPath,
+        scrollBounce: true,
         contextIsolation: true,
         nodeIntegration: false,
         sandbox: false, // Temporarily disable sandbox to see if that's the issue
