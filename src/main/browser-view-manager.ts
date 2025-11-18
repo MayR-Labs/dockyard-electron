@@ -535,6 +535,14 @@ export class BrowserViewManager {
           `Auto-hibernating idle view: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
         );
         this.hibernateView(entry.appId, entry.instanceId);
+
+        // Update app instance state to reflect hibernation
+        const instance = app.instances.find((inst: AppInstance) => inst.id === entry.instanceId);
+        if (instance) {
+          instance.hibernated = true;
+          instance.lastActive = new Date().toISOString();
+          appsStore.set('apps', apps);
+        }
       }
     });
   }
