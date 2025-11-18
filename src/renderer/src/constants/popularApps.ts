@@ -101,18 +101,7 @@ export const msApp = createSuiteHelper('Microsoft');
 export const yandexApp = createSuiteHelper('Yandex');
 export const zohoApp = createSuiteHelper('Zoho');
 
-const dedupeApps = (apps: PopularApp[]) => {
-  const seen = new Set<string>();
-  return apps.filter((app) => {
-    if (seen.has(app.id)) {
-      return false;
-    }
-    seen.add(app.id);
-    return true;
-  });
-};
-
-export const POPULAR_APPS: PopularApp[] = dedupeApps([
+export const POPULAR_APPS: PopularApp[] = [
   // MayR Labs Suite
   mlApp(
     'ContentForge',
@@ -249,14 +238,6 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
   ),
 
   googleApp(
-    'Firebase',
-    'https://firebase.google.com',
-    'https://firebase.google.com/favicon.ico',
-    'App development platform',
-    ['IDE & Coding Resources']
-  ),
-
-  googleApp(
     'Firebase Studio',
     'https://studio.firebase.google.com',
     'https://studio.firebase.google.com/favicon.ico',
@@ -267,16 +248,8 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
   googleApp(
     'Gemini',
     'https://gemini.google.com',
-    'https://www.gstatic.com/ai/gemini/favicon.ico',
-    'Conversational AI assistant built on Google DeepMind models.',
-    ['Artificial Intelligence']
-  ),
-
-  googleApp(
-    'Gemini',
-    'https://gemini.google.com',
     'https://www.gstatic.com/lamda/images/favicon_v1_150160cddff7f294ce30.svg',
-    'AI assistant by Google',
+    'Conversational AI assistant built on Google DeepMind models.',
     ['Artificial Intelligence']
   ),
 
@@ -291,24 +264,8 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
   googleApp(
     'Google Ads',
     'https://ads.google.com',
-    'https://ads.google.com/favicon.ico',
-    'Plan and manage search, display, and video advertising.',
-    ['Advertising & Marketing']
-  ),
-
-  googleApp(
-    'Google Ads',
-    'https://ads.google.com',
     'https://www.gstatic.com/images/branding/product/2x/google_ads_32dp.png',
     'Online advertising platform',
-    ['Advertising & Marketing']
-  ),
-
-  googleApp(
-    'Google Adsense',
-    'https://www.google.com/adsense',
-    'https://www.gstatic.com/adsense/common/adsense_300x50.png',
-    'Ad monetization platform',
     ['Advertising & Marketing']
   ),
 
@@ -326,14 +283,6 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
     'https://analytics.google.com/favicon.ico',
     'Measure site and app performance with advanced analytics.',
     ['Advertising & Marketing', 'Focus & Productivity']
-  ),
-
-  googleApp(
-    'Google Analytics',
-    'https://analytics.google.com',
-    'https://www.google.com/analytics/static/3e3b88e/img/favicon.ico',
-    'Web analytics service',
-    ['Advertising & Marketing']
   ),
 
   googleApp(
@@ -381,15 +330,7 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
     'https://datastudio.google.com',
     'https://datastudio.google.com/favicon.ico',
     'Build interactive reports and dashboards (now Looker Studio).',
-    ['Focus & Productivity', 'Product Management']
-  ),
-
-  googleApp(
-    'Google Data Studio',
-    'https://datastudio.google.com',
-    'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_data_studio_32dp.png',
-    'Data visualization and reporting',
-    ['Advertising & Marketing']
+    ['Focus & Productivity', 'Product Management', 'Advertising & Marketing']
   ),
 
   googleApp(
@@ -507,14 +448,6 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
   ),
 
   googleApp(
-    'Google Tag Manager',
-    'https://tagmanager.google.com',
-    'https://www.gstatic.com/analytics-suite/header/suite/v2/ic_tag_manager_32dp.png',
-    'Tag management system',
-    ['Advertising & Marketing']
-  ),
-
-  googleApp(
     'Google Taskboard',
     'https://workspace.google.com/products/tasks/',
     'https://workspace.google.com/static/apple-touch-icon.png',
@@ -563,14 +496,6 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
   ),
 
   googleApp(
-    'NotebookLM',
-    'https://notebooklm.google',
-    'https://www.gstatic.com/lamda/images/favicon_v1_150160cddff7f294ce30.svg',
-    'AI-powered note-taking by Google',
-    ['Artificial Intelligence', 'Notes & Whiteboards']
-  ),
-
-  googleApp(
     'YouTube',
     'https://youtube.com',
     'https://www.youtube.com/favicon.ico',
@@ -612,14 +537,6 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
   ),
 
   msApp(
-    'Microsoft Copilot',
-    'https://copilot.microsoft.com',
-    'https://copilot.microsoft.com/favicon.ico',
-    'AI companion by Microsoft',
-    ['Artificial Intelligence']
-  ),
-
-  msApp(
     'Microsoft Excel',
     'https://www.office.com/launch/excel',
     'https://res.cdn.office.net/assets/mail/file-icon/png/xlsx_16x16.png',
@@ -644,7 +561,7 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
   ),
 
   msApp(
-    'Microsoft To Do',
+    'Microsoft To-Do',
     'https://to-do.office.com',
     'https://to-do.cdn.office.net/production/assets/favicon.ico',
     'Task management and to-do lists',
@@ -1120,14 +1037,6 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
   ),
 
   popularApp(
-    'Canva for Marketing',
-    'https://www.canva.com',
-    'https://canva.com/favicon.ico',
-    'Design platform for marketing materials',
-    ['Advertising & Marketing', 'Design Suites']
-  ),
-
-  popularApp(
     'Canvas',
     'https://www.instructure.com/canvas',
     'https://www.instructure.com/favicon.ico',
@@ -1557,7 +1466,7 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
     'Felo',
     'https://felo.ai',
     'https://felo.ai/favicon.ico',
-    'AI-powered search engine',
+    'Ask AI anything with Felo, the free multilingual answer engine. Get real-time answers & create AI presentations, AI mind maps & posters.',
     ['Artificial Intelligence']
   ),
 
@@ -1951,7 +1860,7 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
     'LinkTree',
     'https://linktr.ee',
     'https://linktr.ee/favicon.ico',
-    'Link-in-bio tool',
+    'Link-in-bio tool for managing multiple links',
     ['Advertising & Marketing']
   ),
 
@@ -2205,13 +2114,9 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
     ['Administration', 'IDE & Coding Resources']
   ),
 
-  popularApp(
-    'Newsify',
-    'https://newsify.co',
-    'https://newsify.co/favicon.ico',
-    'RSS news reader',
-    ['Misc']
-  ),
+  popularApp('Newsify', 'https://newsify.co', 'https://newsify.co/favicon.ico', 'RSS news reader', [
+    'Misc',
+  ]),
 
   popularApp(
     'Notion',
@@ -2220,23 +2125,6 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
     'All-in-one workspace for notes, tasks, wikis, and databases',
     ['Notes & Whiteboards', 'Task Management', 'Focus & Productivity'],
     [APP_COLLECTIONS.ARTICLE_PUBLISHING, APP_COLLECTIONS.TEAM_PRODUCTIVITY]
-  ),
-
-  popularApp(
-    'Notion AI',
-    'https://www.notion.so/product/ai',
-    'https://www.notion.so/images/favicon.ico',
-    'AI-powered writing and productivity assistant',
-    ['Artificial Intelligence', 'Focus & Productivity']
-  ),
-
-  popularApp(
-    'Notion Team',
-    'https://www.notion.so',
-    'https://www.notion.so/images/favicon.ico',
-    'Team workspace and knowledge management',
-    ['Administration', 'Focus & Productivity'],
-    [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
   ),
 
   popularApp(
@@ -2375,13 +2263,9 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
     ['Focus & Productivity', 'Misc']
   ),
 
-  popularApp(
-    'Poe',
-    'https://poe.com',
-    'https://poe.com/favicon.ico',
-    'Platform for AI chatbots',
-    ['Artificial Intelligence']
-  ),
+  popularApp('Poe', 'https://poe.com', 'https://poe.com/favicon.ico', 'Platform for AI chatbots', [
+    'Artificial Intelligence',
+  ]),
 
   popularApp(
     'Polymail',
@@ -2988,7 +2872,7 @@ export const POPULAR_APPS: PopularApp[] = dedupeApps([
     ['Voice & Video Calls'],
     [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
   ),
-]);
+];
 
 export const APP_CATEGORIES: AppCategory[] = [
   'Accounting & Finance',

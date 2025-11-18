@@ -387,8 +387,8 @@ export function AddAppModal({ isOpen, onClose, onAddApp }: AddAppModalProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {filteredApps.map((app, index) => (
                   <button
-                    id={`app-#${index}-${app.name}`}
-                    key={`#${index}-${app.name}`}
+                    id={app.id}
+                    key={`#${index}-${app.id}`}
                     onClick={() => handlePopularAppSelect(app)}
                     className="p-4 bg-gray-800 hover:bg-gray-750 rounded-xl transition text-left group border border-gray-700 hover:border-indigo-500"
                   >
