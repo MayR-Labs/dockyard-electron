@@ -149,7 +149,7 @@ The application now has:
 
 ---
 
-### **Phase 3: Session Management & Performance** 🚧 _[In Progress - 85% Complete]_
+### **Phase 3: Session Management & Performance** 🚧 _[In Progress - 90% Complete]_
 
 **Goal**: Implement session isolation, auto-hibernation, and performance optimization
 
@@ -165,7 +165,8 @@ The application now has:
 - [x] Idle detection system
 - [x] Auto-suspend inactive apps (default 15 min)
 - [x] Smart resume on app activation
-- [ ] Hibernation settings per app/workspace (UI pending)
+- [x] Workspace-specific hibernation settings (enabled flag and custom idle time)
+- [ ] Per-app hibernation override (UI pending)
 
 #### 3.3 Performance Monitoring
 
@@ -184,7 +185,13 @@ The application now has:
 - [ ] Advanced webview state inspector (planned)
 
 **Target**: Q2-Q3 2025 (ahead of schedule)
-**Status**: 🚧 85% Complete (November 2024)
+**Status**: 🚧 90% Complete (November 2024)
+
+**Recent Updates (Nov 2024)**:
+- Implemented workspace-based auto-hibernation that respects workspace settings
+- Auto-hibernation now checks if hibernation is enabled per workspace
+- Custom idle time settings from workspace configuration are now respected
+- App instance state properly synchronized during auto-hibernation
 
 ---
 
