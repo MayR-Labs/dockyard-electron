@@ -31,6 +31,7 @@ export interface App {
   name: string;
   url: string;
   icon?: string; // Path or URL to icon
+  description?: string; // Optional description of the app
   customCSS?: string;
   customJS?: string;
   userAgent?: string;
