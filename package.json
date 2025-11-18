@@ -17,7 +17,8 @@
     "publish": "npm run build && electron-forge publish",
     "format": "prettier --write 'src/**/*.{js,ts,jsx,tsx,css,scss,html,json,md}'",
     "lint": "eslint src/",
-    "lint:fix": "eslint src/ --fix"
+    "lint:fix": "eslint src/ --fix",
+    "popular-apps:organize": "node scripts/organize-popular-apps.js"
   },
   "repository": {
     "type": "git",

@@ -753,6 +753,14 @@ export const POPULAR_APPS: PopularApp[] = [
     ['Blogging & Writing', 'Focus & Productivity']
   ),
 
+  atlassianApp(
+    'Bitbucket',
+    'https://bitbucket.org',
+    'https://bitbucket.org/favicon.ico',
+    'Git-based source control with built-in CI and code reviews.',
+    ['IDE & Coding Resources']
+  ),
+
   // Atlassian Suite
   atlassianApp(
     'Confluence',
@@ -771,23 +779,6 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   atlassianApp(
-    'Bitbucket',
-    'https://bitbucket.org',
-    'https://bitbucket.org/favicon.ico',
-    'Git-based source control with built-in CI and code reviews.',
-    ['IDE & Coding Resources']
-  ),
-
-  atlassianApp(
-    'Trello',
-    'https://trello.com',
-    'https://trello.com/favicon.ico',
-    'Visual kanban boards for managing tasks and roadmaps.',
-    ['Task Management', 'Product Management'],
-    [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
-  ),
-
-  atlassianApp(
     'Opsgenie',
     'https://www.atlassian.com/software/opsgenie',
     'https://wac-cdn.atlassian.com/assets/img/favicons/atlassian/favicon.png',
@@ -803,6 +794,23 @@ export const POPULAR_APPS: PopularApp[] = [
     ['Customer Support', 'Administration']
   ),
 
+  atlassianApp(
+    'Trello',
+    'https://trello.com',
+    'https://trello.com/favicon.ico',
+    'Visual kanban boards for managing tasks and roadmaps.',
+    ['Task Management', 'Product Management'],
+    [APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+  ),
+
+  laravelApp(
+    'Larajobs',
+    'https://larajobs.com',
+    'https://larajobs.com/favicon.ico',
+    'Job board dedicated to Laravel developers and teams.',
+    ['Misc']
+  ),
+
   // Laravel Suite
   laravelApp(
     'Laravel',
@@ -810,22 +818,6 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://laravel.com/img/favicon/favicon.ico',
     'Full-stack PHP framework with expressive syntax and tooling.',
     ['IDE & Coding Resources', 'Docs']
-  ),
-
-  laravelApp(
-    'Laravel Forge',
-    'https://forge.laravel.com',
-    'https://forge.laravel.com/favicon.ico',
-    'Server provisioning and deployment platform tailored for Laravel.',
-    ['Hosting', 'Cloud']
-  ),
-
-  laravelApp(
-    'Laravel Vapor',
-    'https://vapor.laravel.com',
-    'https://vapor.laravel.com/favicon.ico',
-    'Serverless deployment platform powered by AWS for Laravel apps.',
-    ['Cloud']
   ),
 
   laravelApp(
@@ -837,27 +829,11 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   laravelApp(
-    'Laravel Nova',
-    'https://nova.laravel.com',
-    'https://nova.laravel.com/favicon.ico',
-    'Beautiful administration panel for Laravel applications.',
-    ['Administration', 'Docs']
-  ),
-
-  laravelApp(
-    'Nightwatch',
-    'https://nightwatch.laravel.com',
-    'https://nightwatch.laravel.com/favicon.ico',
-    'Server monitoring and alerting tailored to Laravel workloads.',
-    ['Administration', 'Docs']
-  ),
-
-  laravelApp(
-    'Larajobs',
-    'https://larajobs.com',
-    'https://larajobs.com/favicon.ico',
-    'Job board dedicated to Laravel developers and teams.',
-    ['Misc']
+    'Laravel Forge',
+    'https://forge.laravel.com',
+    'https://forge.laravel.com/favicon.ico',
+    'Server provisioning and deployment platform tailored for Laravel.',
+    ['Hosting', 'Cloud']
   ),
 
   laravelApp(
@@ -868,338 +844,28 @@ export const POPULAR_APPS: PopularApp[] = [
     ['Blogging & Writing']
   ),
 
-  // General Apps
-  // Cloud & Hosting
-  popularApp(
-    'Amazon Web Services',
-    'https://aws.amazon.com',
-    'https://a0.awsstatic.com/libra-css/images/site/fav/favicon.ico',
-    'Comprehensive cloud platform for compute, storage, AI, and DevOps.',
-    ['Cloud', 'Hosting']
+  laravelApp(
+    'Laravel Nova',
+    'https://nova.laravel.com',
+    'https://nova.laravel.com/favicon.ico',
+    'Beautiful administration panel for Laravel applications.',
+    ['Administration', 'Docs']
   ),
 
-  popularApp(
-    'Cloudflare',
-    'https://www.cloudflare.com',
-    'https://www.cloudflare.com/favicon.ico',
-    'Security, performance, and developer platform for the modern web.',
-    ['Cloud', 'Hosting']
+  laravelApp(
+    'Laravel Vapor',
+    'https://vapor.laravel.com',
+    'https://vapor.laravel.com/favicon.ico',
+    'Serverless deployment platform powered by AWS for Laravel apps.',
+    ['Cloud']
   ),
 
-  popularApp(
-    'Cloudinary',
-    'https://cloudinary.com',
-    'https://cloudinary.com/favicon.ico',
-    'Media pipeline for storing, optimizing, and delivering images and video.',
-    ['Cloud', 'Design Suites']
-  ),
-
-  popularApp(
-    'Cloudways',
-    'https://www.cloudways.com',
-    'https://www.cloudways.com/favicon.ico',
-    'Managed cloud hosting for PHP, WordPress, and modern stacks.',
-    ['Cloud', 'Hosting']
-  ),
-
-  popularApp(
-    'Fly.io',
-    'https://fly.io',
-    'https://fly.io/favicon.ico',
-    'Run full-stack apps close to users with global containers.',
-    ['Cloud', 'Hosting']
-  ),
-
-  popularApp(
-    'Go54',
-    'https://go54.com',
-    'https://go54.com/favicon.ico',
-    'African cloud platform for app hosting, databases, and dev tools.',
-    ['Cloud', 'Hosting']
-  ),
-
-  popularApp(
-    'GoDaddy',
-    'https://www.godaddy.com',
-    'https://www.godaddy.com/favicon.ico',
-    'Domains, DNS, and hosting for small businesses.',
-    ['Hosting']
-  ),
-
-  popularApp(
-    'Hetzner',
-    'https://www.hetzner.com',
-    'https://www.hetzner.com/favicon.ico',
-    'European data centers delivering dedicated and cloud servers.',
-    ['Hosting', 'Cloud']
-  ),
-
-  popularApp(
-    'Hostinger',
-    'https://www.hostinger.com',
-    'https://www.hostinger.com/favicon.ico',
-    'Affordable shared, VPS, and cloud hosting for global teams.',
-    ['Hosting']
-  ),
-
-  popularApp(
-    'Namecheap',
-    'https://www.namecheap.com',
-    'https://www.namecheap.com/favicon.ico',
-    'Domain registrar with managed WordPress and VPS hosting.',
-    ['Hosting']
-  ),
-
-  popularApp(
-    'Railway',
-    'https://railway.app',
-    'https://railway.app/favicon.ico',
-    'Deploy containers, databases, and workers with instant previews.',
-    ['Cloud', 'Hosting']
-  ),
-
-  popularApp(
-    'Render',
-    'https://render.com',
-    'https://render.com/favicon.ico',
-    'Unified cloud to host web services, cron jobs, and static sites.',
-    ['Cloud', 'Hosting']
-  ),
-
-  popularApp(
-    'Scaleway',
-    'https://www.scaleway.com',
-    'https://www.scaleway.com/favicon.ico',
-    'European cloud provider for VMs, Kubernetes, and storage.',
-    ['Cloud', 'Hosting']
-  ),
-
-  popularApp(
-    'Surge',
-    'https://surge.sh',
-    'https://surge.sh/favicon.ico',
-    'Static web publishing with a single command.',
-    ['Hosting']
-  ),
-
-  popularApp(
-    'n8n',
-    'https://n8n.io',
-    'https://n8n.io/favicon.ico',
-    'Workflow automation platform that runs self-hosted or in the cloud.',
-    ['Cloud', 'Focus & Productivity']
-  ),
-
-  // Payments
-  popularApp(
-    'Paystack',
-    'https://paystack.com',
-    'https://paystack.com/favicon.ico',
-    'Modern payments infrastructure for African businesses.',
-    ['Payments']
-  ),
-
-  popularApp(
-    'Flutterwave',
-    'https://flutterwave.com',
-    'https://flutterwave.com/favicon.ico',
-    'Collect payments globally via cards, transfers, and wallets.',
-    ['Payments']
-  ),
-
-  popularApp(
-    'Monnify',
-    'https://monnify.com',
-    'https://monnify.com/favicon.ico',
-    'Unified APIs for accepting and reconciling payments in Africa.',
-    ['Payments']
-  ),
-
-  // Design & Creative Utilities
-  popularApp(
-    'Checklist Design',
-    'https://www.checklist.design',
-    'https://www.checklist.design/favicon.ico',
-    'Practical UX checklists covering flows, content, and visuals.',
-    ['Design Suites', 'Docs']
-  ),
-
-  popularApp(
-    'Coolors',
-    'https://coolors.co',
-    'https://coolors.co/assets/img/favicon.png',
-    'Generate, refine, and save color palettes collaboratively.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Designstripe',
-    'https://designstripe.com',
-    'https://designstripe.com/favicon.ico',
-    'Customizable illustrations and scenes for marketing assets.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Getwaves',
-    'https://getwaves.io',
-    'https://getwaves.io/static/favicon.png',
-    'Generate organic SVG wave backgrounds for hero sections.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Haikei',
-    'https://haikei.app',
-    'https://haikei.app/favicon.ico',
-    'Procedural SVG generators for blobs, waves, and gradients.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Icons8',
-    'https://icons8.com',
-    'https://icons8.com/favicon.ico',
-    'Curated icon, illustration, and photo packs.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Iconfinder',
-    'https://www.iconfinder.com',
-    'https://www.iconfinder.com/favicon.ico',
-    'Marketplace for millions of vector icons.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'ICO Convert',
-    'https://icoconvert.com',
-    'https://icoconvert.com/favicon.ico',
-    'Convert images into multi-size ICO sets for apps.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Lorem Picsum',
-    'https://picsum.photos',
-    'https://picsum.photos/favicon.ico',
-    'Random placeholder photos for mockups and prototypes.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'MakeTintsAndShades',
-    'https://maketintsandshades.com',
-    'https://maketintsandshades.com/favicon.ico',
-    'Quickly derive tint and shade scales from a single color.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'MockuuPhone',
-    'https://mockuuphone.com',
-    'https://mockuuphone.com/favicon.ico',
-    'Device mockups for showcasing mobile interfaces.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Picular',
-    'https://picular.co',
-    'https://picular.co/favicon.ico',
-    'Search engine that returns colors inspired by keywords.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Pixmiller',
-    'https://pixmiller.com',
-    'https://pixmiller.com/favicon.ico',
-    'Palette and inspiration explorer for designers.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Realtime Colors',
-    'https://www.realtimecolors.com',
-    'https://www.realtimecolors.com/favicon.ico',
-    'Preview color palettes on live UI templates instantly.',
-    ['Design Suites']
-  ),
-
-  popularApp(
-    'Scrollbar.app',
-    'https://scrollbar.app',
-    'https://scrollbar.app/favicon.ico',
-    'Interactive generator for custom CSS scrollbars.',
-    ['Design Suites', 'IDE & Coding Resources']
-  ),
-
-  // Developer Docs & Registries
-  popularApp(
-    'Dev.to',
-    'https://dev.to',
-    'https://dev.to/favicon.ico',
-    'Developer blogging community for sharing tutorials and tips.',
-    ['Blogging & Writing', 'Docs']
-  ),
-
-  popularApp(
-    'HTML-CSS-JS',
-    'https://html-css-js.com',
-    'https://html-css-js.com/favicon.ico',
-    'Reference snippets for core web technologies and generators.',
-    ['Docs', 'IDE & Coding Resources']
-  ),
-
-  popularApp(
-    'Regex101',
-    'https://regex101.com',
-    'https://regex101.com/favicon.ico',
-    'Real-time regex debugger with explanations and libraries.',
-    ['IDE & Coding Resources', 'Docs']
-  ),
-
-  popularApp(
-    'Composer',
-    'https://getcomposer.org',
-    'https://getcomposer.org/favicon.ico',
-    'Dependency manager for PHP with searchable package docs.',
-    ['IDE & Coding Resources', 'Docs']
-  ),
-
-  popularApp(
-    'npm',
-    'https://www.npmjs.com',
-    'https://www.npmjs.com/favicon.ico',
-    'JavaScript package registry and documentation hub.',
-    ['IDE & Coding Resources']
-  ),
-
-  popularApp(
-    'pub.dev',
-    'https://pub.dev',
-    'https://pub.dev/favicon.ico',
-    'Dart and Flutter package index with API docs.',
-    ['IDE & Coding Resources', 'Docs']
-  ),
-
-  popularApp(
-    'W3Schools',
-    'https://www.w3schools.com',
-    'https://www.w3schools.com/favicon.ico',
-    'Interactive tutorials covering core web standards.',
-    ['Docs', 'Educational']
-  ),
-
-  // Communities & Media
-  popularApp(
-    'TikTok',
-    'https://www.tiktok.com',
-    'https://www.tiktok.com/favicon.ico',
-    'Short-form video platform for discovery and marketing.',
-    ['Messaging & Social', 'Streaming Platforms']
+  laravelApp(
+    'Nightwatch',
+    'https://nightwatch.laravel.com',
+    'https://nightwatch.laravel.com/favicon.ico',
+    'Server monitoring and alerting tailored to Laravel workloads.',
+    ['Administration', 'Docs']
   ),
 
   popularApp(
@@ -1272,6 +938,16 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://www.amazon.com/favicon.ico',
     'Amazon marketplace management',
     ['eCommerce', 'Administration']
+  ),
+
+  // General Apps
+
+  popularApp(
+    'Amazon Web Services',
+    'https://aws.amazon.com',
+    'https://a0.awsstatic.com/libra-css/images/site/fav/favicon.ico',
+    'Comprehensive cloud platform for compute, storage, AI, and DevOps.',
+    ['Cloud', 'Hosting']
   ),
 
   popularApp(
@@ -1541,6 +1217,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Checklist Design',
+    'https://www.checklist.design',
+    'https://www.checklist.design/favicon.ico',
+    'Practical UX checklists covering flows, content, and visuals.',
+    ['Design Suites', 'Docs']
+  ),
+
+  popularApp(
     'CircleCI',
     'https://circleci.com',
     'https://circleci.com/favicon.ico',
@@ -1582,11 +1266,35 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Cloudflare',
+    'https://www.cloudflare.com',
+    'https://www.cloudflare.com/favicon.ico',
+    'Security, performance, and developer platform for the modern web.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
     'CloudHQ',
     'https://www.cloudhq.net',
     'https://www.cloudhq.net/favicon.ico',
     'Cloud synchronization and productivity',
     ['Email', 'Cloud Storage']
+  ),
+
+  popularApp(
+    'Cloudinary',
+    'https://cloudinary.com',
+    'https://cloudinary.com/favicon.ico',
+    'Media pipeline for storing, optimizing, and delivering images and video.',
+    ['Cloud', 'Design Suites']
+  ),
+
+  popularApp(
+    'Cloudways',
+    'https://www.cloudways.com',
+    'https://www.cloudways.com/favicon.ico',
+    'Managed cloud hosting for PHP, WordPress, and modern stacks.',
+    ['Cloud', 'Hosting']
   ),
 
   popularApp(
@@ -1670,6 +1378,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Composer',
+    'https://getcomposer.org',
+    'https://getcomposer.org/favicon.ico',
+    'Dependency manager for PHP with searchable package docs.',
+    ['IDE & Coding Resources', 'Docs']
+  ),
+
+  popularApp(
     'Constant Contact',
     'https://www.constantcontact.com',
     'https://www.constantcontact.com/favicon.ico',
@@ -1683,6 +1399,14 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://convertkit.com/favicon.ico',
     'Email marketing for creators',
     ['Advertising & Marketing']
+  ),
+
+  popularApp(
+    'Coolors',
+    'https://coolors.co',
+    'https://coolors.co/assets/img/favicon.png',
+    'Generate, refine, and save color palettes collaboratively.',
+    ['Design Suites']
   ),
 
   popularApp(
@@ -1755,6 +1479,22 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://www.deepseek.com/favicon.ico',
     'AI search and research assistant',
     ['Artificial Intelligence']
+  ),
+
+  popularApp(
+    'Designstripe',
+    'https://designstripe.com',
+    'https://designstripe.com/favicon.ico',
+    'Customizable illustrations and scenes for marketing assets.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Dev.to',
+    'https://dev.to',
+    'https://dev.to/favicon.ico',
+    'Developer blogging community for sharing tutorials and tips.',
+    ['Blogging & Writing', 'Docs']
   ),
 
   popularApp(
@@ -1934,6 +1674,22 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Flutterwave',
+    'https://flutterwave.com',
+    'https://flutterwave.com/favicon.ico',
+    'Collect payments globally via cards, transfers, and wallets.',
+    ['Payments']
+  ),
+
+  popularApp(
+    'Fly.io',
+    'https://fly.io',
+    'https://fly.io/favicon.ico',
+    'Run full-stack apps close to users with global containers.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
     'Foleon',
     'https://www.foleon.com',
     'https://www.foleon.com/favicon.ico',
@@ -1982,6 +1738,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Getwaves',
+    'https://getwaves.io',
+    'https://getwaves.io/static/favicon.png',
+    'Generate organic SVG wave backgrounds for hero sections.',
+    ['Design Suites']
+  ),
+
+  popularApp(
     'Ghost',
     'https://ghost.org',
     'https://ghost.org/favicon.ico',
@@ -2027,6 +1791,22 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://gleam.io/favicon.ico',
     'Competitions and marketing apps',
     ['Advertising & Marketing']
+  ),
+
+  popularApp(
+    'Go54',
+    'https://go54.com',
+    'https://go54.com/favicon.ico',
+    'African cloud platform for app hosting, databases, and dev tools.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'GoDaddy',
+    'https://www.godaddy.com',
+    'https://www.godaddy.com/favicon.ico',
+    'Domains, DNS, and hosting for small businesses.',
+    ['Hosting']
   ),
 
   popularApp(
@@ -2079,6 +1859,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Haikei',
+    'https://haikei.app',
+    'https://haikei.app/favicon.ico',
+    'Procedural SVG generators for blobs, waves, and gradients.',
+    ['Design Suites']
+  ),
+
+  popularApp(
     'Heap',
     'https://heap.io',
     'https://heap.io/favicon.ico',
@@ -2103,11 +1891,27 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Hetzner',
+    'https://www.hetzner.com',
+    'https://www.hetzner.com/favicon.ico',
+    'European data centers delivering dedicated and cloud servers.',
+    ['Hosting', 'Cloud']
+  ),
+
+  popularApp(
     'Hootsuite',
     'https://hootsuite.com',
     'https://hootsuite.com/favicon.ico',
     'Social media management dashboard',
     ['Advertising & Marketing']
+  ),
+
+  popularApp(
+    'Hostinger',
+    'https://www.hostinger.com',
+    'https://www.hostinger.com/favicon.ico',
+    'Affordable shared, VPS, and cloud hosting for global teams.',
+    ['Hosting']
   ),
 
   popularApp(
@@ -2127,6 +1931,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'HTML-CSS-JS',
+    'https://html-css-js.com',
+    'https://html-css-js.com/favicon.ico',
+    'Reference snippets for core web technologies and generators.',
+    ['Docs', 'IDE & Coding Resources']
+  ),
+
+  popularApp(
     'HubSpot',
     'https://www.hubspot.com',
     'https://www.hubspot.com/hubfs/HubSpot_Logos/HubSpot-Inversed-Favicon.png',
@@ -2140,6 +1952,30 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://www.hushmail.com/favicon.ico',
     'Encrypted email service',
     ['Email']
+  ),
+
+  popularApp(
+    'ICO Convert',
+    'https://icoconvert.com',
+    'https://icoconvert.com/favicon.ico',
+    'Convert images into multi-size ICO sets for apps.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Iconfinder',
+    'https://www.iconfinder.com',
+    'https://www.iconfinder.com/favicon.ico',
+    'Marketplace for millions of vector icons.',
+    ['Design Suites']
+  ),
+
+  popularApp(
+    'Icons8',
+    'https://icons8.com',
+    'https://icons8.com/favicon.ico',
+    'Curated icon, illustration, and photo packs.',
+    ['Design Suites']
   ),
 
   popularApp(
@@ -2336,6 +2172,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Lorem Picsum',
+    'https://picsum.photos',
+    'https://picsum.photos/favicon.ico',
+    'Random placeholder photos for mockups and prototypes.',
+    ['Design Suites']
+  ),
+
+  popularApp(
     'Lumo',
     'https://lumo.ai',
     'https://lumo.ai/favicon.ico',
@@ -2405,6 +2249,14 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://mailshake.com/favicon.ico',
     'Cold email outreach platform',
     ['Advertising & Marketing']
+  ),
+
+  popularApp(
+    'MakeTintsAndShades',
+    'https://maketintsandshades.com',
+    'https://maketintsandshades.com/favicon.ico',
+    'Quickly derive tint and shade scales from a single color.',
+    ['Design Suites']
   ),
 
   popularApp(
@@ -2505,6 +2357,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'MockuuPhone',
+    'https://mockuuphone.com',
+    'https://mockuuphone.com/favicon.ico',
+    'Device mockups for showcasing mobile interfaces.',
+    ['Design Suites']
+  ),
+
+  popularApp(
     'Mode',
     'https://mode.com',
     'https://mode.com/favicon.ico',
@@ -2522,6 +2382,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Monnify',
+    'https://monnify.com',
+    'https://monnify.com/favicon.ico',
+    'Unified APIs for accepting and reconciling payments in Africa.',
+    ['Payments']
+  ),
+
+  popularApp(
     'Mural',
     'https://www.mural.co',
     'https://cdn.prod.website-files.com/62e11362da2667ac3d0e6ed5/63f8b1b0585b45a64baf52da_Mural_Favicon_32x32.png',
@@ -2535,6 +2403,22 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://myhomeworkapp.com/favicon.ico',
     'Student planner and homework tracker',
     ['Educational', 'Task Management']
+  ),
+
+  popularApp(
+    'n8n',
+    'https://n8n.io',
+    'https://n8n.io/favicon.ico',
+    'Workflow automation platform that runs self-hosted or in the cloud.',
+    ['Cloud', 'Focus & Productivity']
+  ),
+
+  popularApp(
+    'Namecheap',
+    'https://www.namecheap.com',
+    'https://www.namecheap.com/favicon.ico',
+    'Domain registrar with managed WordPress and VPS hosting.',
+    ['Hosting']
   ),
 
   popularApp(
@@ -2572,6 +2456,14 @@ export const POPULAR_APPS: PopularApp[] = [
     'All-in-one workspace for notes, tasks, wikis, and databases',
     ['Notes & Whiteboards', 'Task Management', 'Focus & Productivity'],
     [APP_COLLECTIONS.ARTICLE_PUBLISHING, APP_COLLECTIONS.TEAM_PRODUCTIVITY]
+  ),
+
+  popularApp(
+    'npm',
+    'https://www.npmjs.com',
+    'https://www.npmjs.com/favicon.ico',
+    'JavaScript package registry and documentation hub.',
+    ['IDE & Coding Resources']
   ),
 
   popularApp(
@@ -2663,6 +2555,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Paystack',
+    'https://paystack.com',
+    'https://paystack.com/favicon.ico',
+    'Modern payments infrastructure for African businesses.',
+    ['Payments']
+  ),
+
+  popularApp(
     'Periscope Data',
     'https://www.periscopedata.com',
     'https://www.periscopedata.com/favicon.ico',
@@ -2679,6 +2579,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Picular',
+    'https://picular.co',
+    'https://picular.co/favicon.ico',
+    'Search engine that returns colors inspired by keywords.',
+    ['Design Suites']
+  ),
+
+  popularApp(
     'Pingdom',
     'https://www.pingdom.com',
     'https://www.pingdom.com/favicon.ico',
@@ -2692,6 +2600,14 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://www.pipedrive.com/favicon.ico',
     'Sales CRM and pipeline management',
     ['Customer Support', 'Administration']
+  ),
+
+  popularApp(
+    'Pixmiller',
+    'https://pixmiller.com',
+    'https://pixmiller.com/favicon.ico',
+    'Palette and inspiration explorer for designers.',
+    ['Design Suites']
   ),
 
   popularApp(
@@ -2763,6 +2679,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'pub.dev',
+    'https://pub.dev',
+    'https://pub.dev/favicon.ico',
+    'Dart and Flutter package index with API docs.',
+    ['IDE & Coding Resources', 'Docs']
+  ),
+
+  popularApp(
     'QuickBooks Online',
     'https://quickbooks.intuit.com',
     'https://quickbooks.intuit.com/favicon.ico',
@@ -2779,6 +2703,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Railway',
+    'https://railway.app',
+    'https://railway.app/favicon.ico',
+    'Deploy containers, databases, and workers with instant previews.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
     'RainLoop',
     'https://www.rainloop.net',
     'https://www.rainloop.net/favicon.ico',
@@ -2787,11 +2719,35 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Realtime Colors',
+    'https://www.realtimecolors.com',
+    'https://www.realtimecolors.com/favicon.ico',
+    'Preview color palettes on live UI templates instantly.',
+    ['Design Suites']
+  ),
+
+  popularApp(
     'Reddit',
     'https://www.reddit.com',
     'https://www.redditstatic.com/desktop2x/img/favicon/favicon-96x96.png',
     'Social news aggregation and discussion',
     ['Messaging & Social']
+  ),
+
+  popularApp(
+    'Regex101',
+    'https://regex101.com',
+    'https://regex101.com/favicon.ico',
+    'Real-time regex debugger with explanations and libraries.',
+    ['IDE & Coding Resources', 'Docs']
+  ),
+
+  popularApp(
+    'Render',
+    'https://render.com',
+    'https://render.com/favicon.ico',
+    'Unified cloud to host web services, cron jobs, and static sites.',
+    ['Cloud', 'Hosting']
   ),
 
   popularApp(
@@ -2856,6 +2812,22 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://www.satismeter.com/favicon.ico',
     'Customer satisfaction surveys',
     ['Customer Support']
+  ),
+
+  popularApp(
+    'Scaleway',
+    'https://www.scaleway.com',
+    'https://www.scaleway.com/favicon.ico',
+    'European cloud provider for VMs, Kubernetes, and storage.',
+    ['Cloud', 'Hosting']
+  ),
+
+  popularApp(
+    'Scrollbar.app',
+    'https://scrollbar.app',
+    'https://scrollbar.app/favicon.ico',
+    'Interactive generator for custom CSS scrollbars.',
+    ['Design Suites', 'IDE & Coding Resources']
   ),
 
   popularApp(
@@ -3069,6 +3041,14 @@ export const POPULAR_APPS: PopularApp[] = [
   ),
 
   popularApp(
+    'Surge',
+    'https://surge.sh',
+    'https://surge.sh/favicon.ico',
+    'Static web publishing with a single command.',
+    ['Hosting']
+  ),
+
+  popularApp(
     'Tableau',
     'https://www.tableau.com',
     'https://www.tableau.com/favicon.ico',
@@ -3114,6 +3094,14 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://thinkbuddy.ai/favicon.ico',
     'AI thinking partner',
     ['Artificial Intelligence']
+  ),
+
+  popularApp(
+    'TikTok',
+    'https://www.tiktok.com',
+    'https://www.tiktok.com/favicon.ico',
+    'Short-form video platform for discovery and marketing.',
+    ['Messaging & Social', 'Streaming Platforms']
   ),
 
   popularApp(
@@ -3210,6 +3198,14 @@ export const POPULAR_APPS: PopularApp[] = [
     'https://www.vtiger.com/favicon.ico',
     'Open source CRM',
     ['Customer Support', 'Administration']
+  ),
+
+  popularApp(
+    'W3Schools',
+    'https://www.w3schools.com',
+    'https://www.w3schools.com/favicon.ico',
+    'Interactive tutorials covering core web standards.',
+    ['Docs', 'Educational']
   ),
 
   popularApp(
