@@ -1,5 +1,6 @@
 import { app, BrowserView, BrowserWindow, session } from 'electron';
-import { App, AppInstance } from '../shared/types/app';
+import { App, AppInstance, Workspace } from '../shared/types';
+import { StoreManager } from './store-manager';
 
 interface BrowserViewEntry {
   view: BrowserView;
@@ -18,8 +19,10 @@ export class BrowserViewManager {
   private mainWindow: BrowserWindow | null = null;
   private activeViewId: string | null = null;
   private hibernationCheckInterval: NodeJS.Timeout | null = null;
+  private storeManager: StoreManager | null = null;
 
-  constructor() {
+  constructor(storeManager?: StoreManager) {
+    this.storeManager = storeManager || null;
     // Start hibernation check (every minute)
     this.startHibernationCheck();
   }
@@ -480,19 +483,60 @@ export class BrowserViewManager {
   private startHibernationCheck(): void {
     // Check every minute for idle apps
     this.hibernationCheckInterval = setInterval(() => {
-      const now = Date.now();
-      const idleThresholdMs = 15 * 60 * 1000; // 15 minutes default
-
-      this.views.forEach((entry, viewId) => {
-        const idleTime = now - entry.lastActive;
-
-        // Hibernate if idle and not active
-        if (idleTime > idleThresholdMs && this.activeViewId !== viewId) {
-          console.log(`Auto-hibernating idle view: ${viewId}`);
-          this.hibernateView(entry.appId, entry.instanceId);
-        }
-      });
+      this.performHibernationCheck();
     }, 60 * 1000); // Check every minute
+  }
+
+  /**
+   * Perform hibernation check for all views
+   */
+  private performHibernationCheck(): void {
+    if (!this.storeManager) {
+      return; // Cannot perform check without store manager
+    }
+
+    const now = Date.now();
+    const appsStore = this.storeManager.getAppsStore();
+    const workspacesStore = this.storeManager.getWorkspacesStore();
+    const apps = appsStore.get('apps', []);
+    const workspaces = workspacesStore.get('workspaces', []);
+
+    this.views.forEach((entry, viewId) => {
+      // Skip if this is the active view
+      if (this.activeViewId === viewId) {
+        return;
+      }
+
+      // Find the app and its workspace
+      const app = apps.find((a: App) => a.id === entry.appId);
+      if (!app) {
+        return;
+      }
+
+      const workspace = workspaces.find((w: Workspace) => w.id === app.workspaceId);
+      if (!workspace) {
+        return;
+      }
+
+      // Check if hibernation is enabled for this workspace
+      if (!workspace.hibernation?.enabled) {
+        return;
+      }
+
+      // Get idle threshold from workspace settings (default to 15 minutes)
+      const idleTimeMinutes = workspace.hibernation?.idleTimeMinutes || 15;
+      const idleThresholdMs = idleTimeMinutes * 60 * 1000;
+
+      const idleTime = now - entry.lastActive;
+
+      // Hibernate if idle time exceeds threshold
+      if (idleTime > idleThresholdMs) {
+        console.log(
+          `Auto-hibernating idle view: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
+        );
+        this.hibernateView(entry.appId, entry.instanceId);
+      }
+    });
   }
 
   /**

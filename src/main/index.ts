@@ -49,10 +49,10 @@ async function initialize(): Promise<void> {
   storeManager.setCurrentProfile(profileName);
 
   // Initialize browser view manager (keeping for compatibility)
-  browserViewManager = new BrowserViewManager();
+  browserViewManager = new BrowserViewManager(storeManager);
 
   // Initialize webview manager (new)
-  webViewManager = new WebViewManager();
+  webViewManager = new WebViewManager(storeManager);
 
   // Initialize window manager
   windowManager = new WindowManager();
