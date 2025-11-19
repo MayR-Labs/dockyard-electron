@@ -252,18 +252,23 @@ function App() {
     }
   };
 
-  const handleHibernateAppRequest = async (appId: string, instanceId?: string) => {
-    const targetInstanceId = getInstanceId(appId, instanceId);
-    if (!targetInstanceId) return;
+  const handleHibernateAppRequest = useCallback(
+    async (appId: string, instanceId?: string) => {
+      console.log('Then handleHibernateAppRequest');
 
-    try {
-      await hibernateApp(appId, targetInstanceId);
-    } catch (error) {
-      console.error('Failed to hibernate app instance', error);
-    } finally {
-      setAppAwakeState(appId, false);
-    }
-  };
+      const targetInstanceId = getInstanceId(appId, instanceId);
+      if (!targetInstanceId) return;
+
+      try {
+        await hibernateApp(appId, targetInstanceId);
+      } catch (error) {
+        console.error('Failed to hibernate app instance', error);
+      } finally {
+        setAppAwakeState(appId, false);
+      }
+    },
+    [getInstanceId, hibernateApp]
+  );
 
   const handleToggleDockyardDevTools = () => {
     if (!window.dockyard?.window?.toggleDevTools) {
@@ -286,12 +291,25 @@ function App() {
       });
     };
 
+    const handleAppHibernateRequest = (...args: unknown[]) => {
+      console.log('Starting handleAppHibernateRequest');
+
+      const [payload] = args as [{ appId?: string; instanceId?: string }?];
+      if (!payload?.appId) {
+        return;
+      }
+
+      handleHibernateAppRequest(payload.appId, payload.instanceId);
+    };
+
     window.dockyard.on(IPC_EVENTS.APP_UPDATED, handleAppUpdated);
+    window.dockyard.on(IPC_EVENTS.APP_HIBERNATE_REQUEST, handleAppHibernateRequest);
 
     return () => {
       window.dockyard.off(IPC_EVENTS.APP_UPDATED, handleAppUpdated);
+      window.dockyard.off(IPC_EVENTS.APP_HIBERNATE_REQUEST, handleAppHibernateRequest);
     };
-  }, [loadApps]);
+  }, [handleHibernateAppRequest, loadApps]);
 
   useEffect(() => {
     if (!window.dockyard?.on || !window.dockyard?.off || !window.dockyard?.webview) {

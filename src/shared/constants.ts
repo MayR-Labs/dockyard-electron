@@ -86,6 +86,7 @@ export const IPC_CHANNELS = {
 export const IPC_EVENTS = {
   WORKSPACE_CHANGED: 'workspace-changed',
   APP_UPDATED: 'app-updated',
+  APP_HIBERNATE_REQUEST: 'app-hibernate-request',
   NOTIFICATION: 'notification',
   SHORTCUT_RELOAD: 'shortcut:reload',
   SHORTCUT_FORCE_RELOAD: 'shortcut:force-reload',

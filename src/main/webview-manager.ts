@@ -428,25 +428,11 @@ export class WebViewManager {
 
       if (idleTime > idleThresholdMs) {
         console.log(
-          `Auto-hibernating idle webview: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
+          `Requesting hibernation for idle webview: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
         );
 
-        const webContents = this.getWebContents(entry.appId, entry.instanceId);
-        if (webContents && !webContents.isDestroyed()) {
-          try {
-            const destroyable = webContents as WebContents & { destroy?: () => void };
-            destroyable.destroy?.();
-          } catch (error) {
-            console.error('Failed to destroy webContents during hibernation', error);
-          }
-        }
-
-        this.views.delete(viewId);
-
-        instance.hibernated = true;
-        instance.lastActive = new Date().toISOString();
-        appsStore.set('apps', apps);
-        this.emitAppUpdated(entry.appId);
+        this.emitAppHibernateRequest(entry.appId, entry.instanceId, idleTimeMinutes);
+        // this.views.delete(viewId);
       }
     });
   }
@@ -498,6 +484,17 @@ export class WebViewManager {
   private emitAppUpdated(appId: string): void {
     BrowserWindow.getAllWindows().forEach((window) => {
       window.webContents.send(IPC_EVENTS.APP_UPDATED, { appId });
+    });
+  }
+
+  private emitAppHibernateRequest(appId: string, instanceId: string, idleTimeMinutes: number): void {
+    BrowserWindow.getAllWindows().forEach((window) => {
+      window.webContents.send(IPC_EVENTS.APP_HIBERNATE_REQUEST, {
+        appId,
+        instanceId,
+        reason: 'idle-timeout',
+        idleTimeMinutes,
+      });
     });
   }
 
