@@ -22,6 +22,10 @@ export const profileAPI = {
     return window.dockyard.profiles.delete(id);
   },
 
+  switch: (id: string): Promise<void> => {
+    return window.dockyard.profiles.switch(id);
+  },
+
   getCurrent: (): Promise<ProfileMetadata | null> => {
     return window.dockyard.profiles.getCurrent();
   },

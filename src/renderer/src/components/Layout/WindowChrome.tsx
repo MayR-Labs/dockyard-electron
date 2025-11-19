@@ -1,5 +1,6 @@
 interface WindowChromeProps {
   currentWorkspace: string;
+  currentProfileName: string;
   onProfileClick: () => void;
   onSearchClick: () => void;
   onWorkspaceSwitchClick: () => void;
@@ -9,6 +10,7 @@ interface WindowChromeProps {
 
 export function WindowChrome({
   currentWorkspace,
+  currentProfileName,
   onProfileClick,
   onSearchClick,
   onWorkspaceSwitchClick,
@@ -24,7 +26,9 @@ export function WindowChrome({
             onClick={onProfileClick}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-800 transition"
           >
-            <span className="text-sm font-medium text-gray-300">Default Profile</span>
+            <span className="text-sm font-medium text-gray-300">
+              {currentProfileName || 'Default Profile'}
+            </span>
             <svg
               className="w-4 h-4 text-gray-400"
               fill="none"

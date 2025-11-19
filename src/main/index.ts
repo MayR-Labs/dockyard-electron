@@ -30,25 +30,34 @@ let browserViewManager: BrowserViewManager;
 let webViewManager: WebViewManager;
 
 // Parse command line arguments for profile selection
-function parseProfileFromArgs(): string {
+function parseProfileFromArgs(): string | null {
   const profileArg = process.argv.find((arg) => arg.startsWith('--profile='));
   if (profileArg) {
     return profileArg.split('=')[1];
   }
-  return 'default';
+  return null;
 }
 
 /**
  * Initialize the application
  */
 async function initialize(): Promise<void> {
-  // Get profile from command line or use default
-  const profileName = parseProfileFromArgs();
-  debugLog('Launching Dockyard with profile:', profileName);
-
   // Initialize store manager
   storeManager = await StoreManager.create();
-  storeManager.setCurrentProfile(profileName);
+
+  const rootStore = storeManager.getRootStore();
+  const cliProfile = parseProfileFromArgs();
+  const defaultProfileId = rootStore.get('defaultProfile', 'default');
+  const lastActiveProfileId = rootStore.get('lastActiveProfile', defaultProfileId);
+  const requestedProfileId = cliProfile || lastActiveProfileId || defaultProfileId;
+
+  const profiles = rootStore.get('profiles', [] as ProfileMetadata[]);
+  const resolvedProfileId =
+    profiles.find((profileEntry: ProfileMetadata) => profileEntry.id === requestedProfileId)?.id ||
+    defaultProfileId;
+
+  storeManager.setCurrentProfile(resolvedProfileId);
+  debugLog('Launching Dockyard with profile:', resolvedProfileId);
 
   // Initialize browser view manager (keeping for compatibility)
   browserViewManager = new BrowserViewManager(storeManager);
@@ -69,12 +78,10 @@ async function initialize(): Promise<void> {
   browserViewManager.setMainWindow(mainWindow);
 
   // Update last accessed time for profile
-  const rootStore = storeManager.getRootStore();
-  rootStore.set('lastActiveProfile', profileName);
+  rootStore.set('lastActiveProfile', resolvedProfileId);
 
-  const profiles = rootStore.get('profiles');
   const currentProfile = profiles.find(
-    (profileEntry: ProfileMetadata) => profileEntry.id === profileName
+    (profileEntry: ProfileMetadata) => profileEntry.id === resolvedProfileId
   );
   if (currentProfile) {
     currentProfile.lastAccessed = new Date().toISOString();

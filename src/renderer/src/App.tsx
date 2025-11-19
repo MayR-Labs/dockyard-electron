@@ -28,10 +28,12 @@ import { SplitWithModal } from './components/Modals/SplitWithModal';
 import { PerformanceDashboard } from './components/DevTools/PerformanceDashboard';
 import { SessionManager } from './components/DevTools/SessionManager';
 import { WorkspaceSettingsModal } from './components/Modals/WorkspaceSettingsModal';
+import { ProfileSwitcherModal } from './components/Modals/ProfileSwitcherModal';
 import { App as AppType } from '../../shared/types/app';
 import { LayoutMode } from '../../shared/types/workspace';
 import { DEFAULTS } from '../../shared/constants';
 import { debugError, debugLog } from '../../shared/utils/debug';
+import { useProfileStore } from './store/profiles';
 
 function App() {
   const {
@@ -45,6 +47,17 @@ function App() {
   const { loadApps, apps, createApp, updateApp, deleteApp, hibernateApp, resumeApp } =
     useAppStore();
   const { loadSettings, settings, updateSettings } = useSettingsStore();
+  const {
+    profiles,
+    currentProfile,
+    loadProfiles,
+    createProfile,
+    deleteProfile,
+    switchProfile,
+    loading: profileLoading,
+    error: profileError,
+    isSwitching: isSwitchingProfile,
+  } = useProfileStore();
 
   const { isBootstrapping } = useAppBootstrap({
     loadWorkspaces,
@@ -54,6 +67,10 @@ function App() {
     activeWorkspaceId,
     setActiveWorkspace,
   });
+
+  useEffect(() => {
+    void loadProfiles();
+  }, [loadProfiles]);
 
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
   const [isAddAppModalOpen, setIsAddAppModalOpen] = useState(false);
@@ -67,12 +84,14 @@ function App() {
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [isWorkspaceSwitcherOpen, setIsWorkspaceSwitcherOpen] = useState(false);
+  const [isProfileSwitcherOpen, setIsProfileSwitcherOpen] = useState(false);
   const [isSplitWithModalOpen, setIsSplitWithModalOpen] = useState(false);
   const [splitWithAppId, setSplitWithAppId] = useState<string | null>(null);
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
   const [customizationAppId, setCustomizationAppId] = useState<string | null>(null);
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('single');
   const [activeAppIds, setActiveAppIds] = useState<string[]>([]);
+  const [pendingProfileName, setPendingProfileName] = useState<string | null>(null);
 
   const selectedApp = useMemo(() => {
     if (!selectedAppId) {
@@ -154,6 +173,7 @@ function App() {
       isPerformanceDashboardOpen ||
       isSessionManagerOpen ||
       isWorkspaceSwitcherOpen ||
+      isProfileSwitcherOpen ||
       isSplitWithModalOpen ||
       appContextMenu !== null ||
       workspaceContextMenu !== null,
@@ -167,6 +187,7 @@ function App() {
       isPerformanceDashboardOpen,
       isSessionManagerOpen,
       isWorkspaceSwitcherOpen,
+      isProfileSwitcherOpen,
       isSplitWithModalOpen,
       appContextMenu,
       workspaceContextMenu,
@@ -343,6 +364,49 @@ function App() {
     });
   }, []);
 
+  const handleCreateProfile = useCallback(
+    async (name: string) => {
+      try {
+        await createProfile(name);
+      } catch (error) {
+        debugError('Failed to create profile', error);
+      }
+    },
+    [createProfile]
+  );
+
+  const handleDeleteProfile = useCallback(
+    async (profileId: string) => {
+      try {
+        await deleteProfile(profileId);
+      } catch (error) {
+        debugError('Failed to delete profile', error);
+      }
+    },
+    [deleteProfile]
+  );
+
+  const handleProfileSelect = useCallback(
+    async (profileId: string) => {
+      if (currentProfile?.id === profileId) {
+        setIsProfileSwitcherOpen(false);
+        return;
+      }
+
+      const targetProfile = profiles.find((profile) => profile.id === profileId);
+      setPendingProfileName(targetProfile?.name ?? null);
+      setIsProfileSwitcherOpen(false);
+
+      try {
+        await switchProfile(profileId);
+      } catch (error) {
+        setPendingProfileName(null);
+        debugError('Failed to switch profile', error);
+      }
+    },
+    [currentProfile, profiles, switchProfile]
+  );
+
   const handleAppContextMenu = useCallback(
     (appId: string, event: MouseEvent) => {
       event.preventDefault();
@@ -432,8 +496,9 @@ function App() {
     <div className="h-screen flex flex-col bg-gray-950 text-white">
       <WindowChrome
         currentWorkspace={activeWorkspace?.name || ''}
-        onProfileClick={() => {}}
-        onSearchClick={() => {}}
+        currentProfileName={currentProfile?.name || 'Default Profile'}
+        onProfileClick={() => setIsProfileSwitcherOpen(true)}
+        onSearchClick={() => setIsWorkspaceSwitcherOpen((prev) => !prev)}
         onWorkspaceSwitchClick={() => setIsWorkspaceSwitcherOpen(true)}
         onWorkspaceContextMenu={handleWorkspaceContextMenu}
         onThemeClick={() => setIsThemeSettingsModalOpen(true)}
@@ -673,6 +738,18 @@ function App() {
         }}
       />
 
+      <ProfileSwitcherModal
+        isOpen={isProfileSwitcherOpen}
+        profiles={profiles}
+        currentProfileId={currentProfile?.id ?? null}
+        isLoading={profileLoading}
+        errorMessage={profileError}
+        onClose={() => setIsProfileSwitcherOpen(false)}
+        onSelectProfile={handleProfileSelect}
+        onCreateProfile={handleCreateProfile}
+        onDeleteProfile={handleDeleteProfile}
+      />
+
       <AppOptionsModal
         isOpen={isAppOptionsVisible}
         app={selectedApp}
@@ -791,6 +868,20 @@ function App() {
             void handleUpdateApp(appId, data);
           }}
         />
+      )}
+
+      {isSwitchingProfile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl px-6 py-5 text-center space-y-3 shadow-2xl shadow-black/30">
+            <p className="text-lg font-semibold text-white">Switching profile…</p>
+            <p className="text-sm text-gray-300">
+              {pendingProfileName
+                ? `Loading ${pendingProfileName} profile`
+                : 'Loading selected profile'}
+            </p>
+            <p className="text-xs text-gray-500">Dockyard will relaunch automatically.</p>
+          </div>
+        </div>
       )}
     </div>
   );
