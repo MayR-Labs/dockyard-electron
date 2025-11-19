@@ -3,12 +3,12 @@
  * Single Responsibility: Handle app-related IPC communications
  */
 
-import { ipcMain } from 'electron';
-import { DEFAULTS, IPC_CHANNELS } from '../../shared/constants';
-import { StoreManager } from '../store-manager';
-import { BrowserViewManager } from '../browser-view-manager';
+import { BrowserWindow, ipcMain } from 'electron';
+import { DEFAULTS, IPC_CHANNELS, IPC_EVENTS } from '../../shared/constants';
 import { App, AppInstance, Workspace } from '../../shared/types';
 import { generateId, getCurrentTimestamp, getPartitionName } from '../../shared/utils';
+import { BrowserViewManager } from '../browser-view-manager';
+import { StoreManager } from '../store-manager';
 
 export class AppHandlers {
   constructor(
@@ -16,6 +16,12 @@ export class AppHandlers {
     private browserViewManager: BrowserViewManager
   ) {
     this.register();
+  }
+
+  private emitAppUpdated(appId?: string): void {
+    BrowserWindow.getAllWindows().forEach((window) => {
+      window.webContents.send(IPC_EVENTS.APP_UPDATED, { appId });
+    });
   }
 
   private register(): void {
@@ -166,6 +172,8 @@ export class AppHandlers {
       apps.push(newApp);
       store.set('apps', apps);
 
+      this.emitAppUpdated(newApp.id);
+
       return newApp;
     });
   }
@@ -202,6 +210,7 @@ export class AppHandlers {
       apps[index] = nextApp;
 
       store.set('apps', apps);
+      this.emitAppUpdated(id);
       return apps[index];
     });
   }
@@ -212,6 +221,7 @@ export class AppHandlers {
       const apps = store.get('apps', []);
       const filtered = apps.filter((a: App) => a.id !== id);
       store.set('apps', filtered);
+      this.emitAppUpdated(id);
     });
   }
 
@@ -234,6 +244,7 @@ export class AppHandlers {
             instance.hibernated = true;
             instance.lastActive = new Date().toISOString();
             store.set('apps', apps);
+            this.emitAppUpdated(appId);
           }
         }
       }
@@ -257,6 +268,7 @@ export class AppHandlers {
           instance.hibernated = false;
           instance.lastActive = new Date().toISOString();
           store.set('apps', apps);
+          this.emitAppUpdated(appId);
         }
       }
     });
@@ -305,6 +317,7 @@ export class AppHandlers {
         app.instances.push(newInstance);
         app.updatedAt = getCurrentTimestamp();
         store.set('apps', apps);
+        this.emitAppUpdated(app.id);
 
         return newInstance;
       }

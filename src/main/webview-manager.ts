@@ -1,5 +1,5 @@
-import { app, session, WebContents, webContents as electronWebContents } from 'electron';
-import { DEFAULTS } from '../shared/constants';
+import { app, BrowserWindow, session, WebContents, webContents as electronWebContents } from 'electron';
+import { DEFAULTS, IPC_EVENTS } from '../shared/constants';
 import { App, Workspace } from '../shared/types';
 import { StoreManager } from './store-manager';
 
@@ -290,11 +290,7 @@ export class WebViewManager {
     await ses.clearCache();
 
     // Clear cookies
-    const cookies = await ses.cookies.get({});
-    for (const cookie of cookies) {
-      const url = `http${cookie.secure ? 's' : ''}://${cookie.domain}${cookie.path}`;
-      await ses.cookies.remove(url, cookie.name);
-    }
+    await ses.clearStorageData({ storages: ['cookies'] });
 
     // Clear storage data
     await ses.clearStorageData();
@@ -411,15 +407,40 @@ export class WebViewManager {
         DEFAULTS.IDLE_TIME_MINUTES;
       const idleThresholdMs = idleTimeMinutes * 60 * 1000;
 
+      const instance = app.instances.find((inst) => inst.id === entry.instanceId);
+      if (!instance) {
+        this.views.delete(viewId);
+        return;
+      }
+
+      if (instance.hibernated) {
+        this.views.delete(viewId);
+        return;
+      }
+
       const idleTime = now - entry.lastActive;
 
-      // Log idle webviews (actual hibernation would need renderer cooperation)
       if (idleTime > idleThresholdMs) {
         console.log(
-          `WebView is idle: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
+          `Auto-hibernating idle webview: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
         );
-        // Note: Hibernation of webviews requires renderer-side implementation
-        // For now, we just log. The renderer can call the hibernate API when needed.
+
+        const webContents = this.getWebContents(entry.appId, entry.instanceId);
+        if (webContents && !webContents.isDestroyed()) {
+          try {
+            const destroyable = webContents as WebContents & { destroy?: () => void };
+            destroyable.destroy?.();
+          } catch (error) {
+            console.error('Failed to destroy webContents during hibernation', error);
+          }
+        }
+
+        this.views.delete(viewId);
+
+        instance.hibernated = true;
+        instance.lastActive = new Date().toISOString();
+        appsStore.set('apps', apps);
+        this.emitAppUpdated(entry.appId);
       }
     });
   }
@@ -466,6 +487,12 @@ export class WebViewManager {
     });
 
     return result;
+  }
+
+  private emitAppUpdated(appId: string): void {
+    BrowserWindow.getAllWindows().forEach((window) => {
+      window.webContents.send(IPC_EVENTS.APP_UPDATED, { appId });
+    });
   }
 
   /**

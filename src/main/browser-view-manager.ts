@@ -1,5 +1,5 @@
 import { app, BrowserView, BrowserWindow, session } from 'electron';
-import { DEFAULTS } from '../shared/constants';
+import { DEFAULTS, IPC_EVENTS } from '../shared/constants';
 import { App, AppInstance, Workspace } from '../shared/types';
 import { StoreManager } from './store-manager';
 
@@ -519,6 +519,11 @@ export class BrowserViewManager {
         return;
       }
 
+      const instance = app.instances.find((inst: AppInstance) => inst.id === entry.instanceId);
+      if (!instance || instance.hibernated) {
+        return;
+      }
+
       const workspaceHibernation = workspace.hibernation ?? {
         enabled: true,
         idleTimeMinutes: DEFAULTS.IDLE_TIME_MINUTES,
@@ -545,12 +550,10 @@ export class BrowserViewManager {
         this.hibernateView(entry.appId, entry.instanceId);
 
         // Update app instance state to reflect hibernation
-        const instance = app.instances.find((inst: AppInstance) => inst.id === entry.instanceId);
-        if (instance) {
-          instance.hibernated = true;
-          instance.lastActive = new Date().toISOString();
-          appsStore.set('apps', apps);
-        }
+        instance.hibernated = true;
+        instance.lastActive = new Date().toISOString();
+        appsStore.set('apps', apps);
+        this.emitAppUpdated(entry.appId);
       }
     });
   }
@@ -596,6 +599,12 @@ export class BrowserViewManager {
     });
 
     return result;
+  }
+
+  private emitAppUpdated(appId: string): void {
+    BrowserWindow.getAllWindows().forEach((window) => {
+      window.webContents.send(IPC_EVENTS.APP_UPDATED, { appId });
+    });
   }
 
   /**
