@@ -1,207 +1,226 @@
-# **Dockyard**
+# Dockyard
 
-_The open-source, privacy-first multi-app workspace for power users._
+> Open, local-first workspace that hosts every web app you care about without handing your data to someone else.
 
-Dockyard is a desktop application that unifies all your favorite web apps into one elegant, customizable workspace. Think of it as your personal command center where Gmail, Slack, Notion, Figma, and any other web tool coexist seamlessly — all while keeping your data local and your sessions isolated.
+Dockyard combines Electron, React, Vite, and TailwindCSS to provide a hacker-friendly alternative to proprietary "multi-messenger" tools. Profiles isolate your data, workspaces group related apps, and BrowserViews load each service with strict sandboxing so you can focus on the work that matters.
 
----
-
-## 🎯 **What is Dockyard?**
-
-Dockyard transforms how you interact with web applications on your desktop. Instead of juggling dozens of browser tabs or using bloated proprietary tools, Dockyard gives you:
-
-- **One unified workspace** for all your web apps
-- **Complete privacy** — no telemetry, no cloud sync, all data stays local
-- **Total customization** — themes, layouts, keyboard shortcuts, even custom CSS/JS per app
-- **Professional features** — multiple instances per app, session isolation, auto-hibernation
-- **Cross-platform support** — works on Windows, macOS, and Linux
-
-Perfect for developers, designers, productivity enthusiasts, and anyone who wants to take back control of their digital workspace.
+- [Philosophy](#philosophy)
+- [Core Concepts](#core-concepts)
+- [Feature Highlights](#feature-highlights)
+- [Architecture & Tech Stack](#architecture--tech-stack)
+- [Security, Privacy & Data](#security-privacy--data)
+- [Getting Started](#getting-started)
+- [Development Workflow](#development-workflow)
+- [Packaging & Distribution](#packaging--distribution)
+- [Release Process](#release-process)
+- [Roadmap Snapshot](#roadmap-snapshot)
+- [Contributing](#contributing)
 
 ---
 
-## ✨ **Key Features**
+## Philosophy
 
-### **🎨 Customization & Theming**
-- Light, dark, and system themes with custom accent colors
-- Glass, solid, or minimal background styles
-- Per-app custom CSS and JavaScript injection
-- Configurable dock positions (top, bottom, left, right)
-- Keyboard shortcuts for everything
+Dockyard exists for creators, developers, and power users who are tired of juggling dozens of tabs and bloated proprietary "productivity" suites. The guiding principles are simple:
 
-### **🚀 Productivity & Performance**
-- Multiple profiles (work, personal, etc.) running simultaneously
-- Workspaces to organize apps by project or context
-- Auto-hibernation to save memory on idle apps
-- Performance monitoring dashboard
-- Multi-app split layouts (tile apps side-by-side)
+1. **Freedom** – run any web tool, tweak every detail, fork the project if you want.
+2. **Flexibility** – the workspace adapts to your habits: profiles, layouts, and themes are yours to define.
+3. **Focus** – hide distractions, hibernate idle apps, and keep context switches intentional.
 
-### **🔐 Privacy & Security**
-- Complete session isolation between apps
-- No telemetry or tracking whatsoever
-- All data stored locally on your machine
-- Open source and auditable
-- Optional shared sessions within workspaces
-
-### **🎛️ Advanced Features**
-- Multiple instances per app (perfect for multiple accounts)
-- Native OS notifications with Do Not Disturb mode
-- Favicon auto-fetching or custom icon upload
-- Per-app zoom controls
-- Built-in app templates for popular services
+Everything runs locally, no telemetry ships anywhere, and you stay in control of your environment.
 
 ---
 
-## 🧠 **Why Choose Dockyard?**
+## Core Concepts
 
-Most "all-in-one" workspace apps like Rambox, Station, or Franz are:
-- **Proprietary** — closed source with unknown data practices
-- **Subscription-based** — pay monthly for basic features
-- **Cloud-dependent** — require accounts and sync your data
-- **Bloated** — packed with features you don't need
-
-**Dockyard is different:**
-- ✅ Completely open source (MIT license)
-- ✅ Free forever, no subscriptions or paywalls
-- ✅ Privacy-first, local-only data storage
-- ✅ Lightweight and fast
-- ✅ Built by developers, for people who value control
+- **Profiles** – complete browser-like sandboxes. Launch multiple Dockyard instances (e.g., `npm start -- --profile=work`) to separate work and personal data with independent stores.
+- **Workspaces** – goal-focused collections of apps ("Design", "Operations", "Research"). They own layout, theme overrides, and hibernation rules.
+- **Apps & Instances** – add curated or custom URLs, duplicate them for multiple accounts, and choose whether each instance shares a workspace partition or keeps a fully isolated session (`persist:app-{appId}-{instanceId}`).
+- **Customization** – drag-to-order docks, place them on any edge, apply light/dark/system themes, change accent colors, and inject custom CSS/JS per app when needed.
+- **Performance** – idle apps auto-hibernate after 15 minutes by default, resume instantly, and expose memory/CPU stats so you know what is consuming resources.
 
 ---
 
-## 🧩 **Tech Stack**
+## Feature Highlights
 
-- **Electron** — desktop shell
-- **Vite + React** — frontend UI
-- **TypeScript** — strong typing for maintainability
-- **electron-store** — local persistence
-- **TailwindCSS** — styling system
-- **Framer Motion** — smooth transitions and animations
+### Workspace & App Management
+- Unlimited profiles, workspaces, and app instances
+- Session isolation with optional workspace-shared partitions
+- BrowserView-based rendering for better performance than `<webview>`
+- Multi-column / split layouts with detachable windows and per-app zoom
+
+### Customisation & UI
+- Light, dark, or system themes plus accent controls and glass/solid backgrounds
+- Configurable docks (top/bottom/left/right) with drag-and-drop ordering
+- Custom icon upload or auto-fetched favicons; per-app CSS/JS overrides
+- Keyboard shortcuts throughout; quick workspace switching is in development
+
+### Productivity & Performance
+- Auto-hibernation per app/workspace, with resumable BrowserViews
+- Performance monitor hooks to inspect memory/CPU per app
+- Workspace-level hibernation, layout presets, and optional Focus/Do Not Disturb modes
+
+### Notifications & Privacy
+- Native OS notifications that can refocus the originating app
+- Notification badges plus global Do Not Disturb toggle
+- Zero telemetry, local JSON storage via `electron-store`, and secure IPC bridges
+
+### Planned / Experimental
+- Automation hooks, quick launcher, local backup/export tooling
+- Plugin API, curated "app store", LAN workspace sharing, advanced theming packs
 
 ---
 
-## 🛠️ **Project Structure**
+## Architecture & Tech Stack
+
+| Layer | Technology | Notes |
+| --- | --- | --- |
+| Desktop shell | Electron 39+ | Cross-platform window management, BrowserViews |
+| Main process | TypeScript + Node.js | Window, profile, and IPC orchestration |
+| Renderer | React 19 + Vite 7 | SPA UI with hot reload |
+| State | Zustand 5 | Lightweight stores for profiles, apps, workspaces, settings |
+| Styling | TailwindCSS 4 + custom CSS | Utility-first theming |
+| Animations | Framer Motion 12 | Smooth transitions |
+| Storage | electron-store 11 | Local JSON persistence per profile |
 
 ```
-dockyard/
- ├─ src/
- │   ├─ main/        # Electron main process
- │   ├─ renderer/    # React UI
- │   ├─ preload/     # Secure IPC bridges
- │   └─ shared/      # Models & utilities
- ├─ docs/            # Documentation
- ├─ assets/
- ├─ package.json
- └─ vite.config.ts
+src/
+├─ main/          # Electron lifecycle, BrowserView management, IPC handlers
+├─ preload/       # contextBridge-exposed APIs with strict allowlists
+├─ renderer/      # React UI, Zustand stores, hooks, components, styles
+└─ shared/        # Types, constants, helpers shared across processes
+assets/icons/     # Cross-platform icon set (ico/icns/png)
+forge.config.js  # Electron Forge makers + GitHub publisher config
+.github/workflows/release.yml  # Release builds for macOS, Linux, Windows
 ```
+
+Key services include `window-manager.ts` for lifecycle, `browser-view-manager.ts` for view placement, and IPC handlers under `src/main/handlers/` to keep domains (profiles, workspaces, apps, settings) isolated and testable.
 
 ---
 
-## 🧩 **Build & Run**
+## Security, Privacy & Data
+
+- `contextIsolation` enabled, `nodeIntegration` disabled, sandbox on.
+- IPC is namespaced (`profile:*`, `workspace:*`, `app:*`) and validated server-side.
+- Each BrowserView receives sanitized URLs, strict partition naming, and optional session clearing utilities.
+- Data lives only on disk via `electron-store`:
+  - macOS: `~/Library/Application Support/dockyard-electron/`
+  - Windows: `%APPDATA%/dockyard-electron/`
+  - Linux: `~/.config/dockyard-electron/`
+- No analytics libraries, trackers, or background network calls beyond the sites you load.
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm
+- Git
+- macOS, Windows, or Linux workstation
+
+### Installation & Local Run
 
 ```bash
-# Clone repo
 git clone https://github.com/MayR-Labs/dockyard-electron.git
 cd dockyard-electron
-
-# Install dependencies
 npm install
 
-# Start in dev mode
+# Development (build main, start Vite dev server, launch Electron)
 npm run dev
 
-# Build app
+# Production build
 npm run build
 
-# Create distributable
+# Package or make distributables for the current platform
+npm run package
 npm run make
 ```
 
----
-
-## 🔧 **Configuration**
-
-Dockyard reads a small set of environment variables during development/build:
-
-- `VITE_API_BASE_URL` – Base URL for the Dockyard API (defaults to `https://dockyard.mayrlabs.com`). Override this if you host the catalog elsewhere or need a staging endpoint. Add it to a `.env` file or export it before running `npm run dev`/`npm run build`.
+### Helpful Scripts
+- `npm run build:main` / `build:renderer` – compile processes independently.
+- `npm start` – build everything then launch Electron in production mode.
+- `npm run make -- --platform=linux --arch=x64` – cross-target builds (requires platform tooling; see Packaging section).
+- Multi-profile launch: `npm start -- --profile=work`.
 
 ---
 
-## 💡 **Project Status & Planning**
+## Development Workflow
 
-Dockyard is actively being developed with a phased approach. For detailed development plans and current progress:
-
-- **[ROADMAP.md](ROADMAP.md)** - Phased development timeline and milestones (Phase 5 Complete - 100%)
-- **[docs/PLAN.md](docs/PLAN.md)** - Technical implementation details and architecture
-- **[docs/FEATURES.md](docs/FEATURES.md)** - Comprehensive feature list
-- **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** - Developer guide and setup instructions
-
-**Current Version**: v0.6.0 (Beta)
-
-**Recent Milestones:**
-- ✅ Phase 1: Core Architecture - Complete
-- ✅ Phase 2: Workspace & App Management - Complete
-- 🚧 Phase 3: Session Management & Performance - 85% Complete
-- ✅ Phase 4: Notifications & Layout - Complete
-- ✅ Phase 5: Theming & Customization - Complete
-
-**Quick Feature Status:**
-- ✅ Multi-profile support with independent instances
-- ✅ Workspace creation and management
-- ✅ Custom app management with URL input
-- ✅ Session isolation and shared session modes
-- ✅ Auto-hibernation and performance monitoring
-- ✅ Native OS notifications with DND mode
-- ✅ Comprehensive theming (light/dark/system with custom colors)
-- ✅ Per-app CSS/JS injection
-- ✅ Multi-app split layouts and tiling
-- ✅ Keyboard shortcuts throughout
+1. **Bootstrapping** – `npm run dev` builds the main process once, watches it, serves renderer via Vite, and launches Electron with `VITE_DEV_SERVER_URL`.
+2. **State & IPC** – shared types live under `src/shared/types`; preload (`src/preload/index.ts`) exposes a strict `window.dockyard` API so renderer stores can call `window.dockyard.workspaces.list()` etc.
+3. **UI Composition** – React components live in feature folders (AppDock, Layout, Modals, ProfilePicker). Zustand stores encapsulate fetch/update logic.
+4. **Debugging** – Renderer DevTools auto-open in dev; main process logs show in the terminal. Use BrowserView-specific DevTools or the dedicated “Dev Mode” view for stubborn apps.
+5. **Data** – Inspect the profile directories listed above if you need to reset or edit JSON manually.
 
 ---
 
-## 📚 **Documentation**
+## Packaging & Distribution
 
-### For Users:
-- **[docs/ABOUT.md](docs/ABOUT.md)** - Philosophy and core concepts
-- **[docs/THEMING.md](docs/THEMING.md)** - Theming and customization guide
-- **[docs/FEATURES.md](docs/FEATURES.md)** - Complete feature list
+Electron Forge is configured in `forge.config.js` to produce installers for every platform:
 
-### For Developers:
-- **[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)** - Setup and development workflow
-- **[docs/PLAN.md](docs/PLAN.md)** - Technical implementation plan
-- **[docs/DESIGN.md](docs/DESIGN.md)** - UI/UX design specifications
-- **[docs/BROWSERVIEW_ARCHITECTURE.md](docs/BROWSERVIEW_ARCHITECTURE.md)** - BrowserView architecture
-- **[docs/BROWSER_DEV_MODE.md](docs/BROWSER_DEV_MODE.md)** - Browser development mode guide
+- **Windows** – `@electron-forge/maker-squirrel` with `assets/icons/icon.ico`.
+- **macOS** – ZIP + DMG (`@electron-forge/maker-zip`, `@electron-forge/maker-dmg`).
+- **Linux** – `.deb` and `.rpm` with icons under `assets/icons/icon.png`.
+- **GitHub Publisher** – Drafts releases via `@electron-forge/publisher-github` (`MayR-Labs/dockyard-electron`).
 
----
+Local packaging commands:
 
-## 💬 **Community & Support**
+```bash
+# Current platform artifacts
+npm run make
 
-Dockyard is open for contributions, discussions, and suggestions:
+# Cross-build examples (host OS tooling required)
+npm run make -- --platform=win32 --arch=x64   # needs Wine + Mono on macOS/Linux
+npm run make -- --platform=linux --arch=x64  # needs dpkg, rpm, fakeroot
 
-- **Issues**: [Report bugs or request features](https://github.com/MayR-Labs/dockyard-electron/issues)
-- **Discussions**: [Share ideas and get help](https://github.com/MayR-Labs/dockyard-electron/discussions)
-- **Contributing**: See ROADMAP.md for current priorities and how to contribute
+# Publish installers + release assets (respects forge config)
+npm run publish
+```
 
----
-
-## ⚖️ **License**
-
-MIT License - free to use, modify, and distribute.
+For Windows builds on macOS/Linux install Wine + Mono; for Linux artifacts install `dpkg`, `rpm`, and `fakeroot` (already handled automatically in CI for Ubuntu runners).
 
 ---
 
-## 🙏 **Acknowledgments**
+## Release Process
 
-Dockyard is built with amazing open-source technologies:
-- [Electron](https://www.electronjs.org/) for the desktop framework
-- [React](https://react.dev/) for the UI
-- [Vite](https://vitejs.dev/) for lightning-fast development
-- [TailwindCSS](https://tailwindcss.com/) for styling
-- [Zustand](https://github.com/pmndrs/zustand) for state management
+Automated release builds live in `.github/workflows/release.yml` and run on macOS, Windows, and Linux:
 
-Special thanks to the open-source community and all contributors who help make Dockyard better.
+1. **Version & changelog** – update `package.json` and any release notes.
+2. **Tag** – `git tag vX.Y.Z && git push origin main --tags` (workflow triggers on `v*` tags). You can also run it manually via *Actions → Release Builds → Run workflow*.
+3. **CI Build** – each OS job runs `npm ci`, installs platform prerequisites, executes `npm run publish`, and uploads installers to a draft release via the GitHub publisher.
+4. **Review artifacts** – wait until all three jobs succeed; download test builds if needed.
+5. **Publish** – edit the draft release on GitHub (add notes, screenshots, etc.) and click **Publish release**. Re-running the workflow for the same tag refreshes binaries.
+
+That is it—no extra secrets beyond the default `GITHUB_TOKEN` are required.
 
 ---
 
-**Built with ❤️ by MayR Labs**
+## Roadmap Snapshot
+
+- ✅ **Phase 1** – Core architecture (profiles, IPC, storage).
+- ✅ **Phase 2** – Workspace and app management, BrowserViews, custom apps.
+- ✅ **Phase 3** – Session management, auto-hibernation, performance monitors.
+- ✅ **Phase 4** – Layout system, native notifications, badge handling.
+- ✅ **Phase 5** – Theming, customization, profile picker polish.
+
+Upcoming ideas include automation hooks, quick launcher, plugin APIs, backup/export utilities, and tighter performance instrumentation. Contributions in those areas are welcome.
+
+---
+
+## Contributing
+
+1. Fork the repo and create a feature branch.
+2. Run `npm run lint` and ensure builds succeed.
+3. Stick to focused, TypeScript-first changes; keep UI logic and IPC separated per the architecture above.
+4. Submit a PR describing the change, tests performed, and any screenshots when UI is affected.
+
+Issues and discussions live on GitHub—bug reports, feature proposals, and design critiques are all appreciated.
+
+---
+
+## License
+
+MIT License © MayR Labs. Use it, fork it, reship it—just keep it open.
+
+---
+
+Built with care for privacy-focused hackers everywhere.
