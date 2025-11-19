@@ -487,7 +487,11 @@ export class WebViewManager {
     });
   }
 
-  private emitAppHibernateRequest(appId: string, instanceId: string, idleTimeMinutes: number): void {
+  private emitAppHibernateRequest(
+    appId: string,
+    instanceId: string,
+    idleTimeMinutes: number
+  ): void {
     BrowserWindow.getAllWindows().forEach((window) => {
       window.webContents.send(IPC_EVENTS.APP_HIBERNATE_REQUEST, {
         appId,

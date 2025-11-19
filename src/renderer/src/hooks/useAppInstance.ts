@@ -44,7 +44,10 @@ export function useAppInstance(
             await onUpdateApp(app.id, {
               instances: [newInstance],
             });
-            debugLog('Successfully created instance', { appId: app.id, instanceId: newInstance.id });
+            debugLog('Successfully created instance', {
+              appId: app.id,
+              instanceId: newInstance.id,
+            });
           } else {
             debugWarn('Instance creation API not available');
             setIsCreating(false);
