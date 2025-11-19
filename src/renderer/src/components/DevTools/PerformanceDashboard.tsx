@@ -6,6 +6,16 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+type ViewEntry = {
+  appId: string;
+  instanceId: string;
+  partitionId: string;
+  lastActive: number;
+  isActive: boolean;
+};
+
+type ViewSource = 'webview' | 'browserView';
+
 interface AppMetrics {
   appId: string;
   instanceId: string;
@@ -37,22 +47,53 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
   }, []);
 
   useEffect(() => {
-    if (!autoRefresh) return;
+    if (!autoRefresh) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    const getActiveViews = async (): Promise<{ source: ViewSource; views: ViewEntry[] }> => {
+      if (typeof window === 'undefined' || !window.dockyard) {
+        return { source: 'webview', views: [] };
+      }
+
+      try {
+        const webviewViews = await window.dockyard.webview.getAll();
+        if (webviewViews.length > 0) {
+          return { source: 'webview', views: webviewViews };
+        }
+      } catch (error) {
+        console.warn('WebView metrics unavailable:', error);
+      }
+
+      try {
+        const browserViews = await window.dockyard.browserView.getAll();
+        if (browserViews.length > 0) {
+          return { source: 'browserView', views: browserViews };
+        }
+      } catch (error) {
+        console.warn('BrowserView metrics unavailable:', error);
+      }
+
+      return { source: 'webview', views: [] };
+    };
 
     const fetchMetrics = async () => {
+      if (typeof window === 'undefined' || !window.dockyard) {
+        return;
+      }
+
       try {
-        // Get all active views
-        const views = await window.dockyard.browserView.getAll();
+        const [{ source, views }, apps] = await Promise.all([getActiveViews(), window.dockyard.apps.list()]);
 
-        // Get apps list
-        const apps = await window.dockyard.apps.list();
+        const metricsApi = source === 'webview' ? window.dockyard.webview : window.dockyard.browserView;
 
-        // Fetch metrics for each view
         const metricsPromises = views.map(async (view) => {
           const app = apps.find((a) => a.id === view.appId);
           const [memory, cpu] = await Promise.all([
-            window.dockyard.browserView.getMemory(view.appId, view.instanceId),
-            window.dockyard.browserView.getCPU(view.appId, view.instanceId),
+            metricsApi.getMemory(view.appId, view.instanceId),
+            metricsApi.getCPU(view.appId, view.instanceId),
           ]);
 
           return {
@@ -67,16 +108,24 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
         });
 
         const allMetrics = await Promise.all(metricsPromises);
-        setMetrics(allMetrics);
+        if (!isCancelled) {
+          setMetrics(allMetrics);
+        }
       } catch (error) {
-        console.error('Failed to fetch metrics:', error);
+        if (!isCancelled) {
+          console.error('Failed to fetch metrics:', error);
+          setMetrics([]);
+        }
       }
     };
 
     fetchMetrics();
-    const interval = setInterval(fetchMetrics, 3000); // Update every 3 seconds
+    const interval = window.setInterval(fetchMetrics, 3000);
 
-    return () => clearInterval(interval);
+    return () => {
+      isCancelled = true;
+      clearInterval(interval);
+    };
   }, [autoRefresh]);
 
   const formatBytes = (bytes: number): string => {
