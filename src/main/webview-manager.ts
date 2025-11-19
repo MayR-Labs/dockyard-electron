@@ -427,12 +427,11 @@ export class WebViewManager {
       const idleTime = now - entry.lastActive;
 
       if (idleTime > idleThresholdMs) {
-        console.log(
+        console.log( // @todo: debugLog() should be used across the codebase
           `Requesting hibernation for idle webview: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
         );
 
         this.emitAppHibernateRequest(entry.appId, entry.instanceId, idleTimeMinutes);
-        // this.views.delete(viewId);
       }
     });
   }
