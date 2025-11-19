@@ -101,7 +101,7 @@ export function ProfilePickerApp() {
   }, [profiles]);
 
   return (
-    <div className="h-screen bg-slate-950 text-white">
+    <div className="h-screen flex items-center overflow-auto bg-slate-950 text-white">
       <div className="max-w-5xl mx-auto px-8 py-10 space-y-8">
         <header className="flex flex-col gap-2">
           <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Dockyard</p>

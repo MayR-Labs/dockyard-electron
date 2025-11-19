@@ -55,7 +55,7 @@ export function QuickStartGuide({ onCollectionSelect, onAddCustomApp }: QuickSta
   }, [appSetup?.apps, appSetup?.collections]);
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 flex items-center justify-center p-8">
+    <div className="flex-1 bg-gradient-to-br from-gray-950 via-indigo-950 to-purple-950 flex overflow-auto justify-center p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
