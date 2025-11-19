@@ -1,4 +1,10 @@
-import { app, BrowserWindow, session, WebContents, webContents as electronWebContents } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  session,
+  WebContents,
+  webContents as electronWebContents,
+} from 'electron';
 import { DEFAULTS, IPC_EVENTS } from '../shared/constants';
 import { App, Workspace } from '../shared/types';
 import { StoreManager } from './store-manager';

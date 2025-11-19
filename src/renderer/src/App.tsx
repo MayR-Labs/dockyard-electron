@@ -276,6 +276,24 @@ function App() {
   };
 
   useEffect(() => {
+    if (!window.dockyard?.on || !window.dockyard?.off) {
+      return;
+    }
+
+    const handleAppUpdated = () => {
+      loadApps().catch((error: unknown) => {
+        console.error('Failed to refresh apps after update event', error);
+      });
+    };
+
+    window.dockyard.on(IPC_EVENTS.APP_UPDATED, handleAppUpdated);
+
+    return () => {
+      window.dockyard.off(IPC_EVENTS.APP_UPDATED, handleAppUpdated);
+    };
+  }, [loadApps]);
+
+  useEffect(() => {
     if (!window.dockyard?.on || !window.dockyard?.off || !window.dockyard?.webview) {
       return;
     }
