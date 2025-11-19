@@ -8,6 +8,7 @@ export class ProfilePickerWindow {
 
   createWindow(): BrowserWindow {
     const preloadPath = path.join(__dirname, '../preload/index.js');
+
     if (!existsSync(preloadPath)) {
       debugError('Profile picker preload script missing at:', preloadPath);
     }

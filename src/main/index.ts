@@ -12,6 +12,8 @@ import { ProfileHandlers } from './handlers/profile-handlers';
 
 app.setName('Dockyard');
 
+app.setAppUserModelId('com.mayrlabs.dockyard');
+
 app.setAboutPanelOptions({
   applicationName: 'Dockyard',
   applicationVersion: app.getVersion(),

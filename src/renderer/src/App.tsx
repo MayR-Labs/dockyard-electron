@@ -28,12 +28,12 @@ import { SplitWithModal } from './components/Modals/SplitWithModal';
 import { PerformanceDashboard } from './components/DevTools/PerformanceDashboard';
 import { SessionManager } from './components/DevTools/SessionManager';
 import { WorkspaceSettingsModal } from './components/Modals/WorkspaceSettingsModal';
-import { ProfileSwitcherModal } from './components/Modals/ProfileSwitcherModal';
 import { App as AppType } from '../../shared/types/app';
 import { LayoutMode } from '../../shared/types/workspace';
 import { DEFAULTS } from '../../shared/constants';
 import { debugError, debugLog } from '../../shared/utils/debug';
 import { useProfileStore } from './store/profiles';
+import { ProfileSwitcherModal } from './components/Modals/ProfileSwitcherModal';
 
 function App() {
   const {
