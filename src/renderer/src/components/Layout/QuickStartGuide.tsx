@@ -38,13 +38,13 @@ export function QuickStartGuide({ onCollectionSelect, onAddCustomApp }: QuickSta
       });
     });
 
-    const orderedCollections = (catalogCollections.length ? catalogCollections : Array.from(stats.keys())).map(
-      (collection) => ({
-        name: collection,
-        count: stats.get(collection)?.count ?? 0,
-        logos: stats.get(collection)?.logos ?? [],
-      })
-    );
+    const orderedCollections = (
+      catalogCollections.length ? catalogCollections : Array.from(stats.keys())
+    ).map((collection) => ({
+      name: collection,
+      count: stats.get(collection)?.count ?? 0,
+      logos: stats.get(collection)?.logos ?? [],
+    }));
 
     return orderedCollections.sort((a, b) => {
       if (b.count === a.count) {
@@ -170,9 +170,7 @@ export function QuickStartGuide({ onCollectionSelect, onAddCustomApp }: QuickSta
                   whileHover={{ scale: collection.count > 0 ? 1.02 : 1 }}
                   whileTap={{ scale: collection.count > 0 ? 0.98 : 1 }}
                   disabled={collection.count === 0}
-                  onClick={() =>
-                    collection.count > 0 && onCollectionSelect?.(collection.name)
-                  }
+                  onClick={() => collection.count > 0 && onCollectionSelect?.(collection.name)}
                   className={`text-left rounded-xl border transition-all bg-gray-900/70 p-4 flex flex-col gap-3 ${
                     collection.count > 0
                       ? 'border-gray-800 hover:border-indigo-500 hover:bg-gray-900'

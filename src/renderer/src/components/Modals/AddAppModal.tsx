@@ -22,7 +22,8 @@ type AddAppMode = 'select' | 'popular' | 'custom';
 const ALL_FILTER_VALUE = 'All';
 const INDEPENDENT_SUITE_VALUE = '__suite-independent__';
 
-const normalizeSuiteFilterValue = (suite: string | null): string => suite ?? INDEPENDENT_SUITE_VALUE;
+const normalizeSuiteFilterValue = (suite: string | null): string =>
+  suite ?? INDEPENDENT_SUITE_VALUE;
 const getSuiteLabel = (suite: string | null): string => suite ?? 'Independent';
 
 export function AddAppModal({ isOpen, onClose, onAddApp, initialCollection }: AddAppModalProps) {
@@ -460,9 +461,7 @@ export function AddAppModal({ isOpen, onClose, onAddApp, initialCollection }: Ad
               </select>
             </div>
 
-            {isRefreshingAppSetup && (
-              <p className="text-xs text-indigo-300">Refreshing catalog…</p>
-            )}
+            {isRefreshingAppSetup && <p className="text-xs text-indigo-300">Refreshing catalog…</p>}
           </div>
 
           {/* App list */}
@@ -485,8 +484,9 @@ export function AddAppModal({ isOpen, onClose, onAddApp, initialCollection }: Ad
               </div>
             )}
 
-            {!showLoadingState && !showErrorState && (
-              filteredApps.length === 0 ? (
+            {!showLoadingState &&
+              !showErrorState &&
+              (filteredApps.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-gray-400">
                     {totalApps === 0
@@ -546,8 +546,7 @@ export function AddAppModal({ isOpen, onClose, onAddApp, initialCollection }: Ad
                     </button>
                   ))}
                 </div>
-              )
-            )}
+              ))}
 
             {appSetupError && !showErrorState && (
               <div className="mt-6 text-xs text-red-400 bg-red-900/20 border border-red-800 rounded-lg p-3 text-center">
