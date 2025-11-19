@@ -254,8 +254,7 @@ function App() {
 
   const handleHibernateAppRequest = useCallback(
     async (appId: string, instanceId?: string) => {
-      console.log('Then handleHibernateAppRequest');
-
+      console.log("Then handleHibernateAppRequest");
       const targetInstanceId = getInstanceId(appId, instanceId);
       if (!targetInstanceId) return;
 
@@ -270,6 +269,16 @@ function App() {
     [getInstanceId, hibernateApp]
   );
 
+  const loadAppsRef = useRef(loadApps);
+  useEffect(() => {
+    loadAppsRef.current = loadApps;
+  }, [loadApps]);
+
+  const hibernateRequestHandlerRef = useRef(handleHibernateAppRequest);
+  useEffect(() => {
+    hibernateRequestHandlerRef.current = handleHibernateAppRequest;
+  }, [handleHibernateAppRequest]);
+
   const handleToggleDockyardDevTools = () => {
     if (!window.dockyard?.window?.toggleDevTools) {
       return;
@@ -282,24 +291,23 @@ function App() {
 
   useEffect(() => {
     if (!window.dockyard?.on || !window.dockyard?.off) {
-      return;
+      return undefined;
     }
 
     const handleAppUpdated = () => {
-      loadApps().catch((error: unknown) => {
+      loadAppsRef.current().catch((error: unknown) => {
         console.error('Failed to refresh apps after update event', error);
       });
     };
 
     const handleAppHibernateRequest = (...args: unknown[]) => {
-      console.log('Starting handleAppHibernateRequest');
-
+      console.log("Starting handleAppHibernateRequest");
       const [payload] = args as [{ appId?: string; instanceId?: string }?];
       if (!payload?.appId) {
         return;
       }
 
-      handleHibernateAppRequest(payload.appId, payload.instanceId);
+      void hibernateRequestHandlerRef.current(payload.appId, payload.instanceId);
     };
 
     window.dockyard.on(IPC_EVENTS.APP_UPDATED, handleAppUpdated);
@@ -309,7 +317,7 @@ function App() {
       window.dockyard.off(IPC_EVENTS.APP_UPDATED, handleAppUpdated);
       window.dockyard.off(IPC_EVENTS.APP_HIBERNATE_REQUEST, handleAppHibernateRequest);
     };
-  }, [handleHibernateAppRequest, loadApps]);
+  }, []);
 
   useEffect(() => {
     if (!window.dockyard?.on || !window.dockyard?.off || !window.dockyard?.webview) {
