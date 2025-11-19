@@ -1,4 +1,6 @@
 import { app, session, WebContents, webContents as electronWebContents } from 'electron';
+import { App, Workspace } from '../shared/types';
+import { StoreManager } from './store-manager';
 
 interface WebViewEntry {
   webContentsId: number;
@@ -19,8 +21,10 @@ interface WebViewEntry {
 export class WebViewManager {
   private views: Map<string, WebViewEntry> = new Map();
   private hibernationCheckInterval: NodeJS.Timeout | null = null;
+  private storeManager: StoreManager | null = null;
 
-  constructor() {
+  constructor(storeManager?: StoreManager) {
+    this.storeManager = storeManager || null;
     // Start hibernation check (every minute)
     this.startHibernationCheck();
   }
@@ -360,19 +364,56 @@ export class WebViewManager {
   private startHibernationCheck(): void {
     // Check every minute for idle webviews
     this.hibernationCheckInterval = setInterval(() => {
-      const now = Date.now();
-      const idleThresholdMs = 15 * 60 * 1000; // 15 minutes default
-
-      this.views.forEach((entry, viewId) => {
-        const idleTime = now - entry.lastActive;
-
-        // Log idle webviews (actual hibernation would need renderer cooperation)
-        if (idleTime > idleThresholdMs) {
-          console.log(`WebView is idle: ${viewId}`);
-          // Note: Hibernation of webviews requires renderer-side implementation
-        }
-      });
+      this.performHibernationCheck();
     }, 60 * 1000); // Check every minute
+  }
+
+  /**
+   * Perform hibernation check for all webviews
+   */
+  private performHibernationCheck(): void {
+    if (!this.storeManager) {
+      return; // Cannot perform check without store manager
+    }
+
+    const now = Date.now();
+    const appsStore = this.storeManager.getAppsStore();
+    const workspacesStore = this.storeManager.getWorkspacesStore();
+    const apps = appsStore.get('apps', []);
+    const workspaces = workspacesStore.get('workspaces', []);
+
+    this.views.forEach((entry, viewId) => {
+      // Find the app and its workspace
+      const app = apps.find((a: App) => a.id === entry.appId);
+      if (!app) {
+        return;
+      }
+
+      const workspace = workspaces.find((w: Workspace) => w.id === app.workspaceId);
+      if (!workspace) {
+        return;
+      }
+
+      // Check if hibernation is enabled for this workspace
+      if (!workspace.hibernation?.enabled) {
+        return;
+      }
+
+      // Get idle threshold from workspace settings (default to 15 minutes)
+      const idleTimeMinutes = workspace.hibernation?.idleTimeMinutes || 15;
+      const idleThresholdMs = idleTimeMinutes * 60 * 1000;
+
+      const idleTime = now - entry.lastActive;
+
+      // Log idle webviews (actual hibernation would need renderer cooperation)
+      if (idleTime > idleThresholdMs) {
+        console.log(
+          `WebView is idle: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
+        );
+        // Note: Hibernation of webviews requires renderer-side implementation
+        // For now, we just log. The renderer can call the hibernate API when needed.
+      }
+    });
   }
 
   /**
