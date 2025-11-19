@@ -18,6 +18,7 @@ import { App } from '../../../../shared/types/app';
 import { LoadingIcon } from '../Icons';
 import { isElectron } from '../../utils/environment';
 import { BrowserDevPlaceholder } from '../DevMode/BrowserDevPlaceholder';
+import { debugError, debugWarn } from '../../../../shared/utils/debug';
 
 interface BrowserViewContainerProps {
   app: App;
@@ -37,7 +38,7 @@ export function BrowserViewContainer({
 
     // Check if window.dockyard is available
     if (!window.dockyard || !window.dockyard.browserView) {
-      console.error('Dockyard API not available. Preload script may not be loaded.');
+      debugWarn('Dockyard BrowserView API not available. Preload script may not be loaded.');
       return;
     }
 
@@ -67,7 +68,7 @@ export function BrowserViewContainer({
         }
 
         window.dockyard.browserView.show(app.id, instanceId, bounds).catch((error) => {
-          console.error('Failed to show BrowserView:', error);
+          debugError('Failed to show BrowserView:', error);
         });
       }
     };
@@ -94,7 +95,7 @@ export function BrowserViewContainer({
       window.dockyard.browserView
         .setZoom(app.id, instanceId, app.display.zoomLevel)
         .catch((error) => {
-          console.error('Failed to set zoom level:', error);
+          debugError('Failed to set zoom level:', error);
         });
     }
 
@@ -114,7 +115,7 @@ export function BrowserViewContainer({
       window.dockyard.browserView
         .setZoom(app.id, instanceId, app.display.zoomLevel)
         .catch((error) => {
-          console.error('Failed to update zoom level:', error);
+          debugError('Failed to update zoom level:', error);
         });
     }
   }, [app.id, instanceId, app.display?.zoomLevel]);

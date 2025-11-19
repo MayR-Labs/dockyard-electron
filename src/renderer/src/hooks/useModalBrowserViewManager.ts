@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { debugError, debugLog } from '../../../shared/utils/debug';
 
 /**
  * Custom hook to manage BrowserView visibility when modals are open
@@ -18,9 +19,10 @@ export function useModalBrowserViewManager(isAnyModalOpen: boolean) {
       if (isAnyModalOpen) {
         // Hide browserview when modal opens
         try {
+          debugLog('Hiding BrowserView because a modal opened');
           await window.dockyard.browserView.hide();
         } catch (error) {
-          console.error('Failed to hide BrowserView:', error);
+          debugError('Failed to hide BrowserView:', error);
         }
       }
       // Note: We don't automatically show the browserview when modals close

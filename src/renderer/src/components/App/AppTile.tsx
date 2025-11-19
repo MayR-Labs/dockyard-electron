@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import type { FindInPageOptions } from 'electron';
 import { App } from '../../../../shared/types/app';
 import { AppShortcutSignal } from '../../types/shortcuts';
+import { debugError } from '../../../../shared/utils/debug';
 import {
   MenuDotsIcon,
   SearchIcon,
@@ -107,7 +108,7 @@ export function AppTile({
       if (!isElectron() || !isAwake || !instanceId || !window.dockyard?.webview) return;
       window.dockyard?.webview
         .stopFindInPage(app.id, instanceId, action)
-        .catch((error: unknown) => console.error('Failed to stop find in page', error));
+        .catch((error: unknown) => debugError('Failed to stop find in page', error));
     },
     [app.id, instanceId, isAwake]
   );
@@ -117,7 +118,7 @@ export function AppTile({
       if (!isElectron() || !isAwake || !instanceId || !query || !window.dockyard?.webview) return;
       window.dockyard?.webview
         .findInPage(app.id, instanceId, query, options)
-        .catch((error: unknown) => console.error('Failed to run find in page', error));
+        .catch((error: unknown) => debugError('Failed to run find in page', error));
     },
     [app.id, instanceId, isAwake]
   );
@@ -126,7 +127,7 @@ export function AppTile({
     if (!isElectron() || !isAwake || !instanceId || !window.dockyard?.webview) return;
     window.dockyard?.webview
       .print(app.id, instanceId)
-      .catch((error: unknown) => console.error('Failed to print page', error));
+      .catch((error: unknown) => debugError('Failed to print page', error));
   }, [app.id, instanceId, isAwake]);
 
   const openFind = useCallback(() => {

@@ -5,6 +5,7 @@
 
 import { useState } from 'react';
 import type { App } from '../../../../../shared/types/app';
+import { debugError } from '../../../../../shared/utils/debug';
 
 interface AppHibernationSettingsProps {
   app: App;
@@ -51,7 +52,7 @@ export function AppHibernationSettings({
       setStatus('success');
       setTimeout(() => setStatus('idle'), 2000);
     } catch (err) {
-      console.error('Failed to update hibernation', err);
+      debugError('Failed to update hibernation', err);
       setError(err instanceof Error ? err.message : 'Failed to update hibernation settings');
       setStatus('error');
     }

@@ -2,6 +2,7 @@ import { app, BrowserWindow, Menu, MenuItemConstructorOptions, shell } from 'ele
 import path from 'path';
 import { existsSync } from 'fs';
 import { IPC_EVENTS } from '../shared/constants';
+import { debugError, debugLog } from '../shared/utils/debug';
 
 export class WindowManager {
   private mainWindow: BrowserWindow | null = null;
@@ -11,14 +12,14 @@ export class WindowManager {
    */
   createMainWindow(): BrowserWindow {
     const preloadPath = path.join(__dirname, '../preload/index.js');
-    console.log('Preload script path:', preloadPath);
-    console.log('__dirname:', __dirname);
+    debugLog('Preload script path:', preloadPath);
+    debugLog('__dirname:', __dirname);
 
     // Check if preload file exists
     if (existsSync(preloadPath)) {
-      console.log('✓ Preload script found');
+      debugLog('✓ Preload script found');
     } else {
-      console.error('✗ Preload script NOT found at:', preloadPath);
+      debugError('✗ Preload script NOT found at:', preloadPath);
     }
 
     this.mainWindow = new BrowserWindow({

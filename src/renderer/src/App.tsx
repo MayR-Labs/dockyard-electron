@@ -31,6 +31,7 @@ import { WorkspaceSettingsModal } from './components/Modals/WorkspaceSettingsMod
 import { App as AppType } from '../../shared/types/app';
 import { LayoutMode } from '../../shared/types/workspace';
 import { DEFAULTS } from '../../shared/constants';
+import { debugError, debugLog } from '../../shared/utils/debug';
 
 function App() {
   const {
@@ -338,7 +339,7 @@ function App() {
     }
 
     window.dockyard.window.toggleDevTools().catch((error: unknown) => {
-      console.error('Failed to toggle Dockyard devtools', error);
+      debugError('Failed to toggle Dockyard devtools', error);
     });
   }, []);
 
@@ -383,7 +384,7 @@ function App() {
       key: 'Space',
       modifier: 'ctrlOrMeta',
       action: () => {
-        console.log('Quick launcher shortcut triggered');
+        debugLog('Quick launcher shortcut triggered');
       },
       description: 'Open quick launcher',
     },

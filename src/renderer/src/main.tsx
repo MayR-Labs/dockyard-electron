@@ -16,6 +16,7 @@ import type {
   DockyardEventChannel,
   DockyardEventListener,
 } from '../../shared/types/preload';
+import { debugLog, debugWarn } from '../../shared/utils/debug';
 
 // Check if we're running in Electron
 type ElectronProcess = NodeJS.Process & { type?: string };
@@ -41,7 +42,7 @@ const isElectron =
   typeof window.process !== 'undefined' &&
   (window.process as ElectronProcess)?.type === 'renderer';
 
-console.log('Environment check:', {
+debugLog('Environment check:', {
   isElectron,
   hasDockyardAPI: typeof window !== 'undefined' && !!window.dockyard,
   hasBrowserViewAPI: typeof window !== 'undefined' && !!window.dockyard?.browserView,
@@ -49,7 +50,7 @@ console.log('Environment check:', {
 
 // Mock API for development in browser (when not in Electron)
 if (typeof window !== 'undefined' && !window.dockyard) {
-  console.log('Initializing mock Dockyard API for browser development');
+  debugLog('Initializing mock Dockyard API for browser development');
   const mockStorage: MockStorage = {
     workspaces: [],
     apps: [],
@@ -402,7 +403,7 @@ if (typeof window !== 'undefined' && !window.dockyard) {
     },
     notifications: {
       show: async (options: NotificationOptions) => {
-        console.log('Mock: notification.show', options);
+        debugLog('Mock: notification.show', options);
       },
       updateBadge: async (appId: string, _count: number) => {
         const app = mockStorage.apps.find((entry) => entry.id === appId);
@@ -414,7 +415,7 @@ if (typeof window !== 'undefined' && !window.dockyard) {
     },
     window: {
       toggleDevTools: async () => {
-        console.log('Mock: toggle Dockyard devtools');
+        debugLog('Mock: toggle Dockyard devtools');
       },
     },
     on: (channel: DockyardEventChannel, callback: DockyardEventListener) => {
@@ -435,8 +436,8 @@ if (typeof window !== 'undefined' && !window.dockyard) {
   };
 
   window.dockyard = mockDockyardApi;
-  console.log('🔧 Mock Dockyard API initialized for browser development');
-  console.warn('⚠️  Running in browser mode - BrowserView features will be mocked');
+  debugLog('🔧 Mock Dockyard API initialized for browser development');
+  debugWarn('⚠️  Running in browser mode - BrowserView features will be mocked');
 }
 
 const rootElement = document.getElementById('root');

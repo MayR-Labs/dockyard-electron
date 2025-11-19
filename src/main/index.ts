@@ -6,6 +6,7 @@ import { IPCHandlers } from './ipc-handlers';
 import { BrowserViewManager } from './browser-view-manager';
 import { WebViewManager } from './webview-manager';
 import { ProfileMetadata } from '../shared/types';
+import { debugLog } from '../shared/utils/debug';
 
 app.setName('Dockyard');
 
@@ -43,6 +44,7 @@ function parseProfileFromArgs(): string {
 async function initialize(): Promise<void> {
   // Get profile from command line or use default
   const profileName = parseProfileFromArgs();
+  debugLog('Launching Dockyard with profile:', profileName);
 
   // Initialize store manager
   storeManager = await StoreManager.create();
@@ -109,7 +111,7 @@ app.on('window-all-closed', () => {
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   // Another instance is already running with the same profile
-  console.log('Another instance is already running with this profile');
+  debugLog('Another instance is already running with this profile');
   app.quit();
 } else {
   app.on('second-instance', (_event, _commandLine, _workingDirectory) => {

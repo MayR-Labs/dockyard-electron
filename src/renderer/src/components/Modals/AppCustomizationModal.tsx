@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
+import { debugError } from '../../../../shared/utils/debug';
 
 interface AppCustomizationModalProps {
   isOpen: boolean;
@@ -42,7 +43,7 @@ export function AppCustomizationModal({
         await window.dockyard.webview.injectJS(app.id, instanceId, customJS);
       }
     } catch (error) {
-      console.error('Failed to inject code:', error);
+      debugError('Failed to inject code:', error);
       alert('Failed to inject code. See console for details.');
     }
   };

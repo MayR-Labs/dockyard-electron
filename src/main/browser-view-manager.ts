@@ -2,6 +2,7 @@ import { app, BrowserView, BrowserWindow, session } from 'electron';
 import { DEFAULTS, IPC_EVENTS } from '../shared/constants';
 import { App, AppInstance, Workspace } from '../shared/types';
 import { StoreManager } from './store-manager';
+import { debugError, debugLog, debugWarn } from '../shared/utils/debug';
 
 interface BrowserViewEntry {
   view: BrowserView;
@@ -341,7 +342,7 @@ export class BrowserViewManager {
           this.mainWindow.removeBrowserView(entry.view);
         } catch (error) {
           // View may already be removed
-          console.error('Error removing BrowserView during hibernation:', error);
+          debugError('Error removing BrowserView during hibernation:', error);
         }
       }
 
@@ -351,7 +352,7 @@ export class BrowserViewManager {
 
       // Note: We don't destroy the view, just remove it from window
       // The view can be re-added when needed
-      console.log(`Hibernated view: ${viewId}`);
+      debugLog(`Hibernated view: ${viewId}`);
     }
   }
 
@@ -364,7 +365,7 @@ export class BrowserViewManager {
 
     if (entry && !entry.view.webContents.isDestroyed()) {
       entry.lastActive = Date.now();
-      console.log(`Resumed view: ${viewId}`);
+      debugLog(`Resumed view: ${viewId}`);
     }
   }
 
@@ -381,7 +382,7 @@ export class BrowserViewManager {
         try {
           this.mainWindow.removeBrowserView(entry.view);
         } catch (error) {
-          console.warn('BrowserView removal failed during destroyView', error);
+          debugWarn('BrowserView removal failed during destroyView', error);
         }
         this.activeViewId = null;
       }
@@ -445,7 +446,7 @@ export class BrowserViewManager {
         };
       }
     } catch (error) {
-      console.error('Failed to get memory usage:', error);
+      debugError('Failed to get memory usage:', error);
     }
 
     return { workingSetSize: 0, privateBytes: 0 };
@@ -472,7 +473,7 @@ export class BrowserViewManager {
         return processMetrics.cpu.percentCPUUsage || 0;
       }
     } catch (error) {
-      console.error('Failed to get CPU usage:', error);
+      debugError('Failed to get CPU usage:', error);
     }
 
     return 0;
@@ -544,7 +545,7 @@ export class BrowserViewManager {
 
       // Hibernate if idle time exceeds threshold
       if (idleTime > idleThresholdMs) {
-        console.log(
+        debugLog(
           `Auto-hibernating idle view: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
         );
         this.hibernateView(entry.appId, entry.instanceId);

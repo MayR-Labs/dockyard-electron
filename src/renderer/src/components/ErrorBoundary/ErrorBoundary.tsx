@@ -5,6 +5,7 @@
  */
 
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { debugError } from '../../../../shared/utils/debug';
 
 interface Props {
   children: ReactNode;
@@ -35,7 +36,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    debugError('ErrorBoundary caught an error:', error, errorInfo);
     this.setState({
       error,
       errorInfo,

@@ -1,6 +1,7 @@
 import type { AppSetupData, AppSetupApiResponse } from '../../../shared/types';
 import { getApiBaseUrl } from '../utils/environment';
 import { clearPopularFaviconCache, hydratePopularAppIcons } from './popularFaviconCache';
+import { debugLog } from '../../../shared/utils/debug';
 
 const CACHE_KEY = 'dockyard:app-setup';
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -65,7 +66,7 @@ export const fetchAppSetup = async (options: FetchOptions = {}): Promise<AppSetu
   if (!options.forceRefresh) {
     const cached = getCachedAppSetup();
     if (cached) {
-      console.log('Using cached app setup data');
+      debugLog('Using cached app setup data');
       return cached;
     }
   }
@@ -75,7 +76,7 @@ export const fetchAppSetup = async (options: FetchOptions = {}): Promise<AppSetu
     headers: { Accept: 'application/json' },
   });
 
-  console.log(response);
+  debugLog('App setup fetch response', { status: response.status, ok: response.ok });
 
   if (!response.ok) {
     throw new Error('Failed to fetch app catalog');

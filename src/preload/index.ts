@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { IPC_CHANNELS, IPC_EVENTS } from '../shared/constants';
+import { debugLog } from '../shared/utils/debug';
 import type { DockyardAPI } from '../shared/types/preload';
 
 const validEventChannels = [
@@ -59,7 +60,7 @@ const unregisterListener = (
   }
 };
 
-console.log('🔧 Preload script is executing...');
+debugLog('🔧 Preload script is executing...');
 
 // Expose safe API to renderer process
 const dockyardAPI: DockyardAPI = {
@@ -232,5 +233,5 @@ const dockyardAPI: DockyardAPI = {
 // Expose the API to the renderer process
 contextBridge.exposeInMainWorld('dockyard', dockyardAPI);
 
-console.log('✅ Dockyard API exposed to renderer via contextBridge');
-console.log('API includes:', Object.keys(dockyardAPI));
+debugLog('✅ Dockyard API exposed to renderer via contextBridge');
+debugLog('API includes:', Object.keys(dockyardAPI));

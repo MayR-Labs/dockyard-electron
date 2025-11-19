@@ -18,6 +18,7 @@ import { App } from '../../../../shared/types/app';
 import { LoadingIcon, SpinnerIcon } from '../Icons';
 import { isElectron } from '../../utils/environment';
 import { BrowserDevPlaceholder } from '../DevMode/BrowserDevPlaceholder';
+import { debugError, debugLog } from '../../../../shared/utils/debug';
 
 interface WebViewContainerProps {
   app: App;
@@ -85,21 +86,21 @@ export function WebViewContainer({
 
     // Event handlers
     const handleDidFinishLoad = () => {
-      console.log('WebView finished loading:', app.name);
+      debugLog('WebView finished loading', { appName: app.name });
       setInternalLoading(false);
       setIsReady(true);
 
       // Apply custom CSS if provided
       if (app.customCSS) {
         webview.insertCSS(app.customCSS).catch((error: Error) => {
-          console.error('Failed to inject CSS:', error);
+          debugError('Failed to inject CSS:', error);
         });
       }
 
       // Apply custom JS if provided
       if (app.customJS) {
         webview.executeJavaScript(app.customJS).catch((error: Error) => {
-          console.error('Failed to inject JS:', error);
+          debugError('Failed to inject JS:', error);
         });
       }
     };
@@ -109,12 +110,12 @@ export function WebViewContainer({
     };
 
     const handleDidFailLoad = (event: DidFailLoadEvent) => {
-      console.error('WebView failed to load:', event);
+      debugError('WebView failed to load:', event);
       setInternalLoading(false);
     };
 
     const handleDomReady = () => {
-      console.log('WebView DOM ready:', app.name);
+      debugLog('WebView DOM ready', { appName: app.name });
 
       // Apply zoom level if set
       if (app.display?.zoomLevel) {
@@ -127,7 +128,7 @@ export function WebViewContainer({
         window.dockyard.webview
           .register(webContentsId, app.id, instanceId, partitionId)
           .catch((error: Error) => {
-            console.error('Failed to register webview:', error);
+            debugError('Failed to register webview:', error);
           });
       }
     };
@@ -138,7 +139,7 @@ export function WebViewContainer({
       if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
         event.preventDefault();
         // You can use shell.openExternal here if needed
-        console.log('New window request:', url);
+        debugLog('WebView new window request', { url });
       }
     };
 
@@ -160,7 +161,7 @@ export function WebViewContainer({
       // Unregister from main process
       if (window.dockyard?.webview) {
         window.dockyard.webview.unregister(app.id, instanceId).catch((error: Error) => {
-          console.error('Failed to unregister webview:', error);
+          debugError('Failed to unregister webview:', error);
         });
       }
     };
@@ -250,7 +251,7 @@ export function WebViewContainer({
     const handleFocus = () => {
       if (window.dockyard?.webview) {
         window.dockyard.webview.updateActive(app.id, instanceId).catch((error: Error) => {
-          console.error('Failed to update active status:', error);
+          debugError('Failed to update active status:', error);
         });
       }
     };
@@ -272,9 +273,9 @@ export function WebViewContainer({
       .then(() =>
         window.dockyard?.webview
           .reload(app.id, instanceId)
-          .catch((error: Error) => console.error('Failed to reload after user agent change', error))
+          .catch((error: Error) => debugError('Failed to reload after user agent change', error))
       )
-      .catch((error: Error) => console.error('Failed to set user agent', error))
+      .catch((error: Error) => debugError('Failed to set user agent', error))
       .finally(() => {
         lastUserAgent.current = app.userAgent;
       });
@@ -287,7 +288,7 @@ export function WebViewContainer({
 
     window.dockyard.webview
       .setAudioMuted(app.id, instanceId, nextMuted)
-      .catch((error: Error) => console.error('Failed to set audio mute state', error))
+      .catch((error: Error) => debugError('Failed to set audio mute state', error))
       .finally(() => {
         lastAudioMuted.current = nextMuted;
       });

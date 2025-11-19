@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { IPC_EVENTS } from '../../../shared/constants';
 import type { App as AppType } from '../../../shared/types/app';
 import type { AppShortcutSignal, AppShortcutSignalType } from '../types/shortcuts';
+import { debugError, debugLog } from '../../../shared/utils/debug';
 
 type UseAppRuntimeParams = {
   apps: AppType[];
@@ -88,10 +89,12 @@ export function useAppRuntime({
       if (!targetInstanceId) return;
 
       setAppAwakeState(appId, true);
+      debugLog('Requesting wake for app instance', { appId, instanceId: targetInstanceId });
       try {
         await resumeApp(appId, targetInstanceId);
+        debugLog('App instance wake succeeded', { appId, instanceId: targetInstanceId });
       } catch (error) {
-        console.error('Failed to resume app instance', error);
+        debugError('Failed to resume app instance', error);
         setAppAwakeState(appId, false);
       }
     },
@@ -103,10 +106,11 @@ export function useAppRuntime({
       const targetInstanceId = getInstanceId(appId, instanceId);
       if (!targetInstanceId) return;
 
+      debugLog('Requesting hibernation for app instance', { appId, instanceId: targetInstanceId });
       try {
         await hibernateApp(appId, targetInstanceId);
       } catch (error) {
-        console.error('Failed to hibernate app instance', error);
+        debugError('Failed to hibernate app instance', error);
       } finally {
         setAppAwakeState(appId, false);
       }
@@ -173,8 +177,9 @@ export function useAppRuntime({
     }
 
     const handleAppUpdated = () => {
+      debugLog('IPC app update event received');
       loadApps().catch((error: unknown) => {
-        console.error('Failed to refresh apps after update event', error);
+        debugError('Failed to refresh apps after update event', error);
       });
     };
 
@@ -213,7 +218,7 @@ export function useAppRuntime({
         : window.dockyard.webview.reload;
 
       action(currentAppId, instanceId).catch((error: unknown) => {
-        console.error(ignoreCache ? 'Force reload failed' : 'Reload failed', error);
+        debugError(ignoreCache ? 'Force reload failed' : 'Reload failed', error);
       });
     };
 
@@ -225,7 +230,7 @@ export function useAppRuntime({
       if (!instanceId) return;
 
       window.dockyard.webview.toggleDevTools(currentAppId, instanceId).catch((error: unknown) => {
-        console.error('Failed to toggle app devtools', error);
+        debugError('Failed to toggle app devtools', error);
       });
     };
 
@@ -240,6 +245,7 @@ export function useAppRuntime({
     window.dockyard.on(IPC_EVENTS.SHORTCUT_TOGGLE_DEVTOOLS, toggleDevtoolsListener);
     window.dockyard.on(IPC_EVENTS.SHORTCUT_FIND, shortcutFindListener);
     window.dockyard.on(IPC_EVENTS.SHORTCUT_PRINT, shortcutPrintListener);
+    debugLog('Registered runtime shortcut listeners');
 
     return () => {
       window.dockyard?.off(IPC_EVENTS.SHORTCUT_RELOAD, reloadListener);
@@ -267,7 +273,7 @@ export function useAppRuntime({
         window.dockyard.webview
           .setAudioMuted(appId, targetInstanceId, muted)
           .catch((error: unknown) => {
-            console.error('Failed to toggle audio mute', error);
+            debugError('Failed to toggle audio mute', error);
           });
       }
     },

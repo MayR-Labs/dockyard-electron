@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react';
 import { App } from '../../../shared/types/app';
 import { isElectron } from '../utils/environment';
+import { debugError, debugWarn } from '../../../shared/utils/debug';
 
 interface NavigationState {
   canGoBack: boolean;
@@ -28,7 +29,7 @@ export function useNavigationState(app: App, instanceId: string | undefined) {
     if (!isElectron() || !instanceId) return;
 
     if (!window.dockyard?.webview) {
-      console.error('Dockyard webview API not available for navigation state');
+      debugWarn('Dockyard webview API not available for navigation state');
       return;
     }
 
@@ -40,7 +41,7 @@ export function useNavigationState(app: App, instanceId: string | undefined) {
         const state = await window.dockyard.webview.getState(app.id, instanceId);
         setNavigationState(state);
       } catch (error) {
-        console.error('Failed to get navigation state:', error);
+        debugError('Failed to get navigation state:', error);
       }
     };
 
@@ -60,7 +61,7 @@ export function useNavigationState(app: App, instanceId: string | undefined) {
     if (!instanceId || !window.dockyard?.webview) return;
 
     window.dockyard.webview.goBack(app.id, instanceId).catch((error) => {
-      console.error('Failed to go back:', error);
+      debugError('Failed to go back:', error);
     });
   };
 
@@ -68,7 +69,7 @@ export function useNavigationState(app: App, instanceId: string | undefined) {
     if (!instanceId || !window.dockyard?.webview) return;
 
     window.dockyard.webview.goForward(app.id, instanceId).catch((error) => {
-      console.error('Failed to go forward:', error);
+      debugError('Failed to go forward:', error);
     });
   };
 
@@ -76,7 +77,7 @@ export function useNavigationState(app: App, instanceId: string | undefined) {
     if (!instanceId || !window.dockyard?.webview) return;
 
     window.dockyard.webview.reload(app.id, instanceId).catch((error) => {
-      console.error('Failed to reload:', error);
+      debugError('Failed to reload:', error);
     });
   };
 
@@ -84,7 +85,7 @@ export function useNavigationState(app: App, instanceId: string | undefined) {
     if (!instanceId || !window.dockyard?.webview) return;
 
     window.dockyard.webview.navigate(app.id, instanceId, app.url).catch((error) => {
-      console.error('Failed to go home:', error);
+      debugError('Failed to go home:', error);
     });
   };
 
@@ -92,7 +93,7 @@ export function useNavigationState(app: App, instanceId: string | undefined) {
     if (!instanceId || !window.dockyard?.webview) return;
 
     window.dockyard.webview.navigate(app.id, instanceId, url).catch((error) => {
-      console.error('Failed to navigate:', error);
+      debugError('Failed to navigate:', error);
     });
   };
 

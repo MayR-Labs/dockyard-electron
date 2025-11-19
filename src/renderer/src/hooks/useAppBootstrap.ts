@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Workspace } from '../../../shared/types/workspace';
+import { debugError, debugLog } from '../../../shared/utils/debug';
 
 type UseAppBootstrapParams = {
   loadWorkspaces: () => Promise<void>;
@@ -25,9 +26,11 @@ export function useAppBootstrap({
 
     const loadData = async () => {
       try {
+        debugLog('Bootstrapping workspace, apps, and settings data');
         await Promise.all([loadWorkspaces(), loadApps(), loadSettings()]);
+        debugLog('Bootstrap finished successfully');
       } catch (error) {
-        console.error('Failed to load initial data', error);
+        debugError('Failed to load initial data', error);
       } finally {
         if (isMounted) {
           setIsBootstrapping(false);

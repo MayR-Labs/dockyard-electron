@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { App } from '../../../shared/types/app';
+import { debugError, debugLog, debugWarn } from '../../../shared/utils/debug';
 
 export function useAppInstance(
   app: App,
@@ -31,7 +32,7 @@ export function useAppInstance(
     const createInstance = async () => {
       if (!instanceId && !isCreating && onUpdateApp && app.instances.length === 0) {
         setIsCreating(true);
-        console.log('Creating default instance for app:', app.name);
+        debugLog('Creating default instance for app', { appId: app.id, appName: app.name });
 
         // Use the API to create instance with proper partition
         try {
@@ -43,13 +44,13 @@ export function useAppInstance(
             await onUpdateApp(app.id, {
               instances: [newInstance],
             });
-            console.log('Successfully created instance:', newInstance.id);
+            debugLog('Successfully created instance', { appId: app.id, instanceId: newInstance.id });
           } else {
-            console.warn('Instance creation API not available');
+            debugWarn('Instance creation API not available');
             setIsCreating(false);
           }
         } catch (error) {
-          console.error('Failed to create default instance:', error);
+          debugError('Failed to create default instance:', error);
           setIsCreating(false);
         }
       } else if (instanceId && isCreating) {

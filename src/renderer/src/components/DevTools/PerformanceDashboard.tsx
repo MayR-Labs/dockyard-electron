@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { debugError, debugWarn } from '../../../../shared/utils/debug';
 
 type ViewEntry = {
   appId: string;
@@ -64,7 +65,7 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
           return { source: 'webview', views: webviewViews };
         }
       } catch (error) {
-        console.warn('WebView metrics unavailable:', error);
+        debugWarn('WebView metrics unavailable:', error);
       }
 
       try {
@@ -73,7 +74,7 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
           return { source: 'browserView', views: browserViews };
         }
       } catch (error) {
-        console.warn('BrowserView metrics unavailable:', error);
+        debugWarn('BrowserView metrics unavailable:', error);
       }
 
       return { source: 'webview', views: [] };
@@ -117,7 +118,7 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
         }
       } catch (error) {
         if (!isCancelled) {
-          console.error('Failed to fetch metrics:', error);
+          debugError('Failed to fetch metrics:', error);
           setMetrics([]);
         }
       }

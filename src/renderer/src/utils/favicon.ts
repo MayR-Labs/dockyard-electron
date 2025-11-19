@@ -1,3 +1,4 @@
+import { debugError } from '../../../shared/utils/debug';
 /**
  * Favicon Utility
  * Handles fetching and generating icons for apps
@@ -72,7 +73,7 @@ export async function downloadFavicon(url: string): Promise<string | null> {
       reader.readAsDataURL(blob);
     });
   } catch (error) {
-    console.error('Failed to download favicon:', error);
+    debugError('Failed to download favicon:', error);
     return null;
   }
 }

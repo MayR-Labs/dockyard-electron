@@ -8,6 +8,7 @@ import {
 import { DEFAULTS, IPC_EVENTS } from '../shared/constants';
 import { App, Workspace } from '../shared/types';
 import { StoreManager } from './store-manager';
+import { debugError, debugLog, debugWarn } from '../shared/utils/debug';
 
 interface WebViewEntry {
   webContentsId: number;
@@ -235,7 +236,7 @@ export class WebViewManager {
     try {
       webContents.focus();
     } catch (error) {
-      console.warn('Failed to focus webContents before printing', error);
+      debugWarn('Failed to focus webContents before printing', error);
     }
 
     webContents.print(mergedOptions, (success, failureReason) => {
@@ -243,9 +244,9 @@ export class WebViewManager {
         return;
       }
 
-      console.warn('webContents.print failed, falling back to window.print()', failureReason);
+      debugWarn('webContents.print failed, falling back to window.print()', failureReason);
       webContents.executeJavaScript('window.print()', true).catch((error: unknown) => {
-        console.error('Fallback window.print() failed', error);
+        debugError('Fallback window.print() failed', error);
       });
     });
   }
@@ -330,7 +331,7 @@ export class WebViewManager {
         };
       }
     } catch (error) {
-      console.error('Failed to get memory usage:', error);
+      debugError('Failed to get memory usage:', error);
     }
 
     return { workingSetSize: 0, privateBytes: 0 };
@@ -355,7 +356,7 @@ export class WebViewManager {
         return processMetrics.cpu.percentCPUUsage || 0;
       }
     } catch (error) {
-      console.error('Failed to get CPU usage:', error);
+      debugError('Failed to get CPU usage:', error);
     }
 
     return 0;
@@ -427,7 +428,7 @@ export class WebViewManager {
       const idleTime = now - entry.lastActive;
 
       if (idleTime > idleThresholdMs) {
-        console.log( // @todo: debugLog() should be used across the codebase
+        debugLog(
           `Requesting hibernation for idle webview: ${viewId} (idle for ${Math.round(idleTime / 60000)} minutes, threshold: ${idleTimeMinutes} minutes)`
         );
 
@@ -522,7 +523,7 @@ export class WebViewManager {
       }
       await webContents.insertCSS(css);
     } catch (error) {
-      console.error(`Failed to inject CSS into ${viewId}:`, error);
+      debugError(`Failed to inject CSS into ${viewId}:`, error);
       throw error;
     }
   }
@@ -544,7 +545,7 @@ export class WebViewManager {
       }
       await webContents.executeJavaScript(js);
     } catch (error) {
-      console.error(`Failed to inject JS into ${viewId}:`, error);
+      debugError(`Failed to inject JS into ${viewId}:`, error);
       throw error;
     }
   }

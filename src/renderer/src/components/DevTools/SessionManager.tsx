@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { App } from '../../../../shared/types/app';
+import { debugError } from '../../../../shared/utils/debug';
 
 interface SessionManagerProps {
   apps: App[];
@@ -30,7 +31,7 @@ export function SessionManager({ apps, onClose }: SessionManagerProps) {
       await window.dockyard.browserView.clearSession(instance.partitionId);
       setMessage({ type: 'success', text: `Session cleared for ${app.name}` });
     } catch (error) {
-      console.error('Failed to clear session:', error);
+      debugError('Failed to clear session:', error);
       setMessage({ type: 'error', text: 'Failed to clear session. Please try again.' });
     } finally {
       setClearing(false);
