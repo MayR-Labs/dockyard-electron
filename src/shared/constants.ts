@@ -5,6 +5,7 @@ export const IPC_CHANNELS = {
     CREATE: 'profile:create',
     DELETE: 'profile:delete',
     SWITCH: 'profile:switch',
+    LAUNCH: 'profile:launch',
     GET_CURRENT: 'profile:get-current',
   },
   WORKSPACE: {

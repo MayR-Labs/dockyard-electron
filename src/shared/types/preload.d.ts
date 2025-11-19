@@ -13,6 +13,7 @@ export interface DockyardAPI {
     create: (name: string) => Promise<ProfileMetadata>;
     delete: (id: string) => Promise<void>;
     switch: (id: string) => Promise<void>;
+    launch: (id: string) => Promise<void>;
     getCurrent: () => Promise<ProfileMetadata | null>;
   };
   workspaces: {

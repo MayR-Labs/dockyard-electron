@@ -9,6 +9,12 @@ export default defineConfig({
   build: {
     outDir: '../../dist/renderer',
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, './src/renderer/index.html'),
+        profilePicker: path.resolve(__dirname, './src/renderer/profile-picker.html'),
+      },
+    },
   },
   resolve: {
     alias: {

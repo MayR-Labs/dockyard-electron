@@ -4,6 +4,7 @@
  */
 
 import { app, ipcMain } from 'electron';
+import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { IPC_CHANNELS } from '../../shared/constants';
@@ -20,7 +21,8 @@ export class ProfileHandlers {
     this.registerListHandler();
     this.registerCreateHandler();
     this.registerDeleteHandler();
-     this.registerSwitchHandler();
+    this.registerLaunchHandler();
+    this.registerSwitchHandler();
     this.registerGetCurrentHandler();
   }
 
@@ -36,14 +38,26 @@ export class ProfileHandlers {
     return dataPath;
   }
 
-  private scheduleRelaunch(profileId: string): void {
-    const args = process.argv.filter((arg) => !arg.startsWith('--profile='));
-    args.push(`--profile=${profileId}`);
+  private launchProfileProcess(profileId: string, options?: { replaceCurrent?: boolean }): void {
+    const filteredArgs = process.argv
+      .slice(1)
+      .filter((arg) => !arg.startsWith('--profile='));
+    filteredArgs.push(`--profile=${profileId}`);
 
-    setTimeout(() => {
-      app.relaunch({ args });
-      app.exit(0);
-    }, 100);
+    const child = spawn(process.execPath, filteredArgs, {
+      env: process.env,
+      cwd: process.cwd(),
+      detached: true,
+      stdio: 'ignore',
+    });
+
+    child.unref();
+
+    if (options?.replaceCurrent) {
+      setTimeout(() => {
+        app.exit(0);
+      }, 100);
+    }
   }
 
   private registerListHandler(): void {
@@ -135,6 +149,24 @@ export class ProfileHandlers {
     });
   }
 
+  private registerLaunchHandler(): void {
+    ipcMain.handle(IPC_CHANNELS.PROFILE.LAUNCH, async (_, id: string) => {
+      const rootStore = this.storeManager.getRootStore();
+      const profiles = rootStore.get('profiles', []);
+      const targetProfile = profiles.find((p: ProfileMetadata) => p.id === id);
+
+      if (!targetProfile) {
+        throw new Error(`Profile "${id}" not found`);
+      }
+
+      targetProfile.lastAccessed = getCurrentTimestamp();
+      rootStore.set('profiles', profiles);
+      rootStore.set('lastActiveProfile', id);
+
+      this.launchProfileProcess(id);
+    });
+  }
+
   private registerSwitchHandler(): void {
     ipcMain.handle(IPC_CHANNELS.PROFILE.SWITCH, async (_, id: string) => {
       const rootStore = this.storeManager.getRootStore();
@@ -157,9 +189,7 @@ export class ProfileHandlers {
       this.storeManager.setCurrentProfile(id);
       this.storeManager.clearCache();
 
-      this.scheduleRelaunch(id);
-
-      return;
+      this.launchProfileProcess(id, { replaceCurrent: true });
     });
   }
 

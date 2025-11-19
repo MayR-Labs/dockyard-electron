@@ -26,6 +26,10 @@ export const profileAPI = {
     return window.dockyard.profiles.switch(id);
   },
 
+  launch: (id: string): Promise<void> => {
+    return window.dockyard.profiles.launch(id);
+  },
+
   getCurrent: (): Promise<ProfileMetadata | null> => {
     return window.dockyard.profiles.getCurrent();
   },

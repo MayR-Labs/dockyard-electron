@@ -7,6 +7,8 @@ import { BrowserViewManager } from './browser-view-manager';
 import { WebViewManager } from './webview-manager';
 import { ProfileMetadata } from '../shared/types';
 import { debugLog } from '../shared/utils/debug';
+import { ProfilePickerWindow } from './profile-picker-window';
+import { ProfileHandlers } from './handlers/profile-handlers';
 
 app.setName('Dockyard');
 
@@ -28,6 +30,8 @@ let windowManager: WindowManager;
 let storeManager: StoreManager;
 let browserViewManager: BrowserViewManager;
 let webViewManager: WebViewManager;
+let profilePickerWindow: ProfilePickerWindow | null = null;
+let profileHandlersRegistered = false;
 
 // Parse command line arguments for profile selection
 function parseProfileFromArgs(): string | null {
@@ -38,55 +42,56 @@ function parseProfileFromArgs(): string | null {
   return null;
 }
 
-/**
- * Initialize the application
- */
-async function initialize(): Promise<void> {
-  // Initialize store manager
-  storeManager = await StoreManager.create();
+function ensureProfileHandlers(): void {
+  if (!profileHandlersRegistered) {
+    new ProfileHandlers(storeManager);
+    profileHandlersRegistered = true;
+  }
+}
 
-  const rootStore = storeManager.getRootStore();
-  const cliProfile = parseProfileFromArgs();
-  const defaultProfileId = rootStore.get('defaultProfile', 'default');
-  const lastActiveProfileId = rootStore.get('lastActiveProfile', defaultProfileId);
-  const requestedProfileId = cliProfile || lastActiveProfileId || defaultProfileId;
+async function startProfileSession(profileId: string): Promise<void> {
+  debugLog('Starting Dockyard profile session:', profileId);
+  storeManager.setCurrentProfile(profileId);
 
-  const profiles = rootStore.get('profiles', [] as ProfileMetadata[]);
-  const resolvedProfileId =
-    profiles.find((profileEntry: ProfileMetadata) => profileEntry.id === requestedProfileId)?.id ||
-    defaultProfileId;
-
-  storeManager.setCurrentProfile(resolvedProfileId);
-  debugLog('Launching Dockyard with profile:', resolvedProfileId);
-
-  // Initialize browser view manager (keeping for compatibility)
   browserViewManager = new BrowserViewManager(storeManager);
-
-  // Initialize webview manager (new)
   webViewManager = new WebViewManager(storeManager);
-
-  // Initialize window manager
   windowManager = new WindowManager();
 
-  // Initialize IPC handlers
   new IPCHandlers(storeManager, browserViewManager, webViewManager, windowManager);
 
-  // Create main window
   const mainWindow = windowManager.createMainWindow();
-
-  // Set main window reference for browser view manager
   browserViewManager.setMainWindow(mainWindow);
 
-  // Update last accessed time for profile
-  rootStore.set('lastActiveProfile', resolvedProfileId);
+  const rootStore = storeManager.getRootStore();
+  rootStore.set('lastActiveProfile', profileId);
 
-  const currentProfile = profiles.find(
-    (profileEntry: ProfileMetadata) => profileEntry.id === resolvedProfileId
-  );
+  const profiles = rootStore.get('profiles', [] as ProfileMetadata[]);
+  const currentProfile = profiles.find((profileEntry) => profileEntry.id === profileId);
   if (currentProfile) {
     currentProfile.lastAccessed = new Date().toISOString();
     rootStore.set('profiles', profiles);
   }
+}
+
+async function startProfilePicker(): Promise<void> {
+  ensureProfileHandlers();
+  profilePickerWindow = new ProfilePickerWindow();
+  profilePickerWindow.createWindow();
+}
+
+/**
+ * Initialize the application
+ */
+async function initialize(): Promise<void> {
+  storeManager = await StoreManager.create();
+  const cliProfile = parseProfileFromArgs();
+
+  if (cliProfile) {
+    await startProfileSession(cliProfile);
+    return;
+  }
+
+  await startProfilePicker();
 }
 
 /**
@@ -95,10 +100,13 @@ async function initialize(): Promise<void> {
 app.whenReady().then(async () => {
   await initialize();
 
-  // On macOS, re-create window when dock icon is clicked
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      windowManager.createMainWindow();
+      if (profilePickerWindow) {
+        profilePickerWindow.createWindow();
+      } else if (windowManager) {
+        windowManager.createMainWindow();
+      }
     }
   });
 });
@@ -112,23 +120,4 @@ app.on('window-all-closed', () => {
   }
 });
 
-/**
- * Handle second instance (for multi-profile support)
- */
-const gotTheLock = app.requestSingleInstanceLock();
-if (!gotTheLock) {
-  // Another instance is already running with the same profile
-  debugLog('Another instance is already running with this profile');
-  app.quit();
-} else {
-  app.on('second-instance', (_event, _commandLine, _workingDirectory) => {
-    // Someone tried to run a second instance, focus our window
-    const mainWindow = windowManager?.getMainWindow();
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) {
-        mainWindow.restore();
-      }
-      mainWindow.focus();
-    }
-  });
-}
+// Allow multiple instances so users can run multiple profiles simultaneously

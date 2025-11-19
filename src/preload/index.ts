@@ -70,6 +70,7 @@ const dockyardAPI: DockyardAPI = {
     create: (name: string) => ipcRenderer.invoke(IPC_CHANNELS.PROFILE.CREATE, name),
     delete: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.PROFILE.DELETE, id),
     switch: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.PROFILE.SWITCH, id),
+    launch: (id: string) => ipcRenderer.invoke(IPC_CHANNELS.PROFILE.LAUNCH, id),
     getCurrent: () => ipcRenderer.invoke(IPC_CHANNELS.PROFILE.GET_CURRENT),
   },
 
