@@ -1,4 +1,5 @@
 import { app, session, WebContents, webContents as electronWebContents } from 'electron';
+import { DEFAULTS } from '../shared/constants';
 import { App, Workspace } from '../shared/types';
 import { StoreManager } from './store-manager';
 
@@ -394,13 +395,20 @@ export class WebViewManager {
         return;
       }
 
+      const workspaceHibernation = workspace.hibernation ?? {
+        enabled: true,
+        idleTimeMinutes: DEFAULTS.IDLE_TIME_MINUTES,
+      };
+
       // Check if hibernation is enabled for this workspace
-      if (!workspace.hibernation?.enabled) {
+      if (!workspaceHibernation.enabled) {
         return;
       }
 
-      // Get idle threshold from workspace settings (default to 15 minutes)
-      const idleTimeMinutes = workspace.hibernation?.idleTimeMinutes || 15;
+      const idleTimeMinutes =
+        app.hibernation?.idleTimeMinutes ??
+        workspaceHibernation.idleTimeMinutes ??
+        DEFAULTS.IDLE_TIME_MINUTES;
       const idleThresholdMs = idleTimeMinutes * 60 * 1000;
 
       const idleTime = now - entry.lastActive;

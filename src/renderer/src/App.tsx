@@ -31,7 +31,7 @@ import { SessionManager } from './components/DevTools/SessionManager';
 import { WorkspaceSettingsModal } from './components/Modals/WorkspaceSettingsModal';
 import { App as AppType } from '../../shared/types/app';
 import { LayoutMode } from '../../shared/types/workspace';
-import { IPC_EVENTS } from '../../shared/constants';
+import { DEFAULTS, IPC_EVENTS } from '../../shared/constants';
 import type { AppShortcutSignal, AppShortcutSignalType } from './types/shortcuts';
 
 function App() {
@@ -73,6 +73,12 @@ function App() {
     }
     return apps.find((appEntry) => appEntry.id === selectedAppId) ?? null;
   }, [apps, selectedAppId]);
+  const selectedAppWorkspace = useMemo(() => {
+    if (!selectedApp) {
+      return null;
+    }
+    return workspaces.find((workspace) => workspace.id === selectedApp.workspaceId) ?? null;
+  }, [selectedApp, workspaces]);
   const [customizationAppId, setCustomizationAppId] = useState<string | null>(null);
   const [awakeApps, setAwakeApps] = useState<Record<string, boolean>>({});
   const [activeInstances, setActiveInstances] = useState<Record<string, string>>({});
@@ -1025,6 +1031,23 @@ function App() {
         onToggleMute={(muted) => {
           if (selectedApp) {
             handleToggleMute(selectedApp.id, muted);
+          }
+        }}
+        workspaceIdleTimeMinutes={
+          selectedAppWorkspace?.hibernation?.idleTimeMinutes ?? DEFAULTS.IDLE_TIME_MINUTES
+        }
+        isWorkspaceHibernationEnabled={selectedAppWorkspace?.hibernation?.enabled ?? true}
+        onUpdateHibernation={async (minutes) => {
+          if (!selectedApp) {
+            return;
+          }
+
+          if (minutes === null) {
+            await handleUpdateApp(selectedApp.id, { hibernation: null });
+          } else {
+            await handleUpdateApp(selectedApp.id, {
+              hibernation: { idleTimeMinutes: minutes },
+            });
           }
         }}
       />

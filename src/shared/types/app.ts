@@ -26,6 +26,10 @@ export interface AppAudioSettings {
   muted: boolean;
 }
 
+export interface AppHibernationSettings {
+  idleTimeMinutes: number;
+}
+
 export interface App {
   id: string;
   name: string;
@@ -40,6 +44,7 @@ export interface App {
   notifications?: AppNotificationSettings;
   display?: AppDisplaySettings;
   audio?: AppAudioSettings;
+  hibernation?: AppHibernationSettings | null;
   createdAt: string;
   updatedAt: string;
 }

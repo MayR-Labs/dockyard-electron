@@ -85,9 +85,13 @@ export function PerformanceDashboard({ onClose }: PerformanceDashboardProps) {
       }
 
       try {
-        const [{ source, views }, apps] = await Promise.all([getActiveViews(), window.dockyard.apps.list()]);
+        const [{ source, views }, apps] = await Promise.all([
+          getActiveViews(),
+          window.dockyard.apps.list(),
+        ]);
 
-        const metricsApi = source === 'webview' ? window.dockyard.webview : window.dockyard.browserView;
+        const metricsApi =
+          source === 'webview' ? window.dockyard.webview : window.dockyard.browserView;
 
         const metricsPromises = views.map(async (view) => {
           const app = apps.find((a) => a.id === view.appId);

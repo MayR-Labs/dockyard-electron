@@ -4,7 +4,7 @@
  */
 
 import { ipcMain } from 'electron';
-import { IPC_CHANNELS } from '../../shared/constants';
+import { DEFAULTS, IPC_CHANNELS } from '../../shared/constants';
 import { StoreManager } from '../store-manager';
 import { BrowserViewManager } from '../browser-view-manager';
 import { App, AppInstance, Workspace } from '../../shared/types';
@@ -123,6 +123,10 @@ export class AppHandlers {
       const workspaces = workspaceStore.get('workspaces', []);
       const workspace = workspaces.find((w: Workspace) => w.id === workspaceId);
       const sessionMode = workspace?.sessionMode || 'isolated';
+      const defaultIdleMinutes =
+        data.hibernation?.idleTimeMinutes ??
+        workspace?.hibernation?.idleTimeMinutes ??
+        DEFAULTS.IDLE_TIME_MINUTES;
 
       // Create default instance if none provided
       const instances =
@@ -154,6 +158,7 @@ export class AppHandlers {
         userAgent: data.userAgent,
         workspaceId: workspaceId,
         instances: instances,
+        hibernation: data.hibernation ?? { idleTimeMinutes: defaultIdleMinutes },
         createdAt: getCurrentTimestamp(),
         updatedAt: getCurrentTimestamp(),
       };
@@ -175,12 +180,26 @@ export class AppHandlers {
         throw new Error(`App with id "${id}" not found`);
       }
 
-      apps[index] = {
+      const nextApp: App = {
         ...apps[index],
         ...data,
         id, // Ensure id cannot be changed
         updatedAt: getCurrentTimestamp(),
       };
+
+      const hasHibernationUpdate = Object.prototype.hasOwnProperty.call(data, 'hibernation');
+      if (hasHibernationUpdate) {
+        if (data.hibernation === null || data.hibernation === undefined) {
+          delete nextApp.hibernation;
+        } else if (data.hibernation) {
+          nextApp.hibernation = {
+            ...apps[index].hibernation,
+            ...data.hibernation,
+          };
+        }
+      }
+
+      apps[index] = nextApp;
 
       store.set('apps', apps);
       return apps[index];

@@ -14,6 +14,7 @@ import {
   DeleteAppSection,
   ResponsiveMode,
   UserAgentSettings,
+  AppHibernationSettings,
 } from './AppOptions';
 
 interface AppOptionsModalProps {
@@ -30,6 +31,9 @@ interface AppOptionsModalProps {
   onUserAgentChange: (userAgent?: string | null) => void;
   isMuted: boolean;
   onToggleMute: (muted: boolean) => void;
+  workspaceIdleTimeMinutes: number;
+  isWorkspaceHibernationEnabled: boolean;
+  onUpdateHibernation: (minutes: number | null) => Promise<void> | void;
 }
 
 export function AppOptionsModal({
@@ -46,6 +50,9 @@ export function AppOptionsModal({
   onUserAgentChange,
   isMuted,
   onToggleMute,
+  workspaceIdleTimeMinutes,
+  isWorkspaceHibernationEnabled,
+  onUpdateHibernation,
 }: AppOptionsModalProps) {
   const [activeTab, setActiveTab] = useState<'general' | 'responsive'>('general');
   const modalRef = useRef<HTMLDivElement>(null);
@@ -157,6 +164,18 @@ export function AppOptionsModal({
                   userAgent={app.userAgent}
                   onChange={(value) =>
                     handleActionWithClose(() => onUserAgentChange(value), { closeAfter: false })
+                  }
+                />
+
+                <AppHibernationSettings
+                  key={`${app.id}-${workspaceIdleTimeMinutes}-${app.hibernation?.idleTimeMinutes ?? 'inherit'}`}
+                  app={app}
+                  workspaceIdleTimeMinutes={workspaceIdleTimeMinutes}
+                  workspaceHibernationEnabled={isWorkspaceHibernationEnabled}
+                  onUpdate={(minutes) =>
+                    handleActionWithClose(() => onUpdateHibernation(minutes), {
+                      closeAfter: false,
+                    })
                   }
                 />
 
