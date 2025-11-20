@@ -133,11 +133,17 @@ export function ProfileSwitcherModal({
                     <div className="text-xs text-gray-400 space-y-1">
                       <p>
                         Created: {new Date(profile.createdAt).toLocaleDateString()} {''}
-                        {new Date(profile.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(profile.createdAt).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
                       </p>
                       <p>
                         Last used: {new Date(profile.lastAccessed).toLocaleDateString()} {''}
-                        {new Date(profile.lastAccessed).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(profile.lastAccessed).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
                       </p>
                       <p className="truncate" title={profile.dataPath}>
                         Data: {profile.dataPath}
@@ -203,7 +209,8 @@ export function ProfileSwitcherModal({
                 </button>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Profiles keep apps, workspaces, and settings separated. Perfect for work vs. personal contexts.
+                Profiles keep apps, workspaces, and settings separated. Perfect for work vs.
+                personal contexts.
               </p>
             </div>
           </div>

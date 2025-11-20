@@ -39,9 +39,7 @@ export class ProfileHandlers {
   }
 
   private launchProfileProcess(profileId: string, options?: { replaceCurrent?: boolean }): void {
-    const filteredArgs = process.argv
-      .slice(1)
-      .filter((arg) => !arg.startsWith('--profile='));
+    const filteredArgs = process.argv.slice(1).filter((arg) => !arg.startsWith('--profile='));
     filteredArgs.push(`--profile=${profileId}`);
 
     const child = spawn(process.execPath, filteredArgs, {
