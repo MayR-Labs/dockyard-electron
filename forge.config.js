@@ -17,7 +17,13 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-zip',
-      platforms: ['win32', 'linux'],
+      platforms: ['darwin', 'win32', 'linux'],
+    },
+    {
+      name: '@electron-forge/maker-dmg',
+      config: {
+        format: 'ULFO',
+      },
     },
     {
       name: '@electron-forge/maker-deb',

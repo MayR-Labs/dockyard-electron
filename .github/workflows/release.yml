@@ -45,27 +45,13 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y rpm fakeroot
 
       - name: Build ${{ matrix.platform }} artifacts
-        shell: bash
-        run: |
-          if [[ "${{ runner.os }}" == "macOS" ]]; then
-            npm run make:ditto-zip
-          else
-            npm run make
-          fi
+        run: npm run make
 
       - name: Upload ${{ matrix.platform }} artifacts
-        if: runner.os != 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: Dockyard-${{ matrix.platform }}
           path: out/make/**/*
-
-      - name: Upload ${{ matrix.platform }} ditto zip
-        if: runner.os == 'macOS'
-        uses: actions/upload-artifact@v4
-        with:
-          name: Dockyard-${{ matrix.platform }}
-          path: out/ditto-zips/*.zip
 
   release:
     name: Publish Release
