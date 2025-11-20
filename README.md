@@ -1,20 +1,58 @@
-# Dockyard
+<p align="center">
+  <img src="assets/icons/icon.png" alt="Dockyard icon" width="120" />
+</p>
+
+<h1 align="center">Dockyard</h1>
 
 > Open, local-first workspace that hosts every web app you care about without handing your data to someone else.
 
 Dockyard combines Electron, React, Vite, and TailwindCSS to provide a hacker-friendly alternative to proprietary "multi-messenger" tools. Profiles isolate your data, workspaces group related apps, and BrowserViews load each service with strict sandboxing so you can focus on the work that matters.
 
+- [Visual Tour](#visual-tour)
 - [Philosophy](#philosophy)
 - [Core Concepts](#core-concepts)
 - [Feature Highlights](#feature-highlights)
-- [Architecture & Tech Stack](#architecture--tech-stack)
-- [Security, Privacy & Data](#security-privacy--data)
+  - [Workspace \& App Management](#workspace--app-management)
+  - [Customisation \& UI](#customisation--ui)
+  - [Productivity \& Performance](#productivity--performance)
+  - [Notifications \& Privacy](#notifications--privacy)
+  - [Planned / Experimental](#planned--experimental)
+- [Architecture \& Tech Stack](#architecture--tech-stack)
+- [Security, Privacy \& Data](#security-privacy--data)
 - [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation \& Local Run](#installation--local-run)
+  - [Helpful Scripts](#helpful-scripts)
 - [Development Workflow](#development-workflow)
-- [Packaging & Distribution](#packaging--distribution)
+- [Packaging \& Distribution](#packaging--distribution)
 - [Release Process](#release-process)
 - [Roadmap Snapshot](#roadmap-snapshot)
 - [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Visual Tour
+
+| App layout overview                                             | Add an app                                          |
+| --------------------------------------------------------------- | --------------------------------------------------- |
+| ![Dockyard workspace layout](assets/screenshots/app-layout.png) | ![Adding a new app](assets/screenshots/add-app.png) |
+
+| App selection catalog                                         | Create workspace flow                                            |
+| ------------------------------------------------------------- | ---------------------------------------------------------------- |
+| ![Selecting a catalog app](assets/screenshots/select-app.png) | ![Creating a workspace](assets/screenshots/create-workspace.png) |
+
+| Switch workspace palette                                                 | Multi-profile picker                                               |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| ![Switching between workspaces](assets/screenshots/switch-workspace.png) | ![Choosing between profiles](assets/screenshots/multi-profile.png) |
+
+| Customise app controls                                           | Advanced app customisation                                        |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------- |
+| ![Quick app customisation](assets/screenshots/customise-app.png) | ![Detailed app overrides](assets/screenshots/customise-app-1.png) |
+
+| Theme controls                                                | Responsive layout presets                                                 |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| ![Customising themes](assets/screenshots/customise-theme.png) | ![Responsiveness settings](assets/screenshots/responsiveness-setting.png) |
 
 ---
 
@@ -72,15 +110,15 @@ Everything runs locally, no telemetry ships anywhere, and you stay in control of
 
 ## Architecture & Tech Stack
 
-| Layer | Technology | Notes |
-| --- | --- | --- |
-| Desktop shell | Electron 39+ | Cross-platform window management, BrowserViews |
-| Main process | TypeScript + Node.js | Window, profile, and IPC orchestration |
-| Renderer | React 19 + Vite 7 | SPA UI with hot reload |
-| State | Zustand 5 | Lightweight stores for profiles, apps, workspaces, settings |
-| Styling | TailwindCSS 4 + custom CSS | Utility-first theming |
-| Animations | Framer Motion 12 | Smooth transitions |
-| Storage | electron-store 11 | Local JSON persistence per profile |
+| Layer         | Technology                 | Notes                                                       |
+| ------------- | -------------------------- | ----------------------------------------------------------- |
+| Desktop shell | Electron 39+               | Cross-platform window management, BrowserViews              |
+| Main process  | TypeScript + Node.js       | Window, profile, and IPC orchestration                      |
+| Renderer      | React 19 + Vite 7          | SPA UI with hot reload                                      |
+| State         | Zustand 5                  | Lightweight stores for profiles, apps, workspaces, settings |
+| Styling       | TailwindCSS 4 + custom CSS | Utility-first theming                                       |
+| Animations    | Framer Motion 12           | Smooth transitions                                          |
+| Storage       | electron-store 11          | Local JSON persistence per profile                          |
 
 ```
 src/
