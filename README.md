@@ -51,6 +51,33 @@ chmod +x install.sh
 ./install.sh
 ```
 
+### Download Pre-Built Releases
+
+Download the latest release from [GitHub Releases](https://github.com/MayR-Labs/dockyard-electron/releases):
+
+**macOS Users** (unsigned app):
+1. Download the `.zip` file for your architecture (Intel/Apple Silicon)
+2. Extract and use the helper script:
+   ```bash
+   curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/scripts/mac-first-run.sh | bash
+   ```
+   Or manually:
+   ```bash
+   xattr -cr Dockyard.app
+   mv Dockyard.app /Applications/
+   open /Applications/Dockyard.app
+   ```
+3. On first launch: Right-click → Open (bypasses Gatekeeper)
+
+**Linux Users**:
+- Download `.deb` (Debian/Ubuntu) or `.rpm` (Fedora/RHEL)
+- Install with your package manager
+
+**Windows Users**:
+- Download and run the `.exe` installer
+
+> 📘 **Note**: Dockyard is not code-signed (requires $99/year Apple Developer account). See [DISTRIBUTION.md](DISTRIBUTION.md) for detailed security information and alternative installation methods.
+
 ---
 
 Dockyard combines Electron, React, Vite, and TailwindCSS to provide a hacker-friendly alternative to proprietary "multi-messenger" tools. Profiles isolate your data, workspaces group related apps, and BrowserViews load each service with strict sandboxing so you can focus on the work that matters.

@@ -172,9 +172,9 @@ build_app() {
 
     print_info "Building for $BUILD_TARGET..."
     print_info "This may take a few minutes..."
-    
+
     npm run make -- --platform=$PLATFORM --arch=$BUILD_ARCH
-    
+
     print_success "Build completed"
 }
 
@@ -213,11 +213,23 @@ install_app() {
         # Fix permissions
         chmod -R 755 "$INSTALL_PATH"
 
-        # Remove quarantine attribute
+        # Remove quarantine attribute (critical for unsigned apps)
+        print_info "Removing quarantine flags..."
         xattr -cr "$INSTALL_PATH" 2>/dev/null || true
+
+        # Additional quarantine removal for nested contents
+        find "$INSTALL_PATH" -type f -exec xattr -d com.apple.quarantine {} \; 2>/dev/null || true
 
         print_success "Dockyard installed to $INSTALL_PATH"
         print_info "You can launch it from Applications or Spotlight"
+
+        # Provide guidance for first launch
+        echo ""
+        print_warning "First Launch Instructions:"
+        echo -e "  ${YELLOW}1.${NC} Right-click Dockyard.app in Applications"
+        echo -e "  ${YELLOW}2.${NC} Select 'Open' from the menu"
+        echo -e "  ${YELLOW}3.${NC} Click 'Open' in the security dialog"
+        echo -e "  ${YELLOW}Or:${NC} Run: ${BLUE}open /Applications/Dockyard.app${NC}"
 
     elif [ "$PLATFORM" = "linux" ]; then
         if [ ! -d "$APP_PATH" ]; then
