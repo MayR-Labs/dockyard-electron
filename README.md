@@ -35,7 +35,7 @@ Download the latest release from [GitHub Releases](https://github.com/MayR-Labs/
    ```
 4. **Launch** from Applications or Spotlight
 
-> ⚠️ **macOS Security Note**: Dockyard is not code-signed (requires $99/year Apple Developer account). On first launch, **right-click** → **Open** → **Open** to bypass Gatekeeper. This is standard for open-source apps. See [DISTRIBUTION.md](DISTRIBUTION.md) for details.
+> ⚠️ macOS security note: Because Dockyard is open‑source and isn’t signed with an Apple Developer ID, macOS Gatekeeper may warn on first launch. To open it, right‑click the Dockyard app in Finder → Open, then click Open again. This is a normal step for unsigned open‑source apps — see DISTRIBUTION.md for details.
 
 ### Linux
 
@@ -57,6 +57,10 @@ Download and run the `.exe` installer from [Releases](https://github.com/MayR-La
 
 Dockyard combines Electron, React, Vite, and TailwindCSS to provide a hacker-friendly alternative to proprietary "multi-messenger" tools. Profiles isolate your data, workspaces group related apps, and BrowserViews load each service with strict sandboxing so you can focus on the work that matters.
 
+- [Quick Install](#quick-install)
+  - [macOS](#macos)
+  - [Linux](#linux)
+  - [Windows](#windows)
 - [Visual Tour](#visual-tour)
 - [Philosophy](#philosophy)
 - [Core Concepts](#core-concepts)

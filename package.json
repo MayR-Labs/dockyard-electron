@@ -1,7 +1,7 @@
 {
   "name": "dockyard",
   "productName": "Dockyard",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "A flexible, open-source multi-app workspace built for power users.",
   "main": "dist/main/index.js",
   "scripts": {
