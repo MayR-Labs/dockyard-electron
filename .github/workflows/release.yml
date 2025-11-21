@@ -119,58 +119,60 @@ jobs:
       - name: Generate release notes
         id: release_notes
         run: |
-          cat > release_notes.md << 'EOF'
-          ## Dockyard ${{ steps.get_version.outputs.VERSION }}
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          cat > release_notes.md << EOF
+          ## Dockyard ${VERSION}
 
           A local-first multi-app workspace powered by Electron.
 
-          ### Installation
+          ### Download
 
-          Download the artifact for your platform from the Assets section below.
+          Choose the installer for your platform:
 
           #### macOS
-          - Use the `.dmg` to install (drag Dockyard to Applications)
-          - OR use a `.zip`/packaged binary if provided.
+          - **Apple Silicon (M1/M2/M3)**: [Dockyard-${VERSION#v}-arm64.dmg](https://github.com/MayR-Labs/dockyard-electron/releases/download/${VERSION}/Dockyard-${VERSION#v}-arm64.dmg)
+          - **Intel (x64)**: [Dockyard-${VERSION#v}-x64.dmg](https://github.com/MayR-Labs/dockyard-electron/releases/download/${VERSION}/Dockyard-${VERSION#v}-x64.dmg)
+
+          **Important**: After installation, remove macOS quarantine:
+          \`\`\`bash
+          curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/scripts/mac-first-run.sh | bash
+          \`\`\`
 
           #### Windows
-          - Run the Squirrel installer (`DockyardSetup.exe`) or similar `.exe`.
+          - **Installer**: [Dockyard-${VERSION#v}.Setup.exe](https://github.com/MayR-Labs/dockyard-electron/releases/download/${VERSION}/Dockyard-${VERSION#v}.Setup.exe)
 
           #### Linux
-          - Debian/Ubuntu: Install the `.deb` package
-            ```bash
-            sudo dpkg -i dockyard-electron_*.deb || sudo apt -f install
-            ```
-          - Fedora/RHEL: Install the `.rpm` package
-            ```bash
-            sudo rpm -i dockyard-electron-*.rpm
-            ```
-
-          ### Verify Installation
-          Launch Dockyard. From the Dockyard menu (or terminal if using a binary), check the version matches the tag:
-          ```bash
-          # If a CLI wrapper becomes available in future
-          Dockyard --version
-          ```
+          - **Debian/Ubuntu**: [dockyard_${VERSION#v}_amd64.deb](https://github.com/MayR-Labs/dockyard-electron/releases/download/${VERSION}/dockyard_${VERSION#v}_amd64.deb)
+            \`\`\`bash
+            sudo dpkg -i dockyard_${VERSION#v}_amd64.deb
+            # Fix dependencies if needed:
+            sudo apt -f install
+            \`\`\`
+          - **Fedora/RHEL**: [dockyard-${VERSION#v}-1.x86_64.rpm](https://github.com/MayR-Labs/dockyard-electron/releases/download/${VERSION}/dockyard-${VERSION#v}-1.x86_64.rpm)
+            \`\`\`bash
+            sudo rpm -i dockyard-${VERSION#v}-1.x86_64.rpm
+            \`\`\`
 
           ### Checksums
-          Verify integrity of downloaded files using the provided SHA-256 checksums:
-          ```bash
-          # Example (replace <file>)
-          sha256sum <file>
-          # or on macOS
-          shasum -a 256 <file>
-          ```
-          Compare the output to the corresponding entry in `checksums.txt`.
+          Verify file integrity using SHA-256:
+          \`\`\`bash
+          # Linux
+          sha256sum <downloaded-file>
+          # macOS
+          shasum -a 256 <downloaded-file>
+          \`\`\`
+          Compare with checksums below or in \`checksums.txt\`.
 
           ### What's Changed
-          See the [CHANGELOG](https://github.com/MayR-Labs/dockyard-electron/blob/main/CHANGELOG.md) for detailed updates (if available).
+          See the [CHANGELOG](https://github.com/MayR-Labs/dockyard-electron/blob/main/CHANGELOG.md) for detailed updates.
 
           ### Transparency & Privacy
           Dockyard is local-first with no telemetry. Review the source at any time.
+
+          ### Artifact Checksums (SHA-256)
+          \`\`\`text
           EOF
           # Append checksums inline for convenience
-          echo "\n### Artifact Checksums (SHA-256)" >> release_notes.md
-          echo '\n```text' >> release_notes.md
           cat collected/checksums.txt >> release_notes.md
           echo '```' >> release_notes.md
           cat release_notes.md
