@@ -5,7 +5,7 @@ module.exports = {
   packagerConfig: {
     asar: true,
     icon: './assets/icons/icon',
-    executableName: 'dockyard',
+    executableName: 'Dockyard',
   },
   rebuildConfig: {},
   makers: [
@@ -15,10 +15,10 @@ module.exports = {
         setupIcon: './assets/icons/icon.ico',
       },
     },
-    {
-      name: '@electron-forge/maker-zip',
-      platforms: ['darwin', 'win32', 'linux'],
-    },
+    // {
+    //   name: '@electron-forge/maker-zip',
+    //   platforms: ['darwin', 'win32', 'linux'],
+    // },
     {
       name: '@electron-forge/maker-dmg',
       config: {
