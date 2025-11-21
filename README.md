@@ -4,7 +4,54 @@
 
 <h1 align="center">Dockyard</h1>
 
-> Open, local-first workspace that hosts every web app you care about without handing your data to someone else.
+<p align="center">
+  <strong>Open, local-first workspace that hosts every web app you care about without handing your data to someone else.</strong>
+</p>
+
+<p align="center">
+  <a href="#quick-install">Quick Install</a> •
+  <a href="#visual-tour">Visual Tour</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#roadmap-snapshot">Roadmap</a>
+</p>
+
+---
+
+## Quick Install
+
+### One-Line Installation
+
+Install Dockyard with a single command:
+
+```bash
+# Using curl
+curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh | bash
+
+# Or using wget
+wget -qO- https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh | bash
+```
+
+The installer will automatically:
+- ✅ Detect your platform (macOS/Linux) and architecture
+- ✅ Check prerequisites (Node.js 18+, build tools)
+- ✅ Install dependencies and build the application
+- ✅ Install Dockyard to the appropriate system location
+- ✅ Create desktop shortcuts and menu entries
+
+### Manual Installation
+
+Prefer to review the script first?
+
+```bash
+# Download and inspect
+curl -o install.sh https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh
+chmod +x install.sh
+
+# Run when ready
+./install.sh
+```
+
+---
 
 Dockyard combines Electron, React, Vite, and TailwindCSS to provide a hacker-friendly alternative to proprietary "multi-messenger" tools. Profiles isolate your data, workspaces group related apps, and BrowserViews load each service with strict sandboxing so you can focus on the work that matters.
 

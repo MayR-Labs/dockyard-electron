@@ -5,6 +5,13 @@
 
 set -e  # Exit on error
 
+# Check if running in non-interactive mode (piped from curl/wget)
+if [ -t 0 ]; then
+    INTERACTIVE=true
+else
+    INTERACTIVE=false
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -174,14 +181,20 @@ install_app() {
     if [ "$PLATFORM" = "mac" ]; then
         if [ -d "$INSTALL_PATH" ]; then
             print_warning "Existing installation found at $INSTALL_PATH"
-            read -p "Remove existing installation? (y/N): " -n 1 -r
-            echo
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
+            if [ "$INTERACTIVE" = true ]; then
+                read -p "Remove existing installation? (y/N): " -n 1 -r
+                echo
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    rm -rf "$INSTALL_PATH"
+                    print_success "Removed existing installation"
+                else
+                    print_error "Installation cancelled"
+                    exit 1
+                fi
+            else
+                print_info "Removing existing installation automatically..."
                 rm -rf "$INSTALL_PATH"
                 print_success "Removed existing installation"
-            else
-                print_error "Installation cancelled"
-                exit 1
             fi
         fi
 
@@ -250,10 +263,16 @@ EOF
 cleanup() {
     print_header "Cleanup"
 
-    read -p "Remove build artifacts to save space? (Y/n): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Nn]$ ]]; then
-        print_info "Removing build artifacts..."
+    if [ "$INTERACTIVE" = true ]; then
+        read -p "Remove build artifacts to save space? (Y/n): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+            print_info "Removing build artifacts..."
+            rm -rf out/
+            print_success "Build artifacts removed"
+        fi
+    else
+        print_info "Removing build artifacts to save space..."
         rm -rf out/
         print_success "Build artifacts removed"
     fi
@@ -264,36 +283,41 @@ main() {
     clear
     echo -e "${BLUE}"
     cat << "EOF"
-╔═══════════════════════════════════════════════╗
-║                                               ║
+╔══════════════════════════════════════════════╗
+║                                              ║
 ║     ██████╗  ██████╗  ██████╗██╗  ██╗        ║
 ║     ██╔══██╗██╔═══██╗██╔════╝██║ ██╔╝        ║
 ║     ██║  ██║██║   ██║██║     █████╔╝         ║
 ║     ██║  ██║██║   ██║██║     ██╔═██╗         ║
 ║     ██████╔╝╚██████╔╝╚██████╗██║  ██╗        ║
 ║     ╚═════╝  ╚═════╝  ╚═════╝╚═╝  ╚═╝        ║
-║                                               ║
+║                                              ║
 ║    ██╗   ██╗ █████╗ ██████╗ ██████╗          ║
 ║    ╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗         ║
 ║     ╚████╔╝ ███████║██████╔╝██║  ██║         ║
 ║      ╚██╔╝  ██╔══██║██╔══██╗██║  ██║         ║
 ║       ██║   ██║  ██║██║  ██║██████╔╝         ║
 ║       ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝          ║
-║                                               ║
-║        Installation Script v1.0               ║
-║                                               ║
-╚═══════════════════════════════════════════════╝
+║                                              ║
+║        Installation Script v1.0              ║
+║                                              ║
+╚══════════════════════════════════════════════╝
 EOF
     echo -e "${NC}\n"
 
     print_info "This script will build and install Dockyard on your system"
     print_warning "The process may take several minutes\n"
 
-    read -p "Continue with installation? (Y/n): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Nn]$ ]]; then
-        print_info "Installation cancelled"
-        exit 0
+    if [ "$INTERACTIVE" = true ]; then
+        read -p "Continue with installation? (Y/n): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            print_info "Installation cancelled"
+            exit 0
+        fi
+    else
+        print_info "Running in non-interactive mode, proceeding with installation..."
+        sleep 2
     fi
 
     detect_platform
