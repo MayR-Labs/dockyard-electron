@@ -95,59 +95,45 @@
         • You're bypassing Apple's "walled garden," not actual security
     </div>
 
-    <h2>🚀 Quick Install (Recommended)</h2>
-
-    <p>The easiest way to install Dockyard with automatic quarantine removal:</p>
-
-    <pre><code>curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh | bash</code></pre>
-
-    <div class="success">
-        ✅ This script automatically handles all security flags and installs Dockyard to /Applications
-    </div>
-
-    <h2>📦 Manual Installation</h2>
+    <h2>🚀 Installation Steps</h2>
 
     <div class="steps">
-        <h3>Method 1: Helper Script</h3>
+        <h3>Step 1: Download the DMG</h3>
+        <p>Download <code>Dockyard-{version}-{arch}.dmg</code> from <a href="https://github.com/MayR-Labs/dockyard-electron/releases">GitHub Releases</a></p>
+        <ul>
+            <li><strong>Apple Silicon (M1/M2/M3):</strong> darwin-arm64.dmg</li>
+            <li><strong>Intel Macs:</strong> darwin-x64.dmg</li>
+        </ul>
+    </div>
+
+    <div class="steps">
+        <h3>Step 2: Install the App</h3>
         <ol>
-            <li>Download <code>Dockyard-darwin-{arch}.zip</code> from <a href="https://github.com/MayR-Labs/dockyard-electron/releases">GitHub Releases</a></li>
-            <li>Extract the ZIP file</li>
-            <li>Open Terminal and run:
-                <pre><code>curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/scripts/mac-first-run.sh | bash</code></pre>
-            </li>
+            <li>Open the downloaded DMG file</li>
+            <li>Drag <strong>Dockyard.app</strong> to the <strong>Applications</strong> folder</li>
+            <li>Close the DMG window</li>
         </ol>
     </div>
 
     <div class="steps">
-        <h3>Method 2: Manual Commands</h3>
-        <ol>
-            <li>Download and extract the ZIP from Releases</li>
-            <li>Open Terminal in the folder containing <code>Dockyard.app</code></li>
-            <li>Remove quarantine flags:
-                <pre><code>xattr -cr Dockyard.app</code></pre>
-            </li>
-            <li>Move to Applications:
-                <pre><code>mv Dockyard.app /Applications/</code></pre>
-            </li>
-            <li>Launch it:
-                <pre><code>open /Applications/Dockyard.app</code></pre>
-            </li>
-        </ol>
+        <h3>Step 3: Remove Quarantine (Required)</h3>
+        <p><strong>Option A: Automatic (Recommended)</strong></p>
+        <pre><code>curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/scripts/mac-first-run.sh | bash</code></pre>
+
+        <p><strong>Option B: Manual</strong></p>
+        <pre><code>xattr -cr /Applications/Dockyard.app</code></pre>
     </div>
 
     <div class="steps">
-        <h3>Method 3: Right-Click Open</h3>
+        <h3>Step 4: First Launch</h3>
         <ol>
-            <li>Download and extract the ZIP</li>
-            <li>Move <code>Dockyard.app</code> to Applications</li>
+            <li>Go to <strong>Applications</strong> folder</li>
             <li><strong>Right-click</strong> on Dockyard.app</li>
             <li>Select <strong>"Open"</strong> from the menu</li>
             <li>Click <strong>"Open"</strong> in the security dialog</li>
-            <li>Subsequent launches work normally</li>
+            <li>Subsequent launches work normally (just double-click)</li>
         </ol>
-    </div>
-
-    <h2>🆘 If macOS Still Blocks It</h2>
+    </div>    <h2>🆘 If macOS Still Blocks It</h2>
 
     <div class="steps">
         <ol>
@@ -165,9 +151,9 @@
 
     <pre><code>sudo spctl --add /Applications/Dockyard.app</code></pre>
 
-    <h2>🏗️ Build from Source (Most Secure)</h2>
+    <h2>🏗️ Build from Source</h2>
 
-    <p>Want complete control? Build it yourself:</p>
+    <p>Prefer to build locally? No quarantine issues:</p>
 
     <pre><code>git clone https://github.com/MayR-Labs/dockyard-electron.git
 cd dockyard-electron
@@ -176,7 +162,7 @@ npm run make
 cp -R "out/Dockyard-darwin-$(uname -m)/Dockyard.app" /Applications/</code></pre>
 
     <div class="success">
-        When you build locally, macOS doesn't apply quarantine flags, so it opens normally!
+        ✅ Locally built apps don't get quarantine flags and open normally!
     </div>
 
     <h2>🎯 Quick Links</h2>

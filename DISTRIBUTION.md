@@ -2,41 +2,23 @@
 
 ## Mac Distribution (Unsigned App)
 
-Since Dockyard is not code-signed (requires paid Apple Developer account), Mac users need to bypass Gatekeeper. Here are the recommended distribution methods:
+Since Dockyard is not code-signed (requires paid Apple Developer account), Mac users need to bypass Gatekeeper. Here's the recommended installation workflow:
 
-### Method 1: Installation Script (Recommended)
+### Standard Installation Process
 
-Users can install via the automated script which handles quarantine removal:
-
-```bash
-curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh | bash
-```
-
-### Method 2: Direct Download + Manual Installation
-
-1. **Download the latest release** from GitHub Releases
-2. **Extract the ZIP** file
-3. **Remove quarantine attributes**:
+1. **Download the DMG** from [GitHub Releases](https://github.com/MayR-Labs/dockyard-electron/releases)
+2. **Install the app** by opening the DMG and dragging Dockyard to Applications
+3. **Remove quarantine flags** using the helper script:
    ```bash
-   xattr -cr "/path/to/Dockyard.app"
+   curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/scripts/mac-first-run.sh | bash
    ```
-4. **Move to Applications**:
+   Or manually:
    ```bash
-   mv Dockyard.app /Applications/
+   xattr -cr /Applications/Dockyard.app
    ```
-5. **First Launch**: Right-click → Open (bypasses Gatekeeper)
+4. **First Launch**: Right-click → Open (bypasses Gatekeeper)
 
-### Method 3: Terminal Launch Helper
-
-For downloaded builds, users can run:
-
-```bash
-# Navigate to where Dockyard.app is located
-xattr -cr Dockyard.app
-open Dockyard.app
-```
-
-### Method 4: System Settings Override
+### Alternative: System Settings Override
 
 If the app is blocked:
 
@@ -47,9 +29,9 @@ If the app is blocked:
 
 ---
 
-## Building from Source (Most Secure)
+## Building from Source
 
-Users can build locally to avoid all quarantine issues:
+Users who prefer to build locally (no quarantine issues):
 
 ```bash
 git clone https://github.com/MayR-Labs/dockyard-electron.git
@@ -61,6 +43,8 @@ npm run make
 # Move it to Applications:
 cp -R "out/Dockyard-darwin-$(uname -m)/Dockyard.app" /Applications/
 ```
+
+Locally built apps don't get quarantine flags, so they open normally.
 
 ---
 

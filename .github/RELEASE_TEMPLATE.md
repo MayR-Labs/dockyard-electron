@@ -12,44 +12,35 @@ Open-source, local-first multi-app workspace manager for macOS, Linux, and Windo
 
 #### macOS (Intel & Apple Silicon)
 
-**Quick Install:**
-```bash
-curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh | bash
-```
+1. **Download** the `.dmg` file for your architecture below
+   - Apple Silicon (M1/M2/M3): `darwin-arm64.dmg`
+   - Intel Macs: `darwin-x64.dmg`
 
-**Manual Install:**
-1. Download `Dockyard-darwin-{arch}.zip` below
-2. Extract the archive
-3. Run the first-launch helper:
+2. **Install** by opening the DMG and dragging Dockyard to Applications
+
+3. **Remove quarantine** (required for unsigned apps):
    ```bash
    curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/scripts/mac-first-run.sh | bash
    ```
-4. Or manually:
+   Or manually:
    ```bash
-   xattr -cr Dockyard.app
-   mv Dockyard.app /Applications/
+   xattr -cr /Applications/Dockyard.app
    ```
-5. **First launch**: Right-click → Open → Open (bypasses Gatekeeper)
+
+4. **First launch**: Right-click → Open → Open (bypasses Gatekeeper)
 
 > ⚠️ **Note**: This app is not code-signed. macOS will show a security warning on first launch. This is expected for open-source apps without an Apple Developer account ($99/year). You can review our source code anytime.
 
 #### Linux
 
-**Debian/Ubuntu (.deb):**
+**Debian/Ubuntu:**
 ```bash
 sudo dpkg -i dockyard_*_amd64.deb
-# Or install via your package manager
 ```
 
-**Fedora/RHEL (.rpm):**
+**Fedora/RHEL:**
 ```bash
 sudo rpm -i dockyard-*.rpm
-# Or install via your package manager
-```
-
-**Quick Install Script:**
-```bash
-curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh | bash
 ```
 
 #### Windows

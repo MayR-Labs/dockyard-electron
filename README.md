@@ -19,64 +19,39 @@
 
 ## Quick Install
 
-### One-Line Installation
+Download the latest release from [GitHub Releases](https://github.com/MayR-Labs/dockyard-electron/releases) for your platform:
 
-Install Dockyard with a single command:
+### macOS
 
-```bash
-# Using curl
-curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh | bash
-
-# Or using wget
-wget -qO- https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh | bash
-```
-
-The installer will automatically:
-- ✅ Detect your platform (macOS/Linux) and architecture
-- ✅ Check prerequisites (Node.js 18+, build tools)
-- ✅ Install dependencies and build the application
-- ✅ Install Dockyard to the appropriate system location
-- ✅ Create desktop shortcuts and menu entries
-
-### Manual Installation
-
-Prefer to review the script first?
-
-```bash
-# Download and inspect
-curl -o install.sh https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/install.sh
-chmod +x install.sh
-
-# Run when ready
-./install.sh
-```
-
-### Download Pre-Built Releases
-
-Download the latest release from [GitHub Releases](https://github.com/MayR-Labs/dockyard-electron/releases):
-
-**macOS Users** (unsigned app):
-1. Download the `.zip` file for your architecture (Intel/Apple Silicon)
-2. Extract and use the helper script:
+1. **Download** the `.dmg` file for your architecture (Intel/Apple Silicon)
+2. **Install** by opening the DMG and dragging Dockyard to Applications
+3. **Remove quarantine** (required for unsigned apps):
    ```bash
    curl -sSL https://raw.githubusercontent.com/MayR-Labs/dockyard-electron/main/scripts/mac-first-run.sh | bash
    ```
    Or manually:
    ```bash
-   xattr -cr Dockyard.app
-   mv Dockyard.app /Applications/
-   open /Applications/Dockyard.app
+   xattr -cr /Applications/Dockyard.app
    ```
-3. On first launch: Right-click → Open (bypasses Gatekeeper)
+4. **Launch** from Applications or Spotlight
 
-**Linux Users**:
-- Download `.deb` (Debian/Ubuntu) or `.rpm` (Fedora/RHEL)
-- Install with your package manager
+> ⚠️ **macOS Security Note**: Dockyard is not code-signed (requires $99/year Apple Developer account). On first launch, **right-click** → **Open** → **Open** to bypass Gatekeeper. This is standard for open-source apps. See [DISTRIBUTION.md](DISTRIBUTION.md) for details.
 
-**Windows Users**:
-- Download and run the `.exe` installer
+### Linux
 
-> 📘 **Note**: Dockyard is not code-signed (requires $99/year Apple Developer account). See [DISTRIBUTION.md](DISTRIBUTION.md) for detailed security information and alternative installation methods.
+**Debian/Ubuntu:**
+```bash
+sudo dpkg -i dockyard_*_amd64.deb
+```
+
+**Fedora/RHEL:**
+```bash
+sudo rpm -i dockyard-*.rpm
+```
+
+### Windows
+
+Download and run the `.exe` installer from [Releases](https://github.com/MayR-Labs/dockyard-electron/releases).
 
 ---
 
