@@ -44,7 +44,7 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Build (electron-forge make)
-        run: npx electron-forge make --arch=${{ matrix.arch }}
+        run: npm run build && npx electron-forge make --arch=${{ matrix.arch }}
 
       - name: Collect artifacts
         shell: bash
