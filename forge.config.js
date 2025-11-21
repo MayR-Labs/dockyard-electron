@@ -5,7 +5,8 @@ module.exports = {
   packagerConfig: {
     asar: true,
     icon: './assets/icons/icon',
-    executableName: 'Dockyard',
+    // Use lowercase executable name to satisfy linux deb/rpm makers expecting 'dockyard'
+    executableName: 'dockyard',
   },
   rebuildConfig: {},
   makers: [

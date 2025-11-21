@@ -10,11 +10,19 @@ permissions:
 
 jobs:
   build:
-    name: Build Artifacts (${{ matrix.os }})
+    name: Build Artifacts (${{ matrix.os }} / ${{ matrix.arch }})
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            arch: x64
+          - os: macos-latest
+            arch: arm64
+          - os: macos-latest
+            arch: x64
+          - os: windows-latest
+            arch: x64
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout code
@@ -36,7 +44,7 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Build (electron-forge make)
-        run: npm run make
+        run: npx electron-forge make --arch=${{ matrix.arch }}
 
       - name: Collect artifacts
         shell: bash
@@ -51,7 +59,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-${{ matrix.os }}
+          name: artifacts-${{ matrix.os }}-${{ matrix.arch }}
           path: dist/*
           if-no-files-found: warn
 
@@ -60,22 +68,28 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Download all artifacts (Ubuntu)
+      - name: Download artifacts (Ubuntu x64)
         uses: actions/download-artifact@v4
         with:
-          name: artifacts-ubuntu-latest
+          name: artifacts-ubuntu-latest-x64
           path: collected
 
-      - name: Download all artifacts (macOS)
+      - name: Download artifacts (macOS arm64)
         uses: actions/download-artifact@v4
         with:
-          name: artifacts-macos-latest
+          name: artifacts-macos-latest-arm64
           path: collected
 
-      - name: Download all artifacts (Windows)
+      - name: Download artifacts (macOS x64)
         uses: actions/download-artifact@v4
         with:
-          name: artifacts-windows-latest
+          name: artifacts-macos-latest-x64
+          path: collected
+
+      - name: Download artifacts (Windows x64)
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts-windows-latest-x64
           path: collected
 
       - name: List collected artifacts
