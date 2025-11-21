@@ -51,13 +51,15 @@ detect_platform() {
 
     case "$OS" in
         Darwin*)
-            PLATFORM="mac"
+            PLATFORM="darwin"
             PLATFORM_NAME="macOS"
             if [ "$ARCH" = "arm64" ]; then
                 BUILD_TARGET="darwin-arm64"
+                BUILD_ARCH="arm64"
                 PACKAGE_NAME="Dockyard-darwin-arm64"
             else
                 BUILD_TARGET="darwin-x64"
+                BUILD_ARCH="x64"
                 PACKAGE_NAME="Dockyard-darwin-x64"
             fi
             APP_PATH="out/Dockyard-darwin-${ARCH}/Dockyard.app"
@@ -68,9 +70,11 @@ detect_platform() {
             PLATFORM_NAME="Linux"
             if [ "$ARCH" = "x86_64" ]; then
                 BUILD_TARGET="linux-x64"
+                BUILD_ARCH="x64"
                 PACKAGE_NAME="Dockyard-linux-x64"
             elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
                 BUILD_TARGET="linux-arm64"
+                BUILD_ARCH="arm64"
                 PACKAGE_NAME="Dockyard-linux-arm64"
             else
                 print_error "Unsupported Linux architecture: $ARCH"
@@ -122,7 +126,7 @@ check_prerequisites() {
     print_success "npm $(npm -v)"
 
     # Platform-specific checks
-    if [ "$PLATFORM" = "mac" ]; then
+    if [ "$PLATFORM" = "darwin" ]; then
         if ! command -v xcode-select &> /dev/null; then
             print_warning "Xcode Command Line Tools not found"
             print_info "Installing Xcode Command Line Tools..."
@@ -168,9 +172,9 @@ build_app() {
 
     print_info "Building for $BUILD_TARGET..."
     print_info "This may take a few minutes..."
-
-    npm run make -- --platform=$PLATFORM --arch=$(echo $BUILD_TARGET | cut -d'-' -f2)
-
+    
+    npm run make -- --platform=$PLATFORM --arch=$BUILD_ARCH
+    
     print_success "Build completed"
 }
 
@@ -178,7 +182,7 @@ build_app() {
 install_app() {
     print_header "Installing Dockyard"
 
-    if [ "$PLATFORM" = "mac" ]; then
+    if [ "$PLATFORM" = "darwin" ]; then
         if [ -d "$INSTALL_PATH" ]; then
             print_warning "Existing installation found at $INSTALL_PATH"
             if [ "$INTERACTIVE" = true ]; then
@@ -330,7 +334,7 @@ EOF
     print_header "Installation Complete!"
     print_success "Dockyard has been successfully installed"
 
-    if [ "$PLATFORM" = "mac" ]; then
+    if [ "$PLATFORM" = "darwin" ]; then
         echo -e "\n${GREEN}Launch Dockyard from:${NC}"
         echo -e "  • Applications folder"
         echo -e "  • Spotlight (Cmd+Space, type 'Dockyard')"
