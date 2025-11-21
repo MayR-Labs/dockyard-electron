@@ -1,7 +1,6 @@
-name: Release Builds
+name: Release
 
 on:
-  workflow_dispatch:
   push:
     tags:
       - 'v*'
@@ -11,27 +10,19 @@ permissions:
 
 jobs:
   build:
-    name: Build ${{ matrix.platform }}
-    runs-on: ${{ matrix.os }}
+    name: Build Artifacts (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: macos-15
-            platform: macOS (Intel)
-          - os: macos-latest
-            platform: macOS (Apple Silicon)
-          - os: ubuntu-latest
-            platform: Linux
-          - os: windows-latest
-            platform: Windows
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -40,61 +31,147 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Linux packaging tools
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y rpm fakeroot
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-      - name: Build ${{ matrix.platform }} artifacts
+      - name: Build (electron-forge make)
         run: npm run make
 
-      - name: Upload ${{ matrix.platform }} artifacts
+      - name: Collect artifacts
+        shell: bash
+        run: |
+          mkdir -p dist
+          # Copy all generated files from out/make (electron-forge output) into dist
+          if [ -d out/make ]; then
+            find out/make -type f -maxdepth 4 -print -exec cp {} dist/ \;
+          fi
+          ls -lh dist || true
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Dockyard-${{ matrix.platform }}
-          path: out/make/**/*
+          name: artifacts-${{ matrix.os }}
+          path: dist/*
+          if-no-files-found: warn
 
   release:
-    name: Publish Release
-    needs: build
+    name: Create Release
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    permissions:
-      contents: write
+    needs: build
     steps:
-      - name: Download artifacts
+      - name: Download all artifacts (Ubuntu)
         uses: actions/download-artifact@v4
         with:
-          path: dist-artifacts
+          name: artifacts-ubuntu-latest
+          path: collected
+
+      - name: Download all artifacts (macOS)
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts-macos-latest
+          path: collected
+
+      - name: Download all artifacts (Windows)
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts-windows-latest
+          path: collected
+
+      - name: List collected artifacts
+        run: ls -Rlh collected || true
+
+      - name: Generate checksums
+        id: checksums
+        run: |
+          cd collected
+          # Use shasum for macOS compatibility, but on Linux runner sha256sum exists; prefer portable approach
+          for f in *; do
+            if [ -f "$f" ]; then
+              if command -v sha256sum >/dev/null 2>&1; then
+                sha256sum "$f" >> checksums.txt
+              else
+                shasum -a 256 "$f" >> checksums.txt
+              fi
+            fi
+          done
+          sort -o checksums.txt checksums.txt
+          echo "Generated checksums:" && cat checksums.txt
+
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Generate release notes
         id: release_notes
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          result-encoding: string
-          script: |
-            const tag = context.ref.replace('refs/tags/', '');
-            const notes = await github.rest.repos.generateReleaseNotes({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: tag,
-              target_commitish: tag,
-            });
-            return notes.data.body || `Release ${tag}`;
-
-      - name: Write release_notes.md
         run: |
-          cat <<EOF > release_notes.md
-          ${{ steps.release_notes.outputs.result }}
-          EOF
+          cat > release_notes.md << 'EOF'
+          ## Dockyard ${{ steps.get_version.outputs.VERSION }}
 
-      - name: Create GitHub release
+          A local-first multi-app workspace powered by Electron.
+
+          ### Installation
+
+          Download the artifact for your platform from the Assets section below.
+
+          #### macOS
+          - Use the `.dmg` to install (drag Dockyard to Applications)
+          - OR use a `.zip`/packaged binary if provided.
+
+          #### Windows
+          - Run the Squirrel installer (`DockyardSetup.exe`) or similar `.exe`.
+
+          #### Linux
+          - Debian/Ubuntu: Install the `.deb` package
+            ```bash
+            sudo dpkg -i dockyard-electron_*.deb || sudo apt -f install
+            ```
+          - Fedora/RHEL: Install the `.rpm` package
+            ```bash
+            sudo rpm -i dockyard-electron-*.rpm
+            ```
+
+          ### Verify Installation
+          Launch Dockyard. From the Dockyard menu (or terminal if using a binary), check the version matches the tag:
+          ```bash
+          # If a CLI wrapper becomes available in future
+          Dockyard --version
+          ```
+
+          ### Checksums
+          Verify integrity of downloaded files using the provided SHA-256 checksums:
+          ```bash
+          # Example (replace <file>)
+          sha256sum <file>
+          # or on macOS
+          shasum -a 256 <file>
+          ```
+          Compare the output to the corresponding entry in `checksums.txt`.
+
+          ### What's Changed
+          See the [CHANGELOG](https://github.com/MayR-Labs/dockyard-electron/blob/main/CHANGELOG.md) for detailed updates (if available).
+
+          ### Transparency & Privacy
+          Dockyard is local-first with no telemetry. Review the source at any time.
+          EOF
+          # Append checksums inline for convenience
+          echo "\n### Artifact Checksums (SHA-256)" >> release_notes.md
+          echo '\n```text' >> release_notes.md
+          cat collected/checksums.txt >> release_notes.md
+          echo '```' >> release_notes.md
+          cat release_notes.md
+
+      - name: Attach checksums file
+        run: cp collected/checksums.txt .
+
+      - name: Create Release
         uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            collected/*
+            checksums.txt
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          body_path: release_notes.md
-          files: |
-            dist-artifacts/**/*
