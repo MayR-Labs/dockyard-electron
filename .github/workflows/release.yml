@@ -177,15 +177,10 @@ jobs:
           echo '```' >> release_notes.md
           cat release_notes.md
 
-      - name: Attach checksums file
-        run: cp collected/checksums.txt .
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            collected/*
-            checksums.txt
+          files: collected/*
           body_path: release_notes.md
           draft: false
           prerelease: false
