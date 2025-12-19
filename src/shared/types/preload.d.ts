@@ -158,7 +158,8 @@ export interface DockyardAPI {
   };
   backup: {
     create: (password: string) => Promise<{ success: boolean; filePath?: string; error?: string }>;
-    restore: (password: string) => Promise<{ success: boolean; error?: string }>;
+    selectFile: () => Promise<{ success: boolean; filePath?: string; error?: string }>;
+    restore: (filePath: string, password: string) => Promise<{ success: boolean; error?: string }>;
   };
   window: {
     toggleDevTools: () => Promise<void>;

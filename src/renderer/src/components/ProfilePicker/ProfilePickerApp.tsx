@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ProfileMetadata } from '../../../../shared/types/profile';
 import { profileAPI } from '../../services/api';
 import { getErrorMessage } from '../../utils/errors';
+import { RestoreModal } from '../Modals/RestoreModal';
+import { AnimatePresence } from 'framer-motion';
 
 interface ProfileActionState {
   launchingId: string | null;
@@ -31,6 +33,7 @@ export function ProfilePickerApp() {
     deletingId: null,
     creating: false,
   });
+  const [isRestoreModalOpen, setIsRestoreModalOpen] = useState(false);
 
   const loadProfiles = useCallback(async () => {
     setLoading(true);
@@ -104,9 +107,27 @@ export function ProfilePickerApp() {
     <div className="h-screen flex items-center overflow-auto bg-slate-950 text-white">
       <div className="max-w-5xl mx-auto px-8 py-10 space-y-8">
         <header className="flex flex-col gap-2">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Dockyard</p>
-          <h1 className="text-3xl font-semibold">Choose a profile to get started</h1>
-          <p className="text-slate-400">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Dockyard</p>
+              <h1 className="text-3xl font-semibold mt-2">Choose a profile to get started</h1>
+            </div>
+            <button
+              onClick={() => setIsRestoreModalOpen(true)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition text-sm border border-slate-700"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                />
+              </svg>
+              Import Backup
+            </button>
+          </div>
+          <p className="text-slate-400 max-w-2xl">
             Each profile keeps its own workspaces, apps, and settings. Launch multiple profiles to
             run different contexts side by side.
           </p>
@@ -225,6 +246,14 @@ export function ProfilePickerApp() {
           </p>
         </section>
       </div>
+      <RestoreModal
+        isOpen={isRestoreModalOpen}
+        onClose={() => setIsRestoreModalOpen(false)}
+        onRestoreSuccess={() => {
+          // Can optionally reload profiles here, but the app usually restarts on success
+          void loadProfiles();
+        }}
+      />
     </div>
   );
 }

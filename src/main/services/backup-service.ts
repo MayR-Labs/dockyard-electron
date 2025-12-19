@@ -84,11 +84,10 @@ export class BackupService {
   }
 
   /**
-   * Restore a backup from file
+   * Select a backup file from dialog
    */
-  async restoreBackup(password: string): Promise<{ success: boolean; error?: string }> {
+  async selectBackupFile(): Promise<{ success: boolean; filePath?: string; error?: string }> {
     try {
-      // Open Dialog
       const { filePaths } = await dialog.showOpenDialog({
         title: 'Select Backup File',
         filters: [{ name: 'Dockyard Backup', extensions: ['dockyard'] }],
@@ -99,7 +98,25 @@ export class BackupService {
         return { success: false, error: 'No file selected' };
       }
 
-      const filePath = filePaths[0];
+      return { success: true, filePath: filePaths[0] };
+    } catch (error) {
+      debugError('Select backup file failed', error);
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+  }
+
+  /**
+   * Restore a backup from file
+   */
+  async restoreBackup(
+    filePath: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!fs.existsSync(filePath)) {
+        return { success: false, error: 'Backup file not found' };
+      }
+
       const fileBuffer = fs.readFileSync(filePath);
 
       // Extract parts

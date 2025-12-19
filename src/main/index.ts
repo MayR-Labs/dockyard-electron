@@ -9,6 +9,8 @@ import { ProfileMetadata } from '../shared/types';
 import { debugLog } from '../shared/utils/debug';
 import { ProfilePickerWindow } from './profile-picker-window';
 import { ProfileHandlers } from './handlers/profile-handlers';
+import { BackupHandlers } from './handlers/backup-handlers';
+import { BackupService } from './services/backup-service';
 
 app.setName('Dockyard');
 
@@ -77,6 +79,9 @@ async function startProfileSession(profileId: string): Promise<void> {
 
 async function startProfilePicker(): Promise<void> {
   ensureProfileHandlers();
+  // Backup handlers are needed in the profile picker for restore functionality
+  new BackupHandlers(new BackupService());
+
   profilePickerWindow = new ProfilePickerWindow();
   profilePickerWindow.createWindow();
 }

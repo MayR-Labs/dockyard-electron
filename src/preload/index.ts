@@ -77,7 +77,9 @@ const dockyardAPI: DockyardAPI = {
   // Backup APIs
   backup: {
     create: (password: string) => ipcRenderer.invoke(IPC_CHANNELS.BACKUP.CREATE, password),
-    restore: (password: string) => ipcRenderer.invoke(IPC_CHANNELS.BACKUP.RESTORE, password),
+    selectFile: () => ipcRenderer.invoke(IPC_CHANNELS.BACKUP.SELECT_FILE),
+    restore: (filePath: string, password: string) =>
+      ipcRenderer.invoke(IPC_CHANNELS.BACKUP.RESTORE, filePath, password),
   },
 
   // Workspace APIs

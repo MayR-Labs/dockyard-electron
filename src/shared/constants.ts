@@ -84,6 +84,7 @@ export const IPC_CHANNELS = {
   BACKUP: {
     CREATE: 'backup:create',
     RESTORE: 'backup:restore',
+    SELECT_FILE: 'backup:select-file',
   },
 } as const;
 

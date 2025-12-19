@@ -8,20 +8,45 @@ interface BackupSettingsProps {
 export function BackupSettings({ onActionResult }: BackupSettingsProps) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isExporting, setIsExporting] = useState(false);
-  const [isImporting, setIsImporting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [actionType, setActionType] = useState<'create' | 'restore' | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleAction = async () => {
-    if (!password) {
-      onActionResult('Password is required', 'error');
-      return;
+  const handleSelectFile = async () => {
+    setIsLoading(true);
+    try {
+      const result = await window.dockyard.backup.selectFile();
+      if (result.success && result.filePath) {
+        setSelectedFile(result.filePath);
+      } else if (result.error) {
+        // onActionResult(result.error, 'error'); // Optional
+      }
+    } catch (err) {
+      onActionResult('Failed to select file', 'error');
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    if (actionType === 'create' && password !== confirmPassword) {
-      onActionResult('Passwords do not match', 'error');
-      return;
+  const handleAction = async () => {
+    if (actionType === 'create') {
+      if (!password) {
+        onActionResult('Password is required', 'error');
+        return;
+      }
+      if (password !== confirmPassword) {
+        onActionResult('Passwords do not match', 'error');
+        return;
+      }
+    } else if (actionType === 'restore') {
+      if (!selectedFile) {
+        onActionResult('Please select a backup file', 'error');
+        return;
+      }
+      if (!password) {
+        onActionResult('Password is required', 'error');
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -35,7 +60,8 @@ export function BackupSettings({ onActionResult }: BackupSettingsProps) {
           onActionResult(result.error || 'Backup failed', 'error');
         }
       } else if (actionType === 'restore') {
-        const result = await window.dockyard.backup.restore(password);
+        if (!selectedFile) return;
+        const result = await window.dockyard.backup.restore(selectedFile, password);
         if (result.success) {
           onActionResult('Backup restored successfully. App is restarting...', 'success');
           resetState();
@@ -54,8 +80,7 @@ export function BackupSettings({ onActionResult }: BackupSettingsProps) {
     setActionType(null);
     setPassword('');
     setConfirmPassword('');
-    setIsExporting(false);
-    setIsImporting(false);
+    setSelectedFile(null);
   };
 
   return (
@@ -108,18 +133,38 @@ export function BackupSettings({ onActionResult }: BackupSettingsProps) {
             </h4>
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">
-                  {actionType === 'create' ? 'Set Encryption Password' : 'Enter Backup Password'}
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-indigo-500"
-                  placeholder="Enter password..."
-                />
-              </div>
+              {actionType === 'restore' && (
+                <div>
+                  <label className="block text-sm text-gray-400 mb-1">Backup File</label>
+                  <div className="flex gap-2">
+                    <div className="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 truncate">
+                      {selectedFile ? selectedFile.split(/[/\\]/).pop() : 'No file selected'}
+                    </div>
+                    <button
+                      onClick={handleSelectFile}
+                      disabled={isLoading}
+                      className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm border border-gray-600 transition-colors"
+                    >
+                      Select File
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {(actionType === 'create' || (actionType === 'restore' && selectedFile)) && (
+                <div>
+                  <label className="block text-sm text-gray-400 mb-1">
+                    {actionType === 'create' ? 'Set Encryption Password' : 'Enter Backup Password'}
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-indigo-500"
+                    placeholder="Enter password..."
+                  />
+                </div>
+              )}
 
               {actionType === 'create' && (
                 <div>
@@ -144,8 +189,8 @@ export function BackupSettings({ onActionResult }: BackupSettingsProps) {
                 </button>
                 <button
                   onClick={handleAction}
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                  disabled={isLoading || (actionType === 'restore' && (!selectedFile || !password))}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading && (
                     <svg
