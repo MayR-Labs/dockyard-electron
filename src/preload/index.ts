@@ -74,6 +74,12 @@ const dockyardAPI: DockyardAPI = {
     getCurrent: () => ipcRenderer.invoke(IPC_CHANNELS.PROFILE.GET_CURRENT),
   },
 
+  // Backup APIs
+  backup: {
+    create: (password: string) => ipcRenderer.invoke(IPC_CHANNELS.BACKUP.CREATE, password),
+    restore: (password: string) => ipcRenderer.invoke(IPC_CHANNELS.BACKUP.RESTORE, password),
+  },
+
   // Workspace APIs
   workspaces: {
     list: () => ipcRenderer.invoke(IPC_CHANNELS.WORKSPACE.LIST),

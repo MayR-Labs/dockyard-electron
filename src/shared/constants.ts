@@ -81,6 +81,10 @@ export const IPC_CHANNELS = {
     SHOW: 'notification:show',
     UPDATE_BADGE: 'notification:update-badge',
   },
+  BACKUP: {
+    CREATE: 'backup:create',
+    RESTORE: 'backup:restore',
+  },
 } as const;
 
 // Event names for main -> renderer communication

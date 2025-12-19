@@ -16,6 +16,8 @@ import { BrowserViewHandlers } from './handlers/browserview-handlers';
 import { WebViewHandlers } from './handlers/webview-handlers';
 import { WindowHandlers } from './handlers/window-handlers';
 import { WindowManager } from './window-manager';
+import { BackupHandlers } from './handlers/backup-handlers';
+import { BackupService } from './services/backup-service';
 
 export class IPCHandlers {
   private profileHandlers!: ProfileHandlers;
@@ -26,6 +28,7 @@ export class IPCHandlers {
   private browserViewHandlers!: BrowserViewHandlers;
   private webViewHandlers!: WebViewHandlers;
   private windowHandlers!: WindowHandlers;
+  private backupHandlers!: BackupHandlers;
 
   constructor(
     private storeManager: StoreManager,
@@ -37,6 +40,8 @@ export class IPCHandlers {
   }
 
   private initializeHandlers(): void {
+    const backupService = new BackupService();
+
     // Initialize all handler modules
     this.profileHandlers = new ProfileHandlers(this.storeManager);
     this.workspaceHandlers = new WorkspaceHandlers(this.storeManager);
@@ -46,5 +51,6 @@ export class IPCHandlers {
     this.browserViewHandlers = new BrowserViewHandlers(this.storeManager, this.browserViewManager);
     this.webViewHandlers = new WebViewHandlers(this.webViewManager);
     this.windowHandlers = new WindowHandlers(this.windowManager);
+    this.backupHandlers = new BackupHandlers(backupService);
   }
 }

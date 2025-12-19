@@ -19,7 +19,7 @@ import { AddAppModal } from './components/Modals/AddAppModal';
 import { EditAppModal } from './components/Modals/EditAppModal';
 import { CreateWorkspaceModal } from './components/Modals/CreateWorkspaceModal';
 import { AppOptionsModal } from './components/Modals/AppOptionsModal';
-import { ThemeSettingsModal } from './components/Modals/ThemeSettingsModal';
+import { SettingsModal } from './components/Modals/SettingsModal';
 import { AppCustomizationModal } from './components/Modals/AppCustomizationModal';
 import { AppContextMenu } from './components/ContextMenu/AppContextMenu';
 import { WorkspaceContextMenu } from './components/ContextMenu/WorkspaceContextMenu';
@@ -80,7 +80,7 @@ function App() {
   const [isAppOptionsModalOpen, setIsAppOptionsModalOpen] = useState(false);
   const [isAppCustomizationModalOpen, setIsAppCustomizationModalOpen] = useState(false);
   const [isWorkspaceSettingsModalOpen, setIsWorkspaceSettingsModalOpen] = useState(false);
-  const [isThemeSettingsModalOpen, setIsThemeSettingsModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isPerformanceDashboardOpen, setIsPerformanceDashboardOpen] = useState(false);
   const [isSessionManagerOpen, setIsSessionManagerOpen] = useState(false);
   const [isWorkspaceSwitcherOpen, setIsWorkspaceSwitcherOpen] = useState(false);
@@ -169,7 +169,7 @@ function App() {
       isCreateWorkspaceModalOpen ||
       isAppOptionsVisible ||
       isAppCustomizationModalOpen ||
-      isThemeSettingsModalOpen ||
+      isSettingsModalOpen ||
       isPerformanceDashboardOpen ||
       isSessionManagerOpen ||
       isWorkspaceSwitcherOpen ||
@@ -183,7 +183,7 @@ function App() {
       isCreateWorkspaceModalOpen,
       isAppOptionsVisible,
       isAppCustomizationModalOpen,
-      isThemeSettingsModalOpen,
+      isSettingsModalOpen,
       isPerformanceDashboardOpen,
       isSessionManagerOpen,
       isWorkspaceSwitcherOpen,
@@ -501,7 +501,7 @@ function App() {
         onSearchClick={() => setIsWorkspaceSwitcherOpen((prev) => !prev)}
         onWorkspaceSwitchClick={() => setIsWorkspaceSwitcherOpen(true)}
         onWorkspaceContextMenu={handleWorkspaceContextMenu}
-        onThemeClick={() => setIsThemeSettingsModalOpen(true)}
+        onSettingsClick={() => setIsSettingsModalOpen(true)}
       />
 
       <div className="flex-1 flex overflow-hidden relative">
@@ -607,18 +607,17 @@ function App() {
           onSave={handleSaveWorkspaceSettings}
         />
       )}
-      <ThemeSettingsModal
-        isOpen={isThemeSettingsModalOpen}
-        onClose={() => setIsThemeSettingsModalOpen(false)}
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
         currentMode={settings?.theme?.mode || 'dark'}
         currentAccentColor={settings?.theme?.accentColor || '#6366f1'}
         currentBackgroundStyle={settings?.theme?.backgroundStyle || 'solid'}
         customPresets={settings?.theme?.customPresets || []}
-        onSave={(themeSettings) => {
+        onSaveTheme={(themeSettings) => {
           updateSettings({
             theme: themeSettings,
           });
-          setIsThemeSettingsModalOpen(false);
         }}
       />
       <SplitWithModal

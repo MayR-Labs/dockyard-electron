@@ -156,6 +156,10 @@ export interface DockyardAPI {
     }) => Promise<void>;
     updateBadge: (appId: string, count: number) => Promise<App>;
   };
+  backup: {
+    create: (password: string) => Promise<{ success: boolean; filePath?: string; error?: string }>;
+    restore: (password: string) => Promise<{ success: boolean; error?: string }>;
+  };
   window: {
     toggleDevTools: () => Promise<void>;
   };

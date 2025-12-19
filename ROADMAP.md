@@ -188,6 +188,7 @@ The application now has:
 **Status**: 🚧 90% Complete (November 2024)
 
 **Recent Updates (Nov 2024)**:
+
 - Implemented workspace-based auto-hibernation that respects workspace settings
 - Auto-hibernation now checks if hibernation is enabled per workspace
 - Custom idle time settings from workspace configuration are now respected
@@ -286,15 +287,15 @@ The application now has:
 
 ---
 
-### **Phase 7: Backup, Sync & Export** 🗓️ _[Planned]_
+### **Phase 7: Backup, Sync & Export** � _[In Progress]_
 
 **Goal**: Enable data portability and backup solutions
 
 #### 7.1 Backup System
 
-- [ ] Local backup to JSON/ZIP
+- [x] Local backup to JSON/ZIP (Encrypted .dockyard file)
 - [ ] Automatic backup scheduling
-- [ ] Backup restoration UI
+- [x] Backup restoration UI
 
 #### 7.2 Folder-Based Sync
 
