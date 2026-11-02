@@ -66,8 +66,6 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
-.env.*
 !.env.example
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -142,6 +140,4 @@ vite.config.ts.timestamp-*
 
 # prunejs
 .prunejs/**
-branch_structure.json
-temp_auto_push.bat
-temp_interactive_push.bat
+config.bat
